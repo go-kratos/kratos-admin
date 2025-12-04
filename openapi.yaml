@@ -1,0 +1,94 @@
+# Generated with protoc-gen-openapi
+# https://github.com/google/gnostic/tree/master/cmd/protoc-gen-openapi
+
+openapi: 3.0.3
+info:
+    title: Auth API
+    description: The Auth service definition.
+    version: 0.0.1
+paths:
+    /v1/auths/current:
+        get:
+            tags:
+                - Auth
+            description: Current returns the currently logged-in user.
+            operationId: Auth_Current
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/kratos.admin.v1.CurrentReply'
+    /v1/auths/login:
+        post:
+            tags:
+                - Auth
+            description: Login a user and return the username.
+            operationId: Auth_Login
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/kratos.admin.v1.LoginRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/kratos.admin.v1.LoginReply'
+    /v1/auths/logout:
+        post:
+            tags:
+                - Auth
+            description: Logout the currently logged-in user.
+            operationId: Auth_Logout
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/kratos.admin.v1.LogoutRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/kratos.admin.v1.LogoutReply'
+components:
+    schemas:
+        kratos.admin.v1.CurrentReply:
+            type: object
+            properties:
+                username:
+                    type: string
+                    description: Username of the currently logged-in user.
+            description: CurrentReply is the reply message for the Current method.
+        kratos.admin.v1.LoginReply:
+            type: object
+            properties:
+                username:
+                    type: string
+                    description: Username of the logged-in user.
+            description: LoginReply is the reply message for the Login method.
+        kratos.admin.v1.LoginRequest:
+            type: object
+            properties:
+                username:
+                    type: string
+                    description: Username of the user.
+                password:
+                    type: string
+                    description: Password of the user.
+            description: LoginRequest is the request message for the Login method.
+        kratos.admin.v1.LogoutReply:
+            type: object
+            properties: {}
+        kratos.admin.v1.LogoutRequest:
+            type: object
+            properties: {}
+tags:
+    - name: Auth
