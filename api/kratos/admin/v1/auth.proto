@@ -2,6 +2,7 @@ syntax = "proto3";
 
 package kratos.admin.v1;
 
+import "google/protobuf/empty.proto";
 import "google/api/annotations.proto";
 
 option go_package = "github.com/go-kratos/kratos-admin/api/kratos/admin/v1;v1";
@@ -9,23 +10,35 @@ option java_multiple_files = true;
 option java_package = "api.kratos.admin.v1";
 option java_outer_classname = "AuthProto";
 
+// User is the user message.
+message User {
+  // The unique ID of the user.
+  int64 id = 1;
+  // The name of the user.
+  string name = 2;
+  // The email of the user.
+  string email = 3;
+  // The avatar URL of the user.
+  string avatar = 4;
+}
+
 // The Auth service definition.
 service Auth {
   // Login a user and return the username.
-  rpc Login (LoginRequest) returns (LoginReply) {
+  rpc Login (LoginRequest) returns (User) {
     option (google.api.http) = {
       post: "/v1/auths/login"
       body: "*"
     };
   }
   // Current returns the currently logged-in user.
-  rpc Current (CurrentRequest) returns (CurrentReply) {
+  rpc Current (google.protobuf.Empty) returns (User) {
     option (google.api.http) = {
       get: "/v1/auths/current"
     };
   }
   // Logout the currently logged-in user.
-  rpc Logout (LogoutRequest) returns (LogoutReply) {
+  rpc Logout (google.protobuf.Empty) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       post: "/v1/auths/logout"
       body: "*"
@@ -40,21 +53,3 @@ message LoginRequest {
   // Password of the user.
   string password = 2;
 }
-
-// LoginReply is the reply message for the Login method.
-message LoginReply {
-  // Username of the logged-in user.
-  string username = 1;
-}
-
-// CurrentRequest is the request message for the Current method.
-message CurrentRequest {}
-
-// CurrentReply is the reply message for the Current method.
-message CurrentReply {
-  // Username of the currently logged-in user.
-  string username = 1;
-}
-
-message LogoutRequest {}
-message LogoutReply {}
