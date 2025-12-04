@@ -26,7 +26,7 @@ npm install
 npm run dev
 ```
 
-## Example using umijs request
+## The generated clients work with any Promise-based HTTP client that returns JSON.
 ```typescript
 import { createAuthClient } from "@/services/kratos/admin/v1/index";
 import { request } from "@umijs/max";
@@ -53,3 +53,23 @@ export function createAuthService() {
   return createAuthClient(requestHandler);
 }
 ```
+
+## Example using the generated client
+```typescript
+import { createAuthService } from "@/services/index";
+
+const authService = createAuthService();
+
+const handleLogin = async (username: string, password: string) => {
+  try {
+    const response = await authService.login({
+      username: username,
+      password: password,
+    });
+    console.log("Login successful:", response);
+  } catch (error) {
+    console.error("Login failed:", error);
+  }
+};
+```
+
