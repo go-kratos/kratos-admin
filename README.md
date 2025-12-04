@@ -29,26 +29,8 @@ npm run dev
 ## The generated clients work with any Promise-based HTTP client that returns JSON.
 ```typescript
 import { createAuthClient } from "@/services/kratos/admin/v1/index";
-import { request } from "@umijs/max";
 
-type Request = {
-  path: string;
-  method: string;
-  body: string | null;
-};
-
-function requestHandler({ path, method, body }: Request) {
-  const headers: Record<string, string> = {};
-  if (method === "POST" || method === "PUT" || method === "PATCH") {
-    headers["Content-Type"] = "application/json";
-  }
-  return request("/" + path, {
-    method: method,
-    data: body,
-    headers: headers,
-  });
-}
-
+// Defines an Auth service using the specified client.
 export function createAuthService() {
   return createAuthClient(requestHandler);
 }
@@ -62,7 +44,7 @@ const authService = createAuthService();
 
 const handleLogin = async (username: string, password: string) => {
   try {
-    const response = await authService.login({
+    const response = await authService.Login({
       username: username,
       password: password,
     });
