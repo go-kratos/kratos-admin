@@ -1,6 +1,6 @@
 # Kratos Admin Template
 
-## Install
+## Prerequisites
 ```
 make init
 ```
@@ -26,17 +26,25 @@ npm install
 npm run dev
 ```
 
-## The generated clients work with any Promise-based HTTP client that returns JSON.
+The generated clients work with any Promise-based HTTP client that returns JSON.  
+Services are defined and re-exported from this file: `web/src/services/index.ts`.  
 ```typescript
 import { createAuthClient } from "@/services/kratos/admin/v1/index";
 
-// Defines an Auth service using the specified client.
+type Request = {
+  path: string;
+  method: string;
+  body: string | null;
+};
+
+function requestHandler({ path, method, body }: Request) { ... }
+
 export function createAuthService() {
   return createAuthClient(requestHandler);
 }
 ```
 
-## Example using the generated client
+Example using the generated client:
 ```typescript
 import { createAuthService } from "@/services/index";
 
