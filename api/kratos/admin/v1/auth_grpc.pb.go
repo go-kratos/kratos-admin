@@ -20,8 +20,8 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	Auth_Login_FullMethodName   = "/kratos.admin.v1.Auth/Login"
 	Auth_Current_FullMethodName = "/kratos.admin.v1.Auth/Current"
+	Auth_Login_FullMethodName   = "/kratos.admin.v1.Auth/Login"
 	Auth_Logout_FullMethodName  = "/kratos.admin.v1.Auth/Logout"
 )
 
@@ -29,12 +29,12 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 //
-// The Auth service definition.
+// Auth is the admin service definition.
 type AuthClient interface {
-	// Login a user and return the username.
-	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*User, error)
 	// Current returns the currently logged-in user.
-	Current(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*User, error)
+	Current(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*Admin, error)
+	// Login a user and return the username.
+	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*Admin, error)
 	// Logout the currently logged-in user.
 	Logout(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
@@ -47,20 +47,20 @@ func NewAuthClient(cc grpc.ClientConnInterface) AuthClient {
 	return &authClient{cc}
 }
 
-func (c *authClient) Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*User, error) {
+func (c *authClient) Current(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*Admin, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(User)
-	err := c.cc.Invoke(ctx, Auth_Login_FullMethodName, in, out, cOpts...)
+	out := new(Admin)
+	err := c.cc.Invoke(ctx, Auth_Current_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *authClient) Current(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*User, error) {
+func (c *authClient) Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*Admin, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(User)
-	err := c.cc.Invoke(ctx, Auth_Current_FullMethodName, in, out, cOpts...)
+	out := new(Admin)
+	err := c.cc.Invoke(ctx, Auth_Login_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -81,12 +81,12 @@ func (c *authClient) Logout(ctx context.Context, in *emptypb.Empty, opts ...grpc
 // All implementations must embed UnimplementedAuthServer
 // for forward compatibility.
 //
-// The Auth service definition.
+// Auth is the admin service definition.
 type AuthServer interface {
-	// Login a user and return the username.
-	Login(context.Context, *LoginRequest) (*User, error)
 	// Current returns the currently logged-in user.
-	Current(context.Context, *emptypb.Empty) (*User, error)
+	Current(context.Context, *emptypb.Empty) (*Admin, error)
+	// Login a user and return the username.
+	Login(context.Context, *LoginRequest) (*Admin, error)
 	// Logout the currently logged-in user.
 	Logout(context.Context, *emptypb.Empty) (*emptypb.Empty, error)
 	mustEmbedUnimplementedAuthServer()
@@ -99,11 +99,11 @@ type AuthServer interface {
 // pointer dereference when methods are called.
 type UnimplementedAuthServer struct{}
 
-func (UnimplementedAuthServer) Login(context.Context, *LoginRequest) (*User, error) {
-	return nil, status.Error(codes.Unimplemented, "method Login not implemented")
-}
-func (UnimplementedAuthServer) Current(context.Context, *emptypb.Empty) (*User, error) {
+func (UnimplementedAuthServer) Current(context.Context, *emptypb.Empty) (*Admin, error) {
 	return nil, status.Error(codes.Unimplemented, "method Current not implemented")
+}
+func (UnimplementedAuthServer) Login(context.Context, *LoginRequest) (*Admin, error) {
+	return nil, status.Error(codes.Unimplemented, "method Login not implemented")
 }
 func (UnimplementedAuthServer) Logout(context.Context, *emptypb.Empty) (*emptypb.Empty, error) {
 	return nil, status.Error(codes.Unimplemented, "method Logout not implemented")
@@ -129,24 +129,6 @@ func RegisterAuthServer(s grpc.ServiceRegistrar, srv AuthServer) {
 	s.RegisterService(&Auth_ServiceDesc, srv)
 }
 
-func _Auth_Login_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(LoginRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AuthServer).Login(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Auth_Login_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuthServer).Login(ctx, req.(*LoginRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _Auth_Current_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(emptypb.Empty)
 	if err := dec(in); err != nil {
@@ -161,6 +143,24 @@ func _Auth_Current_Handler(srv interface{}, ctx context.Context, dec func(interf
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AuthServer).Current(ctx, req.(*emptypb.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Auth_Login_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LoginRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServer).Login(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Auth_Login_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServer).Login(ctx, req.(*LoginRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -191,12 +191,12 @@ var Auth_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*AuthServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "Login",
-			Handler:    _Auth_Login_Handler,
-		},
-		{
 			MethodName: "Current",
 			Handler:    _Auth_Current_Handler,
+		},
+		{
+			MethodName: "Login",
+			Handler:    _Auth_Login_Handler,
 		},
 		{
 			MethodName: "Logout",

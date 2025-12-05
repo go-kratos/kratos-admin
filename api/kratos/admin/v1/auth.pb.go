@@ -11,6 +11,7 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
+	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
@@ -23,8 +24,8 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// User is the user message.
-type User struct {
+// Admin is the admin message.
+type Admin struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// The unique ID of the user.
 	Id int64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
@@ -33,25 +34,32 @@ type User struct {
 	// The email of the user.
 	Email string `protobuf:"bytes,3,opt,name=email,proto3" json:"email,omitempty"`
 	// The avatar URL of the user.
-	Avatar        string `protobuf:"bytes,4,opt,name=avatar,proto3" json:"avatar,omitempty"`
+	Avatar string `protobuf:"bytes,4,opt,name=avatar,proto3" json:"avatar,omitempty"`
+	// The access level of the user.
+	// Possible values are: "admin", "user", etc.
+	Access string `protobuf:"bytes,5,opt,name=access,proto3" json:"access,omitempty"`
+	// The timestamp at which the user was created.
+	CreateTime *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
+	// The latest timestamp at which the user was updated.
+	UpdateTime    *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=update_time,json=updateTime,proto3" json:"update_time,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *User) Reset() {
-	*x = User{}
+func (x *Admin) Reset() {
+	*x = Admin{}
 	mi := &file_kratos_admin_v1_auth_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *User) String() string {
+func (x *Admin) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*User) ProtoMessage() {}
+func (*Admin) ProtoMessage() {}
 
-func (x *User) ProtoReflect() protoreflect.Message {
+func (x *Admin) ProtoReflect() protoreflect.Message {
 	mi := &file_kratos_admin_v1_auth_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -63,37 +71,58 @@ func (x *User) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use User.ProtoReflect.Descriptor instead.
-func (*User) Descriptor() ([]byte, []int) {
+// Deprecated: Use Admin.ProtoReflect.Descriptor instead.
+func (*Admin) Descriptor() ([]byte, []int) {
 	return file_kratos_admin_v1_auth_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *User) GetId() int64 {
+func (x *Admin) GetId() int64 {
 	if x != nil {
 		return x.Id
 	}
 	return 0
 }
 
-func (x *User) GetName() string {
+func (x *Admin) GetName() string {
 	if x != nil {
 		return x.Name
 	}
 	return ""
 }
 
-func (x *User) GetEmail() string {
+func (x *Admin) GetEmail() string {
 	if x != nil {
 		return x.Email
 	}
 	return ""
 }
 
-func (x *User) GetAvatar() string {
+func (x *Admin) GetAvatar() string {
 	if x != nil {
 		return x.Avatar
 	}
 	return ""
+}
+
+func (x *Admin) GetAccess() string {
+	if x != nil {
+		return x.Access
+	}
+	return ""
+}
+
+func (x *Admin) GetCreateTime() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CreateTime
+	}
+	return nil
+}
+
+func (x *Admin) GetUpdateTime() *timestamppb.Timestamp {
+	if x != nil {
+		return x.UpdateTime
+	}
+	return nil
 }
 
 // LoginRequest is the request message for the Login method.
@@ -155,20 +184,25 @@ var File_kratos_admin_v1_auth_proto protoreflect.FileDescriptor
 
 const file_kratos_admin_v1_auth_proto_rawDesc = "" +
 	"\n" +
-	"\x1akratos/admin/v1/auth.proto\x12\x0fkratos.admin.v1\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1cgoogle/api/annotations.proto\"X\n" +
-	"\x04User\x12\x0e\n" +
+	"\x1akratos/admin/v1/auth.proto\x12\x0fkratos.admin.v1\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1cgoogle/api/annotations.proto\"\xeb\x01\n" +
+	"\x05Admin\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x14\n" +
 	"\x05email\x18\x03 \x01(\tR\x05email\x12\x16\n" +
-	"\x06avatar\x18\x04 \x01(\tR\x06avatar\"F\n" +
+	"\x06avatar\x18\x04 \x01(\tR\x06avatar\x12\x16\n" +
+	"\x06access\x18\x05 \x01(\tR\x06access\x12;\n" +
+	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
+	"createTime\x12;\n" +
+	"\vupdate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\n" +
+	"updateTime\"F\n" +
 	"\fLoginRequest\x12\x1a\n" +
 	"\busername\x18\x01 \x01(\tR\busername\x12\x1a\n" +
-	"\bpassword\x18\x02 \x01(\tR\bpassword2\x8d\x02\n" +
-	"\x04Auth\x12Y\n" +
-	"\x05Login\x12\x1d.kratos.admin.v1.LoginRequest\x1a\x15.kratos.admin.v1.User\"\x1a\x82\xd3\xe4\x93\x02\x14:\x01*\"\x0f/v1/auths/login\x12S\n" +
-	"\aCurrent\x12\x16.google.protobuf.Empty\x1a\x15.kratos.admin.v1.User\"\x19\x82\xd3\xe4\x93\x02\x13\x12\x11/v1/auths/current\x12U\n" +
-	"\x06Logout\x12\x16.google.protobuf.Empty\x1a\x16.google.protobuf.Empty\"\x1b\x82\xd3\xe4\x93\x02\x15:\x01*\"\x10/v1/auths/logoutB\\\n" +
-	"\x13api.kratos.admin.v1B\tAuthProtoP\x01Z8github.com/go-kratos/kratos-admin/api/kratos/admin/v1;v1b\x06proto3"
+	"\bpassword\x18\x02 \x01(\tR\bpassword2\x8c\x02\n" +
+	"\x04Auth\x12S\n" +
+	"\aCurrent\x12\x16.google.protobuf.Empty\x1a\x16.kratos.admin.v1.Admin\"\x18\x82\xd3\xe4\x93\x02\x12\x12\x10/v1/auth/current\x12Y\n" +
+	"\x05Login\x12\x1d.kratos.admin.v1.LoginRequest\x1a\x16.kratos.admin.v1.Admin\"\x19\x82\xd3\xe4\x93\x02\x13:\x01*\"\x0e/v1/auth/login\x12T\n" +
+	"\x06Logout\x12\x16.google.protobuf.Empty\x1a\x16.google.protobuf.Empty\"\x1a\x82\xd3\xe4\x93\x02\x14:\x01*\"\x0f/v1/auth/logoutBQ\n" +
+	"\x13api.kratos.admin.v1P\x01Z8github.com/go-kratos/kratos-admin/api/kratos/admin/v1;v1b\x06proto3"
 
 var (
 	file_kratos_admin_v1_auth_proto_rawDescOnce sync.Once
@@ -184,22 +218,25 @@ func file_kratos_admin_v1_auth_proto_rawDescGZIP() []byte {
 
 var file_kratos_admin_v1_auth_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
 var file_kratos_admin_v1_auth_proto_goTypes = []any{
-	(*User)(nil),          // 0: kratos.admin.v1.User
-	(*LoginRequest)(nil),  // 1: kratos.admin.v1.LoginRequest
-	(*emptypb.Empty)(nil), // 2: google.protobuf.Empty
+	(*Admin)(nil),                 // 0: kratos.admin.v1.Admin
+	(*LoginRequest)(nil),          // 1: kratos.admin.v1.LoginRequest
+	(*timestamppb.Timestamp)(nil), // 2: google.protobuf.Timestamp
+	(*emptypb.Empty)(nil),         // 3: google.protobuf.Empty
 }
 var file_kratos_admin_v1_auth_proto_depIdxs = []int32{
-	1, // 0: kratos.admin.v1.Auth.Login:input_type -> kratos.admin.v1.LoginRequest
-	2, // 1: kratos.admin.v1.Auth.Current:input_type -> google.protobuf.Empty
-	2, // 2: kratos.admin.v1.Auth.Logout:input_type -> google.protobuf.Empty
-	0, // 3: kratos.admin.v1.Auth.Login:output_type -> kratos.admin.v1.User
-	0, // 4: kratos.admin.v1.Auth.Current:output_type -> kratos.admin.v1.User
-	2, // 5: kratos.admin.v1.Auth.Logout:output_type -> google.protobuf.Empty
-	3, // [3:6] is the sub-list for method output_type
-	0, // [0:3] is the sub-list for method input_type
-	0, // [0:0] is the sub-list for extension type_name
-	0, // [0:0] is the sub-list for extension extendee
-	0, // [0:0] is the sub-list for field type_name
+	2, // 0: kratos.admin.v1.Admin.create_time:type_name -> google.protobuf.Timestamp
+	2, // 1: kratos.admin.v1.Admin.update_time:type_name -> google.protobuf.Timestamp
+	3, // 2: kratos.admin.v1.Auth.Current:input_type -> google.protobuf.Empty
+	1, // 3: kratos.admin.v1.Auth.Login:input_type -> kratos.admin.v1.LoginRequest
+	3, // 4: kratos.admin.v1.Auth.Logout:input_type -> google.protobuf.Empty
+	0, // 5: kratos.admin.v1.Auth.Current:output_type -> kratos.admin.v1.Admin
+	0, // 6: kratos.admin.v1.Auth.Login:output_type -> kratos.admin.v1.Admin
+	3, // 7: kratos.admin.v1.Auth.Logout:output_type -> google.protobuf.Empty
+	5, // [5:8] is the sub-list for method output_type
+	2, // [2:5] is the sub-list for method input_type
+	2, // [2:2] is the sub-list for extension type_name
+	2, // [2:2] is the sub-list for extension extendee
+	0, // [0:2] is the sub-list for field type_name
 }
 
 func init() { file_kratos_admin_v1_auth_proto_init() }

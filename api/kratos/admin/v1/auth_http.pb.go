@@ -26,18 +26,37 @@ const OperationAuthLogout = "/kratos.admin.v1.Auth/Logout"
 
 type AuthHTTPServer interface {
 	// Current Current returns the currently logged-in user.
-	Current(context.Context, *emptypb.Empty) (*User, error)
+	Current(context.Context, *emptypb.Empty) (*Admin, error)
 	// Login Login a user and return the username.
-	Login(context.Context, *LoginRequest) (*User, error)
+	Login(context.Context, *LoginRequest) (*Admin, error)
 	// Logout Logout the currently logged-in user.
 	Logout(context.Context, *emptypb.Empty) (*emptypb.Empty, error)
 }
 
 func RegisterAuthHTTPServer(s *http.Server, srv AuthHTTPServer) {
 	r := s.Route("/")
-	r.POST("/v1/auths/login", _Auth_Login0_HTTP_Handler(srv))
-	r.GET("/v1/auths/current", _Auth_Current0_HTTP_Handler(srv))
-	r.POST("/v1/auths/logout", _Auth_Logout0_HTTP_Handler(srv))
+	r.GET("/v1/auth/current", _Auth_Current0_HTTP_Handler(srv))
+	r.POST("/v1/auth/login", _Auth_Login0_HTTP_Handler(srv))
+	r.POST("/v1/auth/logout", _Auth_Logout0_HTTP_Handler(srv))
+}
+
+func _Auth_Current0_HTTP_Handler(srv AuthHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in emptypb.Empty
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationAuthCurrent)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.Current(ctx, req.(*emptypb.Empty))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*Admin)
+		return ctx.Result(200, reply)
+	}
 }
 
 func _Auth_Login0_HTTP_Handler(srv AuthHTTPServer) func(ctx http.Context) error {
@@ -57,26 +76,7 @@ func _Auth_Login0_HTTP_Handler(srv AuthHTTPServer) func(ctx http.Context) error 
 		if err != nil {
 			return err
 		}
-		reply := out.(*User)
-		return ctx.Result(200, reply)
-	}
-}
-
-func _Auth_Current0_HTTP_Handler(srv AuthHTTPServer) func(ctx http.Context) error {
-	return func(ctx http.Context) error {
-		var in emptypb.Empty
-		if err := ctx.BindQuery(&in); err != nil {
-			return err
-		}
-		http.SetOperation(ctx, OperationAuthCurrent)
-		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
-			return srv.Current(ctx, req.(*emptypb.Empty))
-		})
-		out, err := h(ctx, &in)
-		if err != nil {
-			return err
-		}
-		reply := out.(*User)
+		reply := out.(*Admin)
 		return ctx.Result(200, reply)
 	}
 }
@@ -105,9 +105,9 @@ func _Auth_Logout0_HTTP_Handler(srv AuthHTTPServer) func(ctx http.Context) error
 
 type AuthHTTPClient interface {
 	// Current Current returns the currently logged-in user.
-	Current(ctx context.Context, req *emptypb.Empty, opts ...http.CallOption) (rsp *User, err error)
+	Current(ctx context.Context, req *emptypb.Empty, opts ...http.CallOption) (rsp *Admin, err error)
 	// Login Login a user and return the username.
-	Login(ctx context.Context, req *LoginRequest, opts ...http.CallOption) (rsp *User, err error)
+	Login(ctx context.Context, req *LoginRequest, opts ...http.CallOption) (rsp *Admin, err error)
 	// Logout Logout the currently logged-in user.
 	Logout(ctx context.Context, req *emptypb.Empty, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 }
@@ -121,9 +121,9 @@ func NewAuthHTTPClient(client *http.Client) AuthHTTPClient {
 }
 
 // Current Current returns the currently logged-in user.
-func (c *AuthHTTPClientImpl) Current(ctx context.Context, in *emptypb.Empty, opts ...http.CallOption) (*User, error) {
-	var out User
-	pattern := "/v1/auths/current"
+func (c *AuthHTTPClientImpl) Current(ctx context.Context, in *emptypb.Empty, opts ...http.CallOption) (*Admin, error) {
+	var out Admin
+	pattern := "/v1/auth/current"
 	path := binding.EncodeURL(pattern, in, true)
 	opts = append(opts, http.Operation(OperationAuthCurrent))
 	opts = append(opts, http.PathTemplate(pattern))
@@ -135,9 +135,9 @@ func (c *AuthHTTPClientImpl) Current(ctx context.Context, in *emptypb.Empty, opt
 }
 
 // Login Login a user and return the username.
-func (c *AuthHTTPClientImpl) Login(ctx context.Context, in *LoginRequest, opts ...http.CallOption) (*User, error) {
-	var out User
-	pattern := "/v1/auths/login"
+func (c *AuthHTTPClientImpl) Login(ctx context.Context, in *LoginRequest, opts ...http.CallOption) (*Admin, error) {
+	var out Admin
+	pattern := "/v1/auth/login"
 	path := binding.EncodeURL(pattern, in, false)
 	opts = append(opts, http.Operation(OperationAuthLogin))
 	opts = append(opts, http.PathTemplate(pattern))
@@ -151,7 +151,7 @@ func (c *AuthHTTPClientImpl) Login(ctx context.Context, in *LoginRequest, opts .
 // Logout Logout the currently logged-in user.
 func (c *AuthHTTPClientImpl) Logout(ctx context.Context, in *emptypb.Empty, opts ...http.CallOption) (*emptypb.Empty, error) {
 	var out emptypb.Empty
-	pattern := "/v1/auths/logout"
+	pattern := "/v1/auth/logout"
 	path := binding.EncodeURL(pattern, in, false)
 	opts = append(opts, http.Operation(OperationAuthLogout))
 	opts = append(opts, http.PathTemplate(pattern))

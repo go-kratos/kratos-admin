@@ -4,15 +4,18 @@ import (
 	v1 "github.com/go-kratos/kratos-admin/api/kratos/admin/v1"
 	"github.com/go-kratos/kratos-admin/internal/conf"
 	"github.com/go-kratos/kratos-admin/internal/service"
+	"github.com/go-kratos/kratos-admin/pkg/auth"
 
-	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/middleware/recovery"
 	"github.com/go-kratos/kratos/v2/transport/http"
 )
 
 // NewHTTPServer new an HTTP server.
-func NewHTTPServer(c *conf.Server, auth *service.AuthService, logger log.Logger) *http.Server {
+func NewHTTPServer(c *conf.Server, authService *service.AuthService) *http.Server {
 	var opts = []http.ServerOption{
+		http.Filter(
+			auth.Middleware(),
+		),
 		http.Middleware(
 			recovery.Recovery(),
 		),
@@ -27,6 +30,6 @@ func NewHTTPServer(c *conf.Server, auth *service.AuthService, logger log.Logger)
 		opts = append(opts, http.Timeout(c.Http.Timeout.AsDuration()))
 	}
 	srv := http.NewServer(opts...)
-	v1.RegisterAuthHTTPServer(srv, auth)
+	v1.RegisterAuthHTTPServer(srv, authService)
 	return srv
 }

@@ -2,8 +2,8 @@
 /* eslint-disable camelcase */
 // @ts-nocheck
 
-// User is the user message.
-export type User = {
+// Admin is the admin message.
+export type Admin = {
   // The unique ID of the user.
   id: number | undefined;
   // The name of the user.
@@ -12,7 +12,19 @@ export type User = {
   email: string | undefined;
   // The avatar URL of the user.
   avatar: string | undefined;
+  // The access level of the user.
+  // Possible values are: "admin", "user", etc.
+  access: string | undefined;
+  // The timestamp at which the user was created.
+  createTime: wellKnownTimestamp | undefined;
+  // The latest timestamp at which the user was updated.
+  updateTime: wellKnownTimestamp | undefined;
 };
+
+// Encoded using RFC 3339, where generated output will always be Z-normalized
+// and uses 0, 3, 6 or 9 fractional digits.
+// Offsets other than "Z" are also accepted.
+type wellKnownTimestamp = string;
 
 // LoginRequest is the request message for the Login method.
 export type LoginRequest = {
@@ -22,12 +34,12 @@ export type LoginRequest = {
   password: string | undefined;
 };
 
-// The Auth service definition.
+// Auth is the admin service definition.
 export interface Auth {
-  // Login a user and return the username.
-  Login(request: LoginRequest): Promise<User>;
   // Current returns the currently logged-in user.
-  Current(request: wellKnownEmpty): Promise<User>;
+  Current(request: wellKnownEmpty): Promise<Admin>;
+  // Login a user and return the username.
+  Login(request: LoginRequest): Promise<Admin>;
   // Logout the currently logged-in user.
   Logout(request: wellKnownEmpty): Promise<wellKnownEmpty>;
 }
@@ -44,25 +56,8 @@ export function createAuthClient(
   handler: RequestHandler
 ): Auth {
   return {
-    Login(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `v1/auths/login`; // eslint-disable-line quotes
-      const body = JSON.stringify(request);
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "POST",
-        body,
-      }, {
-        service: "Auth",
-        method: "Login",
-      }) as Promise<User>;
-    },
     Current(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `v1/auths/current`; // eslint-disable-line quotes
+      const path = `v1/auth/current`; // eslint-disable-line quotes
       const body = null;
       const queryParams: string[] = [];
       let uri = path;
@@ -76,10 +71,27 @@ export function createAuthClient(
       }, {
         service: "Auth",
         method: "Current",
-      }) as Promise<User>;
+      }) as Promise<Admin>;
+    },
+    Login(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      const path = `v1/auth/login`; // eslint-disable-line quotes
+      const body = JSON.stringify(request);
+      const queryParams: string[] = [];
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "POST",
+        body,
+      }, {
+        service: "Auth",
+        method: "Login",
+      }) as Promise<Admin>;
     },
     Logout(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `v1/auths/logout`; // eslint-disable-line quotes
+      const path = `v1/auth/logout`; // eslint-disable-line quotes
       const body = JSON.stringify(request);
       const queryParams: string[] = [];
       let uri = path;

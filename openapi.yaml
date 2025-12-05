@@ -4,10 +4,10 @@
 openapi: 3.0.3
 info:
     title: Auth API
-    description: The Auth service definition.
+    description: Auth is the admin service definition.
     version: 0.0.1
 paths:
-    /v1/auths/current:
+    /v1/auth/current:
         get:
             tags:
                 - Auth
@@ -19,8 +19,8 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/kratos.admin.v1.User'
-    /v1/auths/login:
+                                $ref: '#/components/schemas/kratos.admin.v1.Admin'
+    /v1/auth/login:
         post:
             tags:
                 - Auth
@@ -38,8 +38,8 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/kratos.admin.v1.User'
-    /v1/auths/logout:
+                                $ref: '#/components/schemas/kratos.admin.v1.Admin'
+    /v1/auth/logout:
         post:
             tags:
                 - Auth
@@ -55,17 +55,7 @@ paths:
                     content: {}
 components:
     schemas:
-        kratos.admin.v1.LoginRequest:
-            type: object
-            properties:
-                username:
-                    type: string
-                    description: Username of the user.
-                password:
-                    type: string
-                    description: Password of the user.
-            description: LoginRequest is the request message for the Login method.
-        kratos.admin.v1.User:
+        kratos.admin.v1.Admin:
             type: object
             properties:
                 id:
@@ -80,6 +70,29 @@ components:
                 avatar:
                     type: string
                     description: The avatar URL of the user.
-            description: User is the user message.
+                access:
+                    type: string
+                    description: |-
+                        The access level of the user.
+                         Possible values are: "admin", "user", etc.
+                createTime:
+                    type: string
+                    description: The timestamp at which the user was created.
+                    format: date-time
+                updateTime:
+                    type: string
+                    description: The latest timestamp at which the user was updated.
+                    format: date-time
+            description: Admin is the admin message.
+        kratos.admin.v1.LoginRequest:
+            type: object
+            properties:
+                username:
+                    type: string
+                    description: Username of the user.
+                password:
+                    type: string
+                    description: Password of the user.
+            description: LoginRequest is the request message for the Login method.
 tags:
     - name: Auth

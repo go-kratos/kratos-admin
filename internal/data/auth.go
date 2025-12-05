@@ -17,6 +17,6 @@ func NewAuthRepo(data *Data) biz.AuthRepo {
 	}
 }
 
-func (r *authRepo) FindByUsername(ctx context.Context, username string) (*biz.User, error) {
-	return &biz.User{Name: username, Password: username}, nil
+func (r *authRepo) FindByName(ctx context.Context, name string) (*biz.Admin, error) {
+	return &biz.Admin{Name: name, Password: name, Access: "admin"}, nil
 }
