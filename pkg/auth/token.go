@@ -3,14 +3,8 @@ package auth
 import (
 	"time"
 
-	"github.com/go-kratos/kratos/v2/errors"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
-)
-
-var (
-	// ErrUnauthorized indicates that the token is invalid.
-	ErrUnauthorized = errors.Unauthorized("UNAUTHORIZED", "Token is invalid")
 )
 
 // GenerateToken generates a JWT token for the given username.

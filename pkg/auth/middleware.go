@@ -11,16 +11,17 @@ import (
 	httpm "github.com/go-kratos/kratos/v2/transport/http"
 )
 
-const (
-	cookieTokenName = "authorization"
-)
-
 var (
+	// noAuthPaths defines the paths that do not require authentication.
 	noAuthPaths = map[string]struct{}{
 		"/v1/auth/login": {},
 	}
-	// TODO: replace with a fixed secret key in production
-	jwtSecretKey = time.Now().Format("20060102150405")
+	// jwtSecretKey is the secret key used for signing JWT tokens.
+	jwtSecretKey = authSecretFromEnv("KRATOS_AUTH_SECRET")
+	// cookieTokenName is the name of the cookie that stores the authorization token.
+	cookieTokenName = cookieNameFromEnv("KRATOS_AUTH_COOKIE")
+	// ErrUnauthorized indicates that the token is invalid.
+	ErrUnauthorized = errors.Unauthorized("UNAUTHORIZED", "Token is invalid")
 )
 
 // Middleware is an authentication middleware for HTTP servers.
