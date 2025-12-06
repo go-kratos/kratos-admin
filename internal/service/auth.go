@@ -37,7 +37,11 @@ func NewAuthService(uc *biz.AuthUsecase) *AuthService {
 }
 
 func (s *AuthService) Current(ctx context.Context, req *emptypb.Empty) (*v1.Admin, error) {
-	admin, err := s.uc.Current(ctx)
+	a, ok := auth.FromContext(ctx)
+	if !ok {
+		return nil, auth.ErrUnauthorized
+	}
+	admin, err := s.uc.GetAdmin(ctx, a.Username)
 	if err != nil {
 		return nil, err
 	}
@@ -58,7 +62,11 @@ func (s *AuthService) Login(ctx context.Context, req *v1.LoginRequest) (*v1.Admi
 
 // Logout implements auth logout.
 func (s *AuthService) Logout(ctx context.Context, req *emptypb.Empty) (*emptypb.Empty, error) {
-	if err := s.uc.Logout(ctx); err != nil {
+	a, ok := auth.FromContext(ctx)
+	if !ok {
+		return nil, auth.ErrUnauthorized
+	}
+	if err := s.uc.Logout(ctx, a.Username); err != nil {
 		return nil, err
 	}
 	if err := auth.SetLogoutCookie(ctx); err != nil {

@@ -43,13 +43,6 @@ api:
  	       --go-http_out=paths=source_relative:./api \
  	       --go-grpc_out=paths=source_relative:./api \
 	       --openapi_out=fq_schema_naming=true,default_response=false:. \
-	       $(API_PROTO_FILES)
-
-.PHONY: web
-# generate web proto
-web:
-	protoc --proto_path=./api \
-	       --proto_path=./third_party \
 		   --typescript-http_out ./web/src/services \
 	       $(API_PROTO_FILES)
 

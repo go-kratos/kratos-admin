@@ -2,6 +2,7 @@ package data
 
 import (
 	"context"
+	"time"
 
 	"github.com/go-kratos/kratos-admin/internal/biz"
 )
@@ -18,5 +19,11 @@ func NewAuthRepo(data *Data) biz.AuthRepo {
 }
 
 func (r *authRepo) FindByName(ctx context.Context, name string) (*biz.Admin, error) {
-	return &biz.Admin{Name: name, Password: name, Access: "admin"}, nil
+	return &biz.Admin{
+		ID:         1,
+		Name:       name,
+		Access:     "admin",
+		CreateTime: time.Now(),
+		UpdateTime: time.Now(),
+	}, nil
 }

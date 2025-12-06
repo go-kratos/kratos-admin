@@ -4,7 +4,6 @@ import (
 	"context"
 	"time"
 
-	"github.com/go-kratos/kratos-admin/pkg/auth"
 	"github.com/go-kratos/kratos/v2/errors"
 	"github.com/go-kratos/kratos/v2/log"
 )
@@ -15,7 +14,6 @@ type Admin struct {
 	Name       string
 	Email      string
 	Avatar     string
-	Password   string
 	Access     string
 	CreateTime time.Time
 	UpdateTime time.Time
@@ -37,12 +35,8 @@ func NewAuthUsecase(repo AuthRepo) *AuthUsecase {
 }
 
 // Current returns the current logged in user.
-func (uc *AuthUsecase) Current(ctx context.Context) (*Admin, error) {
-	a, ok := auth.FromContext(ctx)
-	if !ok {
-		return nil, auth.ErrUnauthorized
-	}
-	return uc.repo.FindByName(ctx, a.Username)
+func (uc *AuthUsecase) GetAdmin(ctx context.Context, username string) (*Admin, error) {
+	return uc.repo.FindByName(ctx, username)
 }
 
 // Login logs in with username and password.
@@ -52,18 +46,14 @@ func (uc *AuthUsecase) Login(ctx context.Context, username, password string) (*A
 		return nil, err
 	}
 	// Here you would normally check the password hash
-	if user.Password != password {
+	if user.Name != password {
 		return nil, errors.Unauthorized("AUTH", "invalid credentials")
 	}
 	return user, nil
 }
 
 // Logout logs out the current user.
-func (uc *AuthUsecase) Logout(ctx context.Context) error {
-	a, ok := auth.FromContext(ctx)
-	if !ok {
-		return auth.ErrUnauthorized
-	}
-	log.Infof("user %s logged out", a.Username)
+func (uc *AuthUsecase) Logout(ctx context.Context, username string) error {
+	log.Infof("user %s logged out", username)
 	return nil
 }
