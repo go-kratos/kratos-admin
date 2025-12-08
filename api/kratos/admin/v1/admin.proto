@@ -29,8 +29,8 @@ message Admin {
   google.protobuf.Timestamp update_time = 7;
 }
 
-// Auth is the admin service definition.
-service Auth {
+// AdminService is the admin service definition.
+service AdminService {
   // Current returns the currently logged-in user.
   rpc Current (google.protobuf.Empty) returns (Admin) {
     option (google.api.http) = {

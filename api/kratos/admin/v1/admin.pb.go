@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.36.10
 // 	protoc        v4.23.2
-// source: kratos/admin/v1/auth.proto
+// source: kratos/admin/v1/admin.proto
 
 package v1
 
@@ -48,7 +48,7 @@ type Admin struct {
 
 func (x *Admin) Reset() {
 	*x = Admin{}
-	mi := &file_kratos_admin_v1_auth_proto_msgTypes[0]
+	mi := &file_kratos_admin_v1_admin_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -60,7 +60,7 @@ func (x *Admin) String() string {
 func (*Admin) ProtoMessage() {}
 
 func (x *Admin) ProtoReflect() protoreflect.Message {
-	mi := &file_kratos_admin_v1_auth_proto_msgTypes[0]
+	mi := &file_kratos_admin_v1_admin_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -73,7 +73,7 @@ func (x *Admin) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Admin.ProtoReflect.Descriptor instead.
 func (*Admin) Descriptor() ([]byte, []int) {
-	return file_kratos_admin_v1_auth_proto_rawDescGZIP(), []int{0}
+	return file_kratos_admin_v1_admin_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *Admin) GetId() int64 {
@@ -138,7 +138,7 @@ type LoginRequest struct {
 
 func (x *LoginRequest) Reset() {
 	*x = LoginRequest{}
-	mi := &file_kratos_admin_v1_auth_proto_msgTypes[1]
+	mi := &file_kratos_admin_v1_admin_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -150,7 +150,7 @@ func (x *LoginRequest) String() string {
 func (*LoginRequest) ProtoMessage() {}
 
 func (x *LoginRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_kratos_admin_v1_auth_proto_msgTypes[1]
+	mi := &file_kratos_admin_v1_admin_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -163,7 +163,7 @@ func (x *LoginRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LoginRequest.ProtoReflect.Descriptor instead.
 func (*LoginRequest) Descriptor() ([]byte, []int) {
-	return file_kratos_admin_v1_auth_proto_rawDescGZIP(), []int{1}
+	return file_kratos_admin_v1_admin_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *LoginRequest) GetUsername() string {
@@ -180,11 +180,11 @@ func (x *LoginRequest) GetPassword() string {
 	return ""
 }
 
-var File_kratos_admin_v1_auth_proto protoreflect.FileDescriptor
+var File_kratos_admin_v1_admin_proto protoreflect.FileDescriptor
 
-const file_kratos_admin_v1_auth_proto_rawDesc = "" +
+const file_kratos_admin_v1_admin_proto_rawDesc = "" +
 	"\n" +
-	"\x1akratos/admin/v1/auth.proto\x12\x0fkratos.admin.v1\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1cgoogle/api/annotations.proto\"\xeb\x01\n" +
+	"\x1bkratos/admin/v1/admin.proto\x12\x0fkratos.admin.v1\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1cgoogle/api/annotations.proto\"\xeb\x01\n" +
 	"\x05Admin\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x14\n" +
@@ -197,41 +197,41 @@ const file_kratos_admin_v1_auth_proto_rawDesc = "" +
 	"updateTime\"F\n" +
 	"\fLoginRequest\x12\x1a\n" +
 	"\busername\x18\x01 \x01(\tR\busername\x12\x1a\n" +
-	"\bpassword\x18\x02 \x01(\tR\bpassword2\x8c\x02\n" +
-	"\x04Auth\x12S\n" +
+	"\bpassword\x18\x02 \x01(\tR\bpassword2\x94\x02\n" +
+	"\fAdminService\x12S\n" +
 	"\aCurrent\x12\x16.google.protobuf.Empty\x1a\x16.kratos.admin.v1.Admin\"\x18\x82\xd3\xe4\x93\x02\x12\x12\x10/v1/auth/current\x12Y\n" +
 	"\x05Login\x12\x1d.kratos.admin.v1.LoginRequest\x1a\x16.kratos.admin.v1.Admin\"\x19\x82\xd3\xe4\x93\x02\x13:\x01*\"\x0e/v1/auth/login\x12T\n" +
 	"\x06Logout\x12\x16.google.protobuf.Empty\x1a\x16.google.protobuf.Empty\"\x1a\x82\xd3\xe4\x93\x02\x14:\x01*\"\x0f/v1/auth/logoutBQ\n" +
 	"\x13api.kratos.admin.v1P\x01Z8github.com/go-kratos/kratos-admin/api/kratos/admin/v1;v1b\x06proto3"
 
 var (
-	file_kratos_admin_v1_auth_proto_rawDescOnce sync.Once
-	file_kratos_admin_v1_auth_proto_rawDescData []byte
+	file_kratos_admin_v1_admin_proto_rawDescOnce sync.Once
+	file_kratos_admin_v1_admin_proto_rawDescData []byte
 )
 
-func file_kratos_admin_v1_auth_proto_rawDescGZIP() []byte {
-	file_kratos_admin_v1_auth_proto_rawDescOnce.Do(func() {
-		file_kratos_admin_v1_auth_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_kratos_admin_v1_auth_proto_rawDesc), len(file_kratos_admin_v1_auth_proto_rawDesc)))
+func file_kratos_admin_v1_admin_proto_rawDescGZIP() []byte {
+	file_kratos_admin_v1_admin_proto_rawDescOnce.Do(func() {
+		file_kratos_admin_v1_admin_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_kratos_admin_v1_admin_proto_rawDesc), len(file_kratos_admin_v1_admin_proto_rawDesc)))
 	})
-	return file_kratos_admin_v1_auth_proto_rawDescData
+	return file_kratos_admin_v1_admin_proto_rawDescData
 }
 
-var file_kratos_admin_v1_auth_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
-var file_kratos_admin_v1_auth_proto_goTypes = []any{
+var file_kratos_admin_v1_admin_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_kratos_admin_v1_admin_proto_goTypes = []any{
 	(*Admin)(nil),                 // 0: kratos.admin.v1.Admin
 	(*LoginRequest)(nil),          // 1: kratos.admin.v1.LoginRequest
 	(*timestamppb.Timestamp)(nil), // 2: google.protobuf.Timestamp
 	(*emptypb.Empty)(nil),         // 3: google.protobuf.Empty
 }
-var file_kratos_admin_v1_auth_proto_depIdxs = []int32{
+var file_kratos_admin_v1_admin_proto_depIdxs = []int32{
 	2, // 0: kratos.admin.v1.Admin.create_time:type_name -> google.protobuf.Timestamp
 	2, // 1: kratos.admin.v1.Admin.update_time:type_name -> google.protobuf.Timestamp
-	3, // 2: kratos.admin.v1.Auth.Current:input_type -> google.protobuf.Empty
-	1, // 3: kratos.admin.v1.Auth.Login:input_type -> kratos.admin.v1.LoginRequest
-	3, // 4: kratos.admin.v1.Auth.Logout:input_type -> google.protobuf.Empty
-	0, // 5: kratos.admin.v1.Auth.Current:output_type -> kratos.admin.v1.Admin
-	0, // 6: kratos.admin.v1.Auth.Login:output_type -> kratos.admin.v1.Admin
-	3, // 7: kratos.admin.v1.Auth.Logout:output_type -> google.protobuf.Empty
+	3, // 2: kratos.admin.v1.AdminService.Current:input_type -> google.protobuf.Empty
+	1, // 3: kratos.admin.v1.AdminService.Login:input_type -> kratos.admin.v1.LoginRequest
+	3, // 4: kratos.admin.v1.AdminService.Logout:input_type -> google.protobuf.Empty
+	0, // 5: kratos.admin.v1.AdminService.Current:output_type -> kratos.admin.v1.Admin
+	0, // 6: kratos.admin.v1.AdminService.Login:output_type -> kratos.admin.v1.Admin
+	3, // 7: kratos.admin.v1.AdminService.Logout:output_type -> google.protobuf.Empty
 	5, // [5:8] is the sub-list for method output_type
 	2, // [2:5] is the sub-list for method input_type
 	2, // [2:2] is the sub-list for extension type_name
@@ -239,26 +239,26 @@ var file_kratos_admin_v1_auth_proto_depIdxs = []int32{
 	0, // [0:2] is the sub-list for field type_name
 }
 
-func init() { file_kratos_admin_v1_auth_proto_init() }
-func file_kratos_admin_v1_auth_proto_init() {
-	if File_kratos_admin_v1_auth_proto != nil {
+func init() { file_kratos_admin_v1_admin_proto_init() }
+func file_kratos_admin_v1_admin_proto_init() {
+	if File_kratos_admin_v1_admin_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_kratos_admin_v1_auth_proto_rawDesc), len(file_kratos_admin_v1_auth_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_kratos_admin_v1_admin_proto_rawDesc), len(file_kratos_admin_v1_admin_proto_rawDesc)),
 			NumEnums:      0,
 			NumMessages:   2,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
-		GoTypes:           file_kratos_admin_v1_auth_proto_goTypes,
-		DependencyIndexes: file_kratos_admin_v1_auth_proto_depIdxs,
-		MessageInfos:      file_kratos_admin_v1_auth_proto_msgTypes,
+		GoTypes:           file_kratos_admin_v1_admin_proto_goTypes,
+		DependencyIndexes: file_kratos_admin_v1_admin_proto_depIdxs,
+		MessageInfos:      file_kratos_admin_v1_admin_proto_msgTypes,
 	}.Build()
-	File_kratos_admin_v1_auth_proto = out.File
-	file_kratos_admin_v1_auth_proto_goTypes = nil
-	file_kratos_admin_v1_auth_proto_depIdxs = nil
+	File_kratos_admin_v1_admin_proto = out.File
+	file_kratos_admin_v1_admin_proto_goTypes = nil
+	file_kratos_admin_v1_admin_proto_depIdxs = nil
 }

@@ -34,8 +34,8 @@ export type LoginRequest = {
   password: string | undefined;
 };
 
-// Auth is the admin service definition.
-export interface Auth {
+// AdminService is the admin service definition.
+export interface AdminService {
   // Current returns the currently logged-in user.
   Current(request: wellKnownEmpty): Promise<Admin>;
   // Login a user and return the username.
@@ -52,9 +52,9 @@ type RequestType = {
 
 type RequestHandler = (request: RequestType, meta: { service: string, method: string }) => Promise<unknown>;
 
-export function createAuthClient(
+export function createAdminServiceClient(
   handler: RequestHandler
-): Auth {
+): AdminService {
   return {
     Current(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
       const path = `v1/auth/current`; // eslint-disable-line quotes
@@ -69,7 +69,7 @@ export function createAuthClient(
         method: "GET",
         body,
       }, {
-        service: "Auth",
+        service: "AdminService",
         method: "Current",
       }) as Promise<Admin>;
     },
@@ -86,7 +86,7 @@ export function createAuthClient(
         method: "POST",
         body,
       }, {
-        service: "Auth",
+        service: "AdminService",
         method: "Login",
       }) as Promise<Admin>;
     },
@@ -103,7 +103,7 @@ export function createAuthClient(
         method: "POST",
         body,
       }, {
-        service: "Auth",
+        service: "AdminService",
         method: "Logout",
       }) as Promise<wellKnownEmpty>;
     },

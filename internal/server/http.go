@@ -11,7 +11,7 @@ import (
 )
 
 // NewHTTPServer new an HTTP server.
-func NewHTTPServer(c *conf.Server, authService *service.AuthService) *http.Server {
+func NewHTTPServer(c *conf.Server, admin *service.AdminService) *http.Server {
 	var opts = []http.ServerOption{
 		http.Filter(
 			auth.Middleware(),
@@ -30,6 +30,6 @@ func NewHTTPServer(c *conf.Server, authService *service.AuthService) *http.Serve
 		opts = append(opts, http.Timeout(c.Http.Timeout.AsDuration()))
 	}
 	srv := http.NewServer(opts...)
-	v1.RegisterAuthHTTPServer(srv, authService)
+	v1.RegisterAdminServiceHTTPServer(srv, admin)
 	return srv
 }

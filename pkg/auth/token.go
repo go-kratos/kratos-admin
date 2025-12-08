@@ -15,18 +15,14 @@ func GenerateToken(username, secret string) (string, error) {
 		RegisteredClaims: jwt.RegisteredClaims{
 			ID:        uuid.NewString(),
 			Issuer:    "kratos",
-			Subject:   username,
+			Subject:   "user",
 			Audience:  []string{"admin"},
 			IssuedAt:  jwt.NewNumericDate(now),
 			NotBefore: jwt.NewNumericDate(now),
 			ExpiresAt: jwt.NewNumericDate(now.Add(7 * 24 * time.Hour)),
 		},
 	}
-	tokenStr, err := jwt.NewWithClaims(jwt.SigningMethodHS256, claims).SignedString(secret)
-	if err != nil {
-		return "", err
-	}
-	return tokenStr, nil
+	return jwt.NewWithClaims(jwt.SigningMethodHS256, claims).SignedString([]byte(secret))
 }
 
 // ParseToken parses the JWT token string and returns the Auth claims.

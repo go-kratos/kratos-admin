@@ -18,8 +18,8 @@ var (
 	}
 	// jwtSecretKey is the secret key used for signing JWT tokens.
 	jwtSecretKey = authSecretFromEnv("KRATOS_AUTH_SECRET")
-	// cookieTokenName is the name of the cookie that stores the authorization token.
-	cookieTokenName = cookieNameFromEnv("KRATOS_AUTH_COOKIE")
+	// cookieName is the name of the cookie that stores the authorization token.
+	cookieName = cookieNameFromEnv("KRATOS_AUTH_COOKIE")
 	// ErrUnauthorized indicates that the token is invalid.
 	ErrUnauthorized = errors.Unauthorized("UNAUTHORIZED", "Token is invalid")
 )
@@ -32,7 +32,7 @@ func Middleware() httpm.FilterFunc {
 				next.ServeHTTP(w, r)
 				return
 			}
-			cookie, err := r.Cookie(cookieTokenName)
+			cookie, err := r.Cookie(cookieName)
 			if err != nil {
 				http.Error(w, "Unauthorized", http.StatusUnauthorized)
 				return
@@ -50,13 +50,17 @@ func Middleware() httpm.FilterFunc {
 }
 
 // SetLoginCookie sets the login cookie in the HTTP response.
-func SetLoginCookie(ctx context.Context, token string, expiresAt time.Time) error {
+func SetLoginCookie(ctx context.Context, username string, expiresAt time.Time) error {
 	tr, ok := transport.FromServerContext(ctx)
 	if !ok {
 		return fmt.Errorf("failed to get transport from context")
 	}
+	token, err := GenerateToken(username, jwtSecretKey)
+	if err != nil {
+		return err
+	}
 	cookie := &http.Cookie{
-		Name:    cookieTokenName,
+		Name:    cookieName,
 		Value:   token,
 		Path:    "/",
 		Expires: expiresAt,
@@ -73,7 +77,7 @@ func SetLogoutCookie(ctx context.Context) error {
 	}
 	expires := time.Now().AddDate(0, 0, -1)
 	cookie := &http.Cookie{
-		Name:    cookieTokenName,
+		Name:    cookieName,
 		Value:   "",
 		Path:    "/",
 		Expires: expires,

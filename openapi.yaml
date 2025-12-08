@@ -3,16 +3,16 @@
 
 openapi: 3.0.3
 info:
-    title: Auth API
-    description: Auth is the admin service definition.
+    title: AdminService API
+    description: AdminService is the admin service definition.
     version: 0.0.1
 paths:
     /v1/auth/current:
         get:
             tags:
-                - Auth
+                - AdminService
             description: Current returns the currently logged-in user.
-            operationId: Auth_Current
+            operationId: AdminService_Current
             responses:
                 "200":
                     description: OK
@@ -23,9 +23,9 @@ paths:
     /v1/auth/login:
         post:
             tags:
-                - Auth
+                - AdminService
             description: Login a user and return the username.
-            operationId: Auth_Login
+            operationId: AdminService_Login
             requestBody:
                 content:
                     application/json:
@@ -42,9 +42,9 @@ paths:
     /v1/auth/logout:
         post:
             tags:
-                - Auth
+                - AdminService
             description: Logout the currently logged-in user.
-            operationId: Auth_Logout
+            operationId: AdminService_Logout
             requestBody:
                 content:
                     application/json: {}
@@ -95,4 +95,4 @@ components:
                     description: Password of the user.
             description: LoginRequest is the request message for the Login method.
 tags:
-    - name: Auth
+    - name: AdminService

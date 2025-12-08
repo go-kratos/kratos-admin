@@ -5,6 +5,7 @@ go 1.24.0
 toolchain go1.24.6
 
 require (
+	github.com/go-kratos/kit v0.0.0-20251205054551-382eaaa28517
 	github.com/go-kratos/kratos/v2 v2.8.0
 	github.com/golang-jwt/jwt/v5 v5.1.0
 	github.com/google/uuid v1.6.0

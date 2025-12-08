@@ -19,28 +19,28 @@ type Admin struct {
 	UpdateTime time.Time
 }
 
-// AuthRepo is a Greater repo.
-type AuthRepo interface {
+// AdminRepo is a Greater repo.
+type AdminRepo interface {
 	FindByName(context.Context, string) (*Admin, error)
 }
 
-// AuthUsecase is a Auth usecase.
-type AuthUsecase struct {
-	repo AuthRepo
+// AdminUsecase is a Admin usecase.
+type AdminUsecase struct {
+	repo AdminRepo
 }
 
-// NewAuthUsecase new a Auth usecase.
-func NewAuthUsecase(repo AuthRepo) *AuthUsecase {
-	return &AuthUsecase{repo: repo}
+// NewAdminUsecase new a Admin usecase.
+func NewAdminUsecase(repo AdminRepo) *AdminUsecase {
+	return &AdminUsecase{repo: repo}
 }
 
 // Current returns the current logged in user.
-func (uc *AuthUsecase) GetAdmin(ctx context.Context, username string) (*Admin, error) {
+func (uc *AdminUsecase) GetAdmin(ctx context.Context, username string) (*Admin, error) {
 	return uc.repo.FindByName(ctx, username)
 }
 
 // Login logs in with username and password.
-func (uc *AuthUsecase) Login(ctx context.Context, username, password string) (*Admin, error) {
+func (uc *AdminUsecase) Login(ctx context.Context, username, password string) (*Admin, error) {
 	user, err := uc.repo.FindByName(ctx, username)
 	if err != nil {
 		return nil, err
@@ -53,7 +53,7 @@ func (uc *AuthUsecase) Login(ctx context.Context, username, password string) (*A
 }
 
 // Logout logs out the current user.
-func (uc *AuthUsecase) Logout(ctx context.Context, username string) error {
+func (uc *AdminUsecase) Logout(ctx context.Context, username string) error {
 	log.Infof("user %s logged out", username)
 	return nil
 }

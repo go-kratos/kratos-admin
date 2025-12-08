@@ -1,4 +1,4 @@
-import { createAuthClient } from "@/services/kratos/admin/v1/index";
+import { createAdminServiceClient } from "@/services/kratos/admin/v1/index";
 import { request } from "@umijs/max";
 
 type Request = {
@@ -19,6 +19,6 @@ function requestHandler({ path, method, body }: Request) {
   });
 }
 
-export function createAuthService() {
-  return createAuthClient(requestHandler);
+export function createAdminService() {
+  return createAdminServiceClient(requestHandler);
 }

@@ -56,8 +56,8 @@ export default [
     redirect: '/welcome',
   },
   {
-    path: '*',
+    component: '404',
     layout: false,
-    component: './404',
+    path: './*',
   },
 ];

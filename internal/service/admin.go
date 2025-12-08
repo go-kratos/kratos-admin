@@ -24,19 +24,19 @@ func convertAdmin(m *biz.Admin) *v1.Admin {
 	}
 }
 
-// AuthService is a greeter service.
-type AuthService struct {
-	v1.UnimplementedAuthServer
+// AdminService is a greeter service.
+type AdminService struct {
+	v1.UnimplementedAdminServiceServer
 
-	uc *biz.AuthUsecase
+	uc *biz.AdminUsecase
 }
 
-// NewAuthService new a greeter service.
-func NewAuthService(uc *biz.AuthUsecase) *AuthService {
-	return &AuthService{uc: uc}
+// NewAdminService new a greeter service.
+func NewAdminService(uc *biz.AdminUsecase) *AdminService {
+	return &AdminService{uc: uc}
 }
 
-func (s *AuthService) Current(ctx context.Context, req *emptypb.Empty) (*v1.Admin, error) {
+func (s *AdminService) Current(ctx context.Context, req *emptypb.Empty) (*v1.Admin, error) {
 	a, ok := auth.FromContext(ctx)
 	if !ok {
 		return nil, auth.ErrUnauthorized
@@ -49,7 +49,7 @@ func (s *AuthService) Current(ctx context.Context, req *emptypb.Empty) (*v1.Admi
 }
 
 // Login implements auth login.
-func (s *AuthService) Login(ctx context.Context, req *v1.LoginRequest) (*v1.Admin, error) {
+func (s *AdminService) Login(ctx context.Context, req *v1.LoginRequest) (*v1.Admin, error) {
 	admin, err := s.uc.Login(ctx, req.Username, req.Password)
 	if err != nil {
 		return nil, err
@@ -61,7 +61,7 @@ func (s *AuthService) Login(ctx context.Context, req *v1.LoginRequest) (*v1.Admi
 }
 
 // Logout implements auth logout.
-func (s *AuthService) Logout(ctx context.Context, req *emptypb.Empty) (*emptypb.Empty, error) {
+func (s *AdminService) Logout(ctx context.Context, req *emptypb.Empty) (*emptypb.Empty, error) {
 	a, ok := auth.FromContext(ctx)
 	if !ok {
 		return nil, auth.ErrUnauthorized
