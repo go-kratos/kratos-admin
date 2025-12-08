@@ -29,7 +29,7 @@ npm run dev
 The generated clients work with any Promise-based HTTP client that returns JSON.  
 Services are defined and re-exported from this file: `web/src/services/index.ts`.  
 ```typescript
-import { createAuthClient } from "@/services/kratos/admin/v1/index";
+import { createAdminServiceClient } from "@/services/kratos/admin/v1/index";
 
 type Request = {
   path: string;
@@ -39,20 +39,20 @@ type Request = {
 
 function requestHandler({ path, method, body }: Request) { ... }
 
-export function createAuthService() {
-  return createAuthClient(requestHandler);
+export function createAdminService() {
+  return createAdminServiceClient(requestHandler);
 }
 ```
 
 Example using the generated client:
 ```typescript
-import { createAuthService } from "@/services/index";
+import { createAdminService } from "@/services/index";
 
-const authService = createAuthService();
+const adminService = createAdminService();
 
 const handleLogin = async (username: string, password: string) => {
   try {
-    const response = await authService.Login({
+    const response = await adminService.Login({
       username: username,
       password: password,
     });
