@@ -45,33 +45,14 @@ type AdminServiceHTTPServer interface {
 
 func RegisterAdminServiceHTTPServer(s *http.Server, srv AdminServiceHTTPServer) {
 	r := s.Route("/")
-	r.GET("/v1/admins/current", _AdminService_Current0_HTTP_Handler(srv))
 	r.POST("/v1/admins/login", _AdminService_Login0_HTTP_Handler(srv))
 	r.POST("/v1/admins/logout", _AdminService_Logout0_HTTP_Handler(srv))
-	r.GET("/v1/admins/{id}", _AdminService_GetAdmin0_HTTP_Handler(srv))
+	r.GET("/v1/admins/current", _AdminService_Current0_HTTP_Handler(srv))
 	r.GET("/v1/admins/list", _AdminService_ListAdmins0_HTTP_Handler(srv))
 	r.POST("/v1/admins/create", _AdminService_CreateAdmin0_HTTP_Handler(srv))
 	r.PUT("/v1/admins/update", _AdminService_UpdateAdmin0_HTTP_Handler(srv))
 	r.DELETE("/v1/admins/{id}", _AdminService_DeleteAdmin0_HTTP_Handler(srv))
-}
-
-func _AdminService_Current0_HTTP_Handler(srv AdminServiceHTTPServer) func(ctx http.Context) error {
-	return func(ctx http.Context) error {
-		var in emptypb.Empty
-		if err := ctx.BindQuery(&in); err != nil {
-			return err
-		}
-		http.SetOperation(ctx, OperationAdminServiceCurrent)
-		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
-			return srv.Current(ctx, req.(*emptypb.Empty))
-		})
-		out, err := h(ctx, &in)
-		if err != nil {
-			return err
-		}
-		reply := out.(*Admin)
-		return ctx.Result(200, reply)
-	}
+	r.GET("/v1/admins/{id}", _AdminService_GetAdmin0_HTTP_Handler(srv))
 }
 
 func _AdminService_Login0_HTTP_Handler(srv AdminServiceHTTPServer) func(ctx http.Context) error {
@@ -118,18 +99,15 @@ func _AdminService_Logout0_HTTP_Handler(srv AdminServiceHTTPServer) func(ctx htt
 	}
 }
 
-func _AdminService_GetAdmin0_HTTP_Handler(srv AdminServiceHTTPServer) func(ctx http.Context) error {
+func _AdminService_Current0_HTTP_Handler(srv AdminServiceHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
-		var in GetAdminRequest
+		var in emptypb.Empty
 		if err := ctx.BindQuery(&in); err != nil {
 			return err
 		}
-		if err := ctx.BindVars(&in); err != nil {
-			return err
-		}
-		http.SetOperation(ctx, OperationAdminServiceGetAdmin)
+		http.SetOperation(ctx, OperationAdminServiceCurrent)
 		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
-			return srv.GetAdmin(ctx, req.(*GetAdminRequest))
+			return srv.Current(ctx, req.(*emptypb.Empty))
 		})
 		out, err := h(ctx, &in)
 		if err != nil {
@@ -221,6 +199,28 @@ func _AdminService_DeleteAdmin0_HTTP_Handler(srv AdminServiceHTTPServer) func(ct
 			return err
 		}
 		reply := out.(*emptypb.Empty)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _AdminService_GetAdmin0_HTTP_Handler(srv AdminServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in GetAdminRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindVars(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationAdminServiceGetAdmin)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.GetAdmin(ctx, req.(*GetAdminRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*Admin)
 		return ctx.Result(200, reply)
 	}
 }

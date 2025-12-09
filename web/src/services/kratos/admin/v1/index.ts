@@ -34,17 +34,13 @@ export type AdminSet = {
   items: Admin[] | undefined;
   // The total number of admins.
   total: number | undefined;
-  // The current page number.
-  page: number | undefined;
-  // The number of admins per page.
-  size: number | undefined;
 };
 
 // LoginRequest is the request message for the Login method.
 export type LoginRequest = {
-  // Username of the user.
+  // Required. Username of the user.
   username: string | undefined;
-  // Password of the user.
+  // Required. Password of the user.
   password: string | undefined;
 };
 
@@ -56,21 +52,32 @@ export type GetAdminRequest = {
 
 // ListAdminsResponse is the response message for the ListAdmins method.
 export type ListAdminsRequest = {
-  // The page number to retrieve.
+  // Optional. The page number to retrieve.
   pageNum: number | undefined;
-  // The number of admins per page.
+  // Optional. The number of admins per page.
   pageSize: number | undefined;
+  // Optional. The standard list filter.
+  // Supported fields:
+  // * `timestamp` range (i.e. `timestamp>="2025-01-31T11:30:00-04:00"` where
+  // the timestamp is in RFC 3339 format)
+  // More detail in [AIP-160](https://google.aip.dev/160).
+  filter: string | undefined;
+  // Optional. A comma-separated list of fields to order by, sorted in ascending
+  // order. Use "desc" after a field name for descending. Supported fields:
+  // - `create_time`
+  // Example: `create_time desc`.
+  orderBy: string | undefined;
 };
 
 // CreateAdminRequest is the request message for the CreateAdmin method.
 export type CreateAdminRequest = {
-  // The admin to create.
+  // Required. The admin to create.
   admin: Admin | undefined;
 };
 
 // UpdateAdminRequest is the request message for the UpdateAdmin method.
 export type UpdateAdminRequest = {
-  // The admin to update.
+  // Required. The admin to update.
   admin: Admin | undefined;
   // Required. Mask of fields to update.
   updateMask: wellKnownFieldMask | undefined;
@@ -106,23 +113,23 @@ type wellKnownFieldMask = string;
 
 // DeleteAdminRequest is the request message for the DeleteAdmin method.
 export type DeleteAdminRequest = {
-  // The ID of the admin to delete.
+  // Required. The ID of the admin to delete.
   id: number | undefined;
 };
 
 // AdminService is the admin service definition.
 export interface AdminService {
-  // Current returns the currently logged-in user.
-  Current(request: wellKnownEmpty): Promise<Admin>;
   // Login a user and return the username.
   Login(request: LoginRequest): Promise<Admin>;
   // Logout the currently logged-in user.
   Logout(request: wellKnownEmpty): Promise<wellKnownEmpty>;
-  GetAdmin(request: GetAdminRequest): Promise<Admin>;
+  // Current returns the currently logged-in user.
+  Current(request: wellKnownEmpty): Promise<Admin>;
   ListAdmins(request: ListAdminsRequest): Promise<AdminSet>;
   CreateAdmin(request: CreateAdminRequest): Promise<Admin>;
   UpdateAdmin(request: UpdateAdminRequest): Promise<Admin>;
   DeleteAdmin(request: DeleteAdminRequest): Promise<wellKnownEmpty>;
+  GetAdmin(request: GetAdminRequest): Promise<Admin>;
 }
 
 type RequestType = {
@@ -137,23 +144,6 @@ export function createAdminServiceClient(
   handler: RequestHandler
 ): AdminService {
   return {
-    Current(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `v1/admins/current`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "AdminService",
-        method: "Current",
-      }) as Promise<Admin>;
-    },
     Login(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
       const path = `v1/admins/login`; // eslint-disable-line quotes
       const body = JSON.stringify(request);
@@ -188,11 +178,8 @@ export function createAdminServiceClient(
         method: "Logout",
       }) as Promise<wellKnownEmpty>;
     },
-    GetAdmin(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.id) {
-        throw new Error("missing required field request.id");
-      }
-      const path = `v1/admins/${request.id}`; // eslint-disable-line quotes
+    Current(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      const path = `v1/admins/current`; // eslint-disable-line quotes
       const body = null;
       const queryParams: string[] = [];
       let uri = path;
@@ -205,7 +192,7 @@ export function createAdminServiceClient(
         body,
       }, {
         service: "AdminService",
-        method: "GetAdmin",
+        method: "Current",
       }) as Promise<Admin>;
     },
     ListAdmins(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
@@ -217,6 +204,12 @@ export function createAdminServiceClient(
       }
       if (request.pageSize) {
         queryParams.push(`pageSize=${encodeURIComponent(request.pageSize.toString())}`)
+      }
+      if (request.filter) {
+        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
+      }
+      if (request.orderBy) {
+        queryParams.push(`orderBy=${encodeURIComponent(request.orderBy.toString())}`)
       }
       let uri = path;
       if (queryParams.length > 0) {
@@ -287,6 +280,26 @@ export function createAdminServiceClient(
         service: "AdminService",
         method: "DeleteAdmin",
       }) as Promise<wellKnownEmpty>;
+    },
+    GetAdmin(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      if (!request.id) {
+        throw new Error("missing required field request.id");
+      }
+      const path = `v1/admins/${request.id}`; // eslint-disable-line quotes
+      const body = null;
+      const queryParams: string[] = [];
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "GET",
+        body,
+      }, {
+        service: "AdminService",
+        method: "GetAdmin",
+      }) as Promise<Admin>;
     },
   };
 }

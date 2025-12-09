@@ -38,20 +38,10 @@ message AdminSet {
   repeated Admin items = 1;
   // The total number of admins.
   int32 total = 2;
-  // The current page number.
-  int32 page = 3;
-  // The number of admins per page.
-  int32 size = 4;
 }
 
 // AdminService is the admin service definition.
 service AdminService {
-  // Current returns the currently logged-in user.
-  rpc Current (google.protobuf.Empty) returns (Admin) {
-    option (google.api.http) = {
-      get: "/v1/admins/current"
-    };
-  }
   // Login a user and return the username.
   rpc Login (LoginRequest) returns (Admin) {
     option (google.api.http) = {
@@ -66,9 +56,10 @@ service AdminService {
       body: "*"
     };
   }
-  rpc GetAdmin(GetAdminRequest) returns (Admin) {
+  // Current returns the currently logged-in user.
+  rpc Current (google.protobuf.Empty) returns (Admin) {
     option (google.api.http) = {
-      get: "/v1/admins/{id}"
+      get: "/v1/admins/current"
     };
   }
   rpc ListAdmins(ListAdminsRequest) returns (AdminSet) {
@@ -93,13 +84,18 @@ service AdminService {
       delete: "/v1/admins/{id}"
     };
   }
+  rpc GetAdmin(GetAdminRequest) returns (Admin) {
+    option (google.api.http) = {
+      get: "/v1/admins/{id}"
+    };
+  }
 }
 
 // LoginRequest is the request message for the Login method.
 message LoginRequest {
-  // Username of the user.
+  // Required. Username of the user.
   string username = 1;
-  // Password of the user.
+  // Required. Password of the user.
   string password = 2;
 }
 
@@ -111,21 +107,34 @@ message GetAdminRequest {
 
 // ListAdminsResponse is the response message for the ListAdmins method.
 message ListAdminsRequest {
-  // The page number to retrieve.
+  // Optional. The page number to retrieve.
   int32 page_num = 1;
-  // The number of admins per page.
+  // Optional. The number of admins per page.
   int32 page_size = 2;
+  // Optional. The standard list filter.
+  // Supported fields:
+  //    * `timestamp` range (i.e. `timestamp>="2025-01-31T11:30:00-04:00"` where
+  //    the timestamp is in RFC 3339 format)
+  //
+  // More detail in [AIP-160](https://google.aip.dev/160).
+  string filter = 3;
+  // Optional. A comma-separated list of fields to order by, sorted in ascending
+  // order. Use "desc" after a field name for descending. Supported fields:
+  // - `create_time`
+  //
+  // Example: `create_time desc`.
+  string order_by = 4;
 }
 
 // CreateAdminRequest is the request message for the CreateAdmin method.
 message CreateAdminRequest {
-  // The admin to create.
+  // Required. The admin to create.
   Admin admin = 1;
 }
 
 // UpdateAdminRequest is the request message for the UpdateAdmin method.
 message UpdateAdminRequest {
-  // The admin to update.
+  // Required. The admin to update.
   Admin admin = 1;
   // Required. Mask of fields to update.
   google.protobuf.FieldMask update_mask = 2;
@@ -133,6 +142,6 @@ message UpdateAdminRequest {
 
 // DeleteAdminRequest is the request message for the DeleteAdmin method.
 message DeleteAdminRequest {
-  // The ID of the admin to delete.
+  // Required. The ID of the admin to delete.
   int64 id = 1;
 }

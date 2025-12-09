@@ -141,11 +141,7 @@ type AdminSet struct {
 	// The set of admins.
 	Items []*Admin `protobuf:"bytes,1,rep,name=items,proto3" json:"items,omitempty"`
 	// The total number of admins.
-	Total int32 `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"`
-	// The current page number.
-	Page int32 `protobuf:"varint,3,opt,name=page,proto3" json:"page,omitempty"`
-	// The number of admins per page.
-	Size          int32 `protobuf:"varint,4,opt,name=size,proto3" json:"size,omitempty"`
+	Total         int32 `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -194,26 +190,12 @@ func (x *AdminSet) GetTotal() int32 {
 	return 0
 }
 
-func (x *AdminSet) GetPage() int32 {
-	if x != nil {
-		return x.Page
-	}
-	return 0
-}
-
-func (x *AdminSet) GetSize() int32 {
-	if x != nil {
-		return x.Size
-	}
-	return 0
-}
-
 // LoginRequest is the request message for the Login method.
 type LoginRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Username of the user.
+	// Required. Username of the user.
 	Username string `protobuf:"bytes,1,opt,name=username,proto3" json:"username,omitempty"`
-	// Password of the user.
+	// Required. Password of the user.
 	Password      string `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -312,10 +294,23 @@ func (x *GetAdminRequest) GetId() int64 {
 // ListAdminsResponse is the response message for the ListAdmins method.
 type ListAdminsRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// The page number to retrieve.
+	// Optional. The page number to retrieve.
 	PageNum int32 `protobuf:"varint,1,opt,name=page_num,json=pageNum,proto3" json:"page_num,omitempty"`
-	// The number of admins per page.
-	PageSize      int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
+	// Optional. The number of admins per page.
+	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
+	// Optional. The standard list filter.
+	// Supported fields:
+	//   - `timestamp` range (i.e. `timestamp>="2025-01-31T11:30:00-04:00"` where
+	//     the timestamp is in RFC 3339 format)
+	//
+	// More detail in [AIP-160](https://google.aip.dev/160).
+	Filter string `protobuf:"bytes,3,opt,name=filter,proto3" json:"filter,omitempty"`
+	// Optional. A comma-separated list of fields to order by, sorted in ascending
+	// order. Use "desc" after a field name for descending. Supported fields:
+	// - `create_time`
+	//
+	// Example: `create_time desc`.
+	OrderBy       string `protobuf:"bytes,4,opt,name=order_by,json=orderBy,proto3" json:"order_by,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -364,10 +359,24 @@ func (x *ListAdminsRequest) GetPageSize() int32 {
 	return 0
 }
 
+func (x *ListAdminsRequest) GetFilter() string {
+	if x != nil {
+		return x.Filter
+	}
+	return ""
+}
+
+func (x *ListAdminsRequest) GetOrderBy() string {
+	if x != nil {
+		return x.OrderBy
+	}
+	return ""
+}
+
 // CreateAdminRequest is the request message for the CreateAdmin method.
 type CreateAdminRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// The admin to create.
+	// Required. The admin to create.
 	Admin         *Admin `protobuf:"bytes,1,opt,name=admin,proto3" json:"admin,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -413,7 +422,7 @@ func (x *CreateAdminRequest) GetAdmin() *Admin {
 // UpdateAdminRequest is the request message for the UpdateAdmin method.
 type UpdateAdminRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// The admin to update.
+	// Required. The admin to update.
 	Admin *Admin `protobuf:"bytes,1,opt,name=admin,proto3" json:"admin,omitempty"`
 	// Required. Mask of fields to update.
 	UpdateMask    *fieldmaskpb.FieldMask `protobuf:"bytes,2,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
@@ -468,7 +477,7 @@ func (x *UpdateAdminRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
 // DeleteAdminRequest is the request message for the DeleteAdmin method.
 type DeleteAdminRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// The ID of the admin to delete.
+	// Required. The ID of the admin to delete.
 	Id            int64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -526,20 +535,20 @@ const file_kratos_admin_v1_admin_proto_rawDesc = "" +
 	"\vcreate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"createTime\x12;\n" +
 	"\vupdate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampR\n" +
-	"updateTime\"v\n" +
+	"updateTime\"N\n" +
 	"\bAdminSet\x12,\n" +
 	"\x05items\x18\x01 \x03(\v2\x16.kratos.admin.v1.AdminR\x05items\x12\x14\n" +
-	"\x05total\x18\x02 \x01(\x05R\x05total\x12\x12\n" +
-	"\x04page\x18\x03 \x01(\x05R\x04page\x12\x12\n" +
-	"\x04size\x18\x04 \x01(\x05R\x04size\"F\n" +
+	"\x05total\x18\x02 \x01(\x05R\x05total\"F\n" +
 	"\fLoginRequest\x12\x1a\n" +
 	"\busername\x18\x01 \x01(\tR\busername\x12\x1a\n" +
 	"\bpassword\x18\x02 \x01(\tR\bpassword\"!\n" +
 	"\x0fGetAdminRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\x03R\x02id\"K\n" +
+	"\x02id\x18\x01 \x01(\x03R\x02id\"~\n" +
 	"\x11ListAdminsRequest\x12\x19\n" +
 	"\bpage_num\x18\x01 \x01(\x05R\apageNum\x12\x1b\n" +
-	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\"B\n" +
+	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x16\n" +
+	"\x06filter\x18\x03 \x01(\tR\x06filter\x12\x19\n" +
+	"\border_by\x18\x04 \x01(\tR\aorderBy\"B\n" +
 	"\x12CreateAdminRequest\x12,\n" +
 	"\x05admin\x18\x01 \x01(\v2\x16.kratos.admin.v1.AdminR\x05admin\"\x7f\n" +
 	"\x12UpdateAdminRequest\x12,\n" +
@@ -548,16 +557,16 @@ const file_kratos_admin_v1_admin_proto_rawDesc = "" +
 	"updateMask\"$\n" +
 	"\x12DeleteAdminRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id2\xa0\x06\n" +
-	"\fAdminService\x12U\n" +
-	"\aCurrent\x12\x16.google.protobuf.Empty\x1a\x16.kratos.admin.v1.Admin\"\x1a\x82\xd3\xe4\x93\x02\x14\x12\x12/v1/admins/current\x12[\n" +
+	"\fAdminService\x12[\n" +
 	"\x05Login\x12\x1d.kratos.admin.v1.LoginRequest\x1a\x16.kratos.admin.v1.Admin\"\x1b\x82\xd3\xe4\x93\x02\x15:\x01*\"\x10/v1/admins/login\x12V\n" +
-	"\x06Logout\x12\x16.google.protobuf.Empty\x1a\x16.google.protobuf.Empty\"\x1c\x82\xd3\xe4\x93\x02\x16:\x01*\"\x11/v1/admins/logout\x12]\n" +
-	"\bGetAdmin\x12 .kratos.admin.v1.GetAdminRequest\x1a\x16.kratos.admin.v1.Admin\"\x17\x82\xd3\xe4\x93\x02\x11\x12\x0f/v1/admins/{id}\x12d\n" +
+	"\x06Logout\x12\x16.google.protobuf.Empty\x1a\x16.google.protobuf.Empty\"\x1c\x82\xd3\xe4\x93\x02\x16:\x01*\"\x11/v1/admins/logout\x12U\n" +
+	"\aCurrent\x12\x16.google.protobuf.Empty\x1a\x16.kratos.admin.v1.Admin\"\x1a\x82\xd3\xe4\x93\x02\x14\x12\x12/v1/admins/current\x12d\n" +
 	"\n" +
 	"ListAdmins\x12\".kratos.admin.v1.ListAdminsRequest\x1a\x19.kratos.admin.v1.AdminSet\"\x17\x82\xd3\xe4\x93\x02\x11\x12\x0f/v1/admins/list\x12l\n" +
 	"\vCreateAdmin\x12#.kratos.admin.v1.CreateAdminRequest\x1a\x16.kratos.admin.v1.Admin\" \x82\xd3\xe4\x93\x02\x1a:\x05admin\"\x11/v1/admins/create\x12l\n" +
 	"\vUpdateAdmin\x12#.kratos.admin.v1.UpdateAdminRequest\x1a\x16.kratos.admin.v1.Admin\" \x82\xd3\xe4\x93\x02\x1a:\x05admin\x1a\x11/v1/admins/update\x12c\n" +
-	"\vDeleteAdmin\x12#.kratos.admin.v1.DeleteAdminRequest\x1a\x16.google.protobuf.Empty\"\x17\x82\xd3\xe4\x93\x02\x11*\x0f/v1/admins/{id}BQ\n" +
+	"\vDeleteAdmin\x12#.kratos.admin.v1.DeleteAdminRequest\x1a\x16.google.protobuf.Empty\"\x17\x82\xd3\xe4\x93\x02\x11*\x0f/v1/admins/{id}\x12]\n" +
+	"\bGetAdmin\x12 .kratos.admin.v1.GetAdminRequest\x1a\x16.kratos.admin.v1.Admin\"\x17\x82\xd3\xe4\x93\x02\x11\x12\x0f/v1/admins/{id}BQ\n" +
 	"\x13api.kratos.admin.v1P\x01Z8github.com/go-kratos/kratos-admin/api/kratos/admin/v1;v1b\x06proto3"
 
 var (
@@ -593,22 +602,22 @@ var file_kratos_admin_v1_admin_proto_depIdxs = []int32{
 	0,  // 3: kratos.admin.v1.CreateAdminRequest.admin:type_name -> kratos.admin.v1.Admin
 	0,  // 4: kratos.admin.v1.UpdateAdminRequest.admin:type_name -> kratos.admin.v1.Admin
 	9,  // 5: kratos.admin.v1.UpdateAdminRequest.update_mask:type_name -> google.protobuf.FieldMask
-	10, // 6: kratos.admin.v1.AdminService.Current:input_type -> google.protobuf.Empty
-	2,  // 7: kratos.admin.v1.AdminService.Login:input_type -> kratos.admin.v1.LoginRequest
-	10, // 8: kratos.admin.v1.AdminService.Logout:input_type -> google.protobuf.Empty
-	3,  // 9: kratos.admin.v1.AdminService.GetAdmin:input_type -> kratos.admin.v1.GetAdminRequest
-	4,  // 10: kratos.admin.v1.AdminService.ListAdmins:input_type -> kratos.admin.v1.ListAdminsRequest
-	5,  // 11: kratos.admin.v1.AdminService.CreateAdmin:input_type -> kratos.admin.v1.CreateAdminRequest
-	6,  // 12: kratos.admin.v1.AdminService.UpdateAdmin:input_type -> kratos.admin.v1.UpdateAdminRequest
-	7,  // 13: kratos.admin.v1.AdminService.DeleteAdmin:input_type -> kratos.admin.v1.DeleteAdminRequest
-	0,  // 14: kratos.admin.v1.AdminService.Current:output_type -> kratos.admin.v1.Admin
-	0,  // 15: kratos.admin.v1.AdminService.Login:output_type -> kratos.admin.v1.Admin
-	10, // 16: kratos.admin.v1.AdminService.Logout:output_type -> google.protobuf.Empty
-	0,  // 17: kratos.admin.v1.AdminService.GetAdmin:output_type -> kratos.admin.v1.Admin
-	1,  // 18: kratos.admin.v1.AdminService.ListAdmins:output_type -> kratos.admin.v1.AdminSet
-	0,  // 19: kratos.admin.v1.AdminService.CreateAdmin:output_type -> kratos.admin.v1.Admin
-	0,  // 20: kratos.admin.v1.AdminService.UpdateAdmin:output_type -> kratos.admin.v1.Admin
-	10, // 21: kratos.admin.v1.AdminService.DeleteAdmin:output_type -> google.protobuf.Empty
+	2,  // 6: kratos.admin.v1.AdminService.Login:input_type -> kratos.admin.v1.LoginRequest
+	10, // 7: kratos.admin.v1.AdminService.Logout:input_type -> google.protobuf.Empty
+	10, // 8: kratos.admin.v1.AdminService.Current:input_type -> google.protobuf.Empty
+	4,  // 9: kratos.admin.v1.AdminService.ListAdmins:input_type -> kratos.admin.v1.ListAdminsRequest
+	5,  // 10: kratos.admin.v1.AdminService.CreateAdmin:input_type -> kratos.admin.v1.CreateAdminRequest
+	6,  // 11: kratos.admin.v1.AdminService.UpdateAdmin:input_type -> kratos.admin.v1.UpdateAdminRequest
+	7,  // 12: kratos.admin.v1.AdminService.DeleteAdmin:input_type -> kratos.admin.v1.DeleteAdminRequest
+	3,  // 13: kratos.admin.v1.AdminService.GetAdmin:input_type -> kratos.admin.v1.GetAdminRequest
+	0,  // 14: kratos.admin.v1.AdminService.Login:output_type -> kratos.admin.v1.Admin
+	10, // 15: kratos.admin.v1.AdminService.Logout:output_type -> google.protobuf.Empty
+	0,  // 16: kratos.admin.v1.AdminService.Current:output_type -> kratos.admin.v1.Admin
+	1,  // 17: kratos.admin.v1.AdminService.ListAdmins:output_type -> kratos.admin.v1.AdminSet
+	0,  // 18: kratos.admin.v1.AdminService.CreateAdmin:output_type -> kratos.admin.v1.Admin
+	0,  // 19: kratos.admin.v1.AdminService.UpdateAdmin:output_type -> kratos.admin.v1.Admin
+	10, // 20: kratos.admin.v1.AdminService.DeleteAdmin:output_type -> google.protobuf.Empty
+	0,  // 21: kratos.admin.v1.AdminService.GetAdmin:output_type -> kratos.admin.v1.Admin
 	14, // [14:22] is the sub-list for method output_type
 	6,  // [6:14] is the sub-list for method input_type
 	6,  // [6:6] is the sub-list for extension type_name

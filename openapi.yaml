@@ -46,16 +46,37 @@ paths:
             parameters:
                 - name: pageNum
                   in: query
-                  description: The page number to retrieve.
+                  description: Optional. The page number to retrieve.
                   schema:
                     type: integer
                     format: int32
                 - name: pageSize
                   in: query
-                  description: The number of admins per page.
+                  description: Optional. The number of admins per page.
                   schema:
                     type: integer
                     format: int32
+                - name: filter
+                  in: query
+                  description: |-
+                    Optional. The standard list filter.
+                     Supported fields:
+                        * `timestamp` range (i.e. `timestamp>="2025-01-31T11:30:00-04:00"` where
+                        the timestamp is in RFC 3339 format)
+
+                     More detail in [AIP-160](https://google.aip.dev/160).
+                  schema:
+                    type: string
+                - name: orderBy
+                  in: query
+                  description: |-
+                    Optional. A comma-separated list of fields to order by, sorted in ascending
+                     order. Use "desc" after a field name for descending. Supported fields:
+                     - `create_time`
+
+                     Example: `create_time desc`.
+                  schema:
+                    type: string
             responses:
                 "200":
                     description: OK
@@ -147,7 +168,7 @@ paths:
             parameters:
                 - name: id
                   in: path
-                  description: The ID of the admin to delete.
+                  description: Required. The ID of the admin to delete.
                   required: true
                   schema:
                     type: string
@@ -201,24 +222,16 @@ components:
                     type: integer
                     description: The total number of admins.
                     format: int32
-                page:
-                    type: integer
-                    description: The current page number.
-                    format: int32
-                size:
-                    type: integer
-                    description: The number of admins per page.
-                    format: int32
             description: AdminSet is the set of admins.
         kratos.admin.v1.LoginRequest:
             type: object
             properties:
                 username:
                     type: string
-                    description: Username of the user.
+                    description: Required. Username of the user.
                 password:
                     type: string
-                    description: Password of the user.
+                    description: Required. Password of the user.
             description: LoginRequest is the request message for the Login method.
 tags:
     - name: AdminService

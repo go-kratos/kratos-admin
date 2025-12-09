@@ -9,17 +9,12 @@ make init
 ```
 # Download and update dependencies
 make init
-# Generate API files (include: pb.go, http, grpc, validate, swagger) by proto file
+# Generate API files (include: pb.go, http, grpc, validate, swagger, index.ts) by proto file
 make api
 ```
 
-## Generate Web Client files
+## Run Web Application
 ```
-# Download and update dependencies
-make init
-# Generate client files (include: index.ts) by proto file
-make web
-
 # Enter web directory, install dependencies and start development server
 cd web
 npm install

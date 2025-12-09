@@ -2,6 +2,7 @@ package data
 
 import (
 	"github.com/go-kratos/kratos-admin/internal/conf"
+	"github.com/go-kratos/kratos-admin/internal/data/ent"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/google/wire"
 )
@@ -11,13 +12,19 @@ var ProviderSet = wire.NewSet(NewData, NewAdminRepo)
 
 // Data .
 type Data struct {
-	// TODO wrapped database client
+	db *ent.Client
 }
 
 // NewData .
 func NewData(c *conf.Data) (*Data, func(), error) {
-	cleanup := func() {
-		log.Info("closing the data resources")
+	db, err := ent.Open(c.Database.Driver, c.Database.Source)
+	if err != nil {
+		log.Fatalf("failed opening connection to database: %v", err)
 	}
-	return &Data{}, cleanup, nil
+	cleanup := func() {
+		db.Close()
+	}
+	return &Data{
+		db: db,
+	}, cleanup, nil
 }
