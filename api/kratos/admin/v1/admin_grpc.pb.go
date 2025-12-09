@@ -20,9 +20,14 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	AdminService_Current_FullMethodName = "/kratos.admin.v1.AdminService/Current"
-	AdminService_Login_FullMethodName   = "/kratos.admin.v1.AdminService/Login"
-	AdminService_Logout_FullMethodName  = "/kratos.admin.v1.AdminService/Logout"
+	AdminService_Current_FullMethodName     = "/kratos.admin.v1.AdminService/Current"
+	AdminService_Login_FullMethodName       = "/kratos.admin.v1.AdminService/Login"
+	AdminService_Logout_FullMethodName      = "/kratos.admin.v1.AdminService/Logout"
+	AdminService_GetAdmin_FullMethodName    = "/kratos.admin.v1.AdminService/GetAdmin"
+	AdminService_ListAdmins_FullMethodName  = "/kratos.admin.v1.AdminService/ListAdmins"
+	AdminService_CreateAdmin_FullMethodName = "/kratos.admin.v1.AdminService/CreateAdmin"
+	AdminService_UpdateAdmin_FullMethodName = "/kratos.admin.v1.AdminService/UpdateAdmin"
+	AdminService_DeleteAdmin_FullMethodName = "/kratos.admin.v1.AdminService/DeleteAdmin"
 )
 
 // AdminServiceClient is the client API for AdminService service.
@@ -37,6 +42,11 @@ type AdminServiceClient interface {
 	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*Admin, error)
 	// Logout the currently logged-in user.
 	Logout(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	GetAdmin(ctx context.Context, in *GetAdminRequest, opts ...grpc.CallOption) (*Admin, error)
+	ListAdmins(ctx context.Context, in *ListAdminsRequest, opts ...grpc.CallOption) (*AdminSet, error)
+	CreateAdmin(ctx context.Context, in *CreateAdminRequest, opts ...grpc.CallOption) (*Admin, error)
+	UpdateAdmin(ctx context.Context, in *UpdateAdminRequest, opts ...grpc.CallOption) (*Admin, error)
+	DeleteAdmin(ctx context.Context, in *DeleteAdminRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type adminServiceClient struct {
@@ -77,6 +87,56 @@ func (c *adminServiceClient) Logout(ctx context.Context, in *emptypb.Empty, opts
 	return out, nil
 }
 
+func (c *adminServiceClient) GetAdmin(ctx context.Context, in *GetAdminRequest, opts ...grpc.CallOption) (*Admin, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Admin)
+	err := c.cc.Invoke(ctx, AdminService_GetAdmin_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *adminServiceClient) ListAdmins(ctx context.Context, in *ListAdminsRequest, opts ...grpc.CallOption) (*AdminSet, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(AdminSet)
+	err := c.cc.Invoke(ctx, AdminService_ListAdmins_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *adminServiceClient) CreateAdmin(ctx context.Context, in *CreateAdminRequest, opts ...grpc.CallOption) (*Admin, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Admin)
+	err := c.cc.Invoke(ctx, AdminService_CreateAdmin_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *adminServiceClient) UpdateAdmin(ctx context.Context, in *UpdateAdminRequest, opts ...grpc.CallOption) (*Admin, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Admin)
+	err := c.cc.Invoke(ctx, AdminService_UpdateAdmin_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *adminServiceClient) DeleteAdmin(ctx context.Context, in *DeleteAdminRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, AdminService_DeleteAdmin_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AdminServiceServer is the server API for AdminService service.
 // All implementations must embed UnimplementedAdminServiceServer
 // for forward compatibility.
@@ -89,6 +149,11 @@ type AdminServiceServer interface {
 	Login(context.Context, *LoginRequest) (*Admin, error)
 	// Logout the currently logged-in user.
 	Logout(context.Context, *emptypb.Empty) (*emptypb.Empty, error)
+	GetAdmin(context.Context, *GetAdminRequest) (*Admin, error)
+	ListAdmins(context.Context, *ListAdminsRequest) (*AdminSet, error)
+	CreateAdmin(context.Context, *CreateAdminRequest) (*Admin, error)
+	UpdateAdmin(context.Context, *UpdateAdminRequest) (*Admin, error)
+	DeleteAdmin(context.Context, *DeleteAdminRequest) (*emptypb.Empty, error)
 	mustEmbedUnimplementedAdminServiceServer()
 }
 
@@ -107,6 +172,21 @@ func (UnimplementedAdminServiceServer) Login(context.Context, *LoginRequest) (*A
 }
 func (UnimplementedAdminServiceServer) Logout(context.Context, *emptypb.Empty) (*emptypb.Empty, error) {
 	return nil, status.Error(codes.Unimplemented, "method Logout not implemented")
+}
+func (UnimplementedAdminServiceServer) GetAdmin(context.Context, *GetAdminRequest) (*Admin, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetAdmin not implemented")
+}
+func (UnimplementedAdminServiceServer) ListAdmins(context.Context, *ListAdminsRequest) (*AdminSet, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListAdmins not implemented")
+}
+func (UnimplementedAdminServiceServer) CreateAdmin(context.Context, *CreateAdminRequest) (*Admin, error) {
+	return nil, status.Error(codes.Unimplemented, "method CreateAdmin not implemented")
+}
+func (UnimplementedAdminServiceServer) UpdateAdmin(context.Context, *UpdateAdminRequest) (*Admin, error) {
+	return nil, status.Error(codes.Unimplemented, "method UpdateAdmin not implemented")
+}
+func (UnimplementedAdminServiceServer) DeleteAdmin(context.Context, *DeleteAdminRequest) (*emptypb.Empty, error) {
+	return nil, status.Error(codes.Unimplemented, "method DeleteAdmin not implemented")
 }
 func (UnimplementedAdminServiceServer) mustEmbedUnimplementedAdminServiceServer() {}
 func (UnimplementedAdminServiceServer) testEmbeddedByValue()                      {}
@@ -183,6 +263,96 @@ func _AdminService_Logout_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AdminService_GetAdmin_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAdminRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AdminServiceServer).GetAdmin(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AdminService_GetAdmin_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AdminServiceServer).GetAdmin(ctx, req.(*GetAdminRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AdminService_ListAdmins_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListAdminsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AdminServiceServer).ListAdmins(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AdminService_ListAdmins_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AdminServiceServer).ListAdmins(ctx, req.(*ListAdminsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AdminService_CreateAdmin_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateAdminRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AdminServiceServer).CreateAdmin(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AdminService_CreateAdmin_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AdminServiceServer).CreateAdmin(ctx, req.(*CreateAdminRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AdminService_UpdateAdmin_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateAdminRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AdminServiceServer).UpdateAdmin(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AdminService_UpdateAdmin_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AdminServiceServer).UpdateAdmin(ctx, req.(*UpdateAdminRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AdminService_DeleteAdmin_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteAdminRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AdminServiceServer).DeleteAdmin(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AdminService_DeleteAdmin_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AdminServiceServer).DeleteAdmin(ctx, req.(*DeleteAdminRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AdminService_ServiceDesc is the grpc.ServiceDesc for AdminService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -201,6 +371,26 @@ var AdminService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Logout",
 			Handler:    _AdminService_Logout_Handler,
+		},
+		{
+			MethodName: "GetAdmin",
+			Handler:    _AdminService_GetAdmin_Handler,
+		},
+		{
+			MethodName: "ListAdmins",
+			Handler:    _AdminService_ListAdmins_Handler,
+		},
+		{
+			MethodName: "CreateAdmin",
+			Handler:    _AdminService_CreateAdmin_Handler,
+		},
+		{
+			MethodName: "UpdateAdmin",
+			Handler:    _AdminService_UpdateAdmin_Handler,
+		},
+		{
+			MethodName: "DeleteAdmin",
+			Handler:    _AdminService_DeleteAdmin_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

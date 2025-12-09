@@ -20,24 +20,39 @@ var _ = binding.EncodeURL
 
 const _ = http.SupportPackageIsVersion1
 
+const OperationAdminServiceCreateAdmin = "/kratos.admin.v1.AdminService/CreateAdmin"
 const OperationAdminServiceCurrent = "/kratos.admin.v1.AdminService/Current"
+const OperationAdminServiceDeleteAdmin = "/kratos.admin.v1.AdminService/DeleteAdmin"
+const OperationAdminServiceGetAdmin = "/kratos.admin.v1.AdminService/GetAdmin"
+const OperationAdminServiceListAdmins = "/kratos.admin.v1.AdminService/ListAdmins"
 const OperationAdminServiceLogin = "/kratos.admin.v1.AdminService/Login"
 const OperationAdminServiceLogout = "/kratos.admin.v1.AdminService/Logout"
+const OperationAdminServiceUpdateAdmin = "/kratos.admin.v1.AdminService/UpdateAdmin"
 
 type AdminServiceHTTPServer interface {
+	CreateAdmin(context.Context, *CreateAdminRequest) (*Admin, error)
 	// Current Current returns the currently logged-in user.
 	Current(context.Context, *emptypb.Empty) (*Admin, error)
+	DeleteAdmin(context.Context, *DeleteAdminRequest) (*emptypb.Empty, error)
+	GetAdmin(context.Context, *GetAdminRequest) (*Admin, error)
+	ListAdmins(context.Context, *ListAdminsRequest) (*AdminSet, error)
 	// Login Login a user and return the username.
 	Login(context.Context, *LoginRequest) (*Admin, error)
 	// Logout Logout the currently logged-in user.
 	Logout(context.Context, *emptypb.Empty) (*emptypb.Empty, error)
+	UpdateAdmin(context.Context, *UpdateAdminRequest) (*Admin, error)
 }
 
 func RegisterAdminServiceHTTPServer(s *http.Server, srv AdminServiceHTTPServer) {
 	r := s.Route("/")
-	r.GET("/v1/auth/current", _AdminService_Current0_HTTP_Handler(srv))
-	r.POST("/v1/auth/login", _AdminService_Login0_HTTP_Handler(srv))
-	r.POST("/v1/auth/logout", _AdminService_Logout0_HTTP_Handler(srv))
+	r.GET("/v1/admins/current", _AdminService_Current0_HTTP_Handler(srv))
+	r.POST("/v1/admins/login", _AdminService_Login0_HTTP_Handler(srv))
+	r.POST("/v1/admins/logout", _AdminService_Logout0_HTTP_Handler(srv))
+	r.GET("/v1/admins/{id}", _AdminService_GetAdmin0_HTTP_Handler(srv))
+	r.GET("/v1/admins/list", _AdminService_ListAdmins0_HTTP_Handler(srv))
+	r.POST("/v1/admins/create", _AdminService_CreateAdmin0_HTTP_Handler(srv))
+	r.PUT("/v1/admins/update", _AdminService_UpdateAdmin0_HTTP_Handler(srv))
+	r.DELETE("/v1/admins/{id}", _AdminService_DeleteAdmin0_HTTP_Handler(srv))
 }
 
 func _AdminService_Current0_HTTP_Handler(srv AdminServiceHTTPServer) func(ctx http.Context) error {
@@ -103,13 +118,125 @@ func _AdminService_Logout0_HTTP_Handler(srv AdminServiceHTTPServer) func(ctx htt
 	}
 }
 
+func _AdminService_GetAdmin0_HTTP_Handler(srv AdminServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in GetAdminRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindVars(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationAdminServiceGetAdmin)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.GetAdmin(ctx, req.(*GetAdminRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*Admin)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _AdminService_ListAdmins0_HTTP_Handler(srv AdminServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in ListAdminsRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationAdminServiceListAdmins)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.ListAdmins(ctx, req.(*ListAdminsRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*AdminSet)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _AdminService_CreateAdmin0_HTTP_Handler(srv AdminServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in CreateAdminRequest
+		if err := ctx.Bind(&in.Admin); err != nil {
+			return err
+		}
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationAdminServiceCreateAdmin)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.CreateAdmin(ctx, req.(*CreateAdminRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*Admin)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _AdminService_UpdateAdmin0_HTTP_Handler(srv AdminServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in UpdateAdminRequest
+		if err := ctx.Bind(&in.Admin); err != nil {
+			return err
+		}
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationAdminServiceUpdateAdmin)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.UpdateAdmin(ctx, req.(*UpdateAdminRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*Admin)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _AdminService_DeleteAdmin0_HTTP_Handler(srv AdminServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in DeleteAdminRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindVars(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationAdminServiceDeleteAdmin)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.DeleteAdmin(ctx, req.(*DeleteAdminRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*emptypb.Empty)
+		return ctx.Result(200, reply)
+	}
+}
+
 type AdminServiceHTTPClient interface {
+	CreateAdmin(ctx context.Context, req *CreateAdminRequest, opts ...http.CallOption) (rsp *Admin, err error)
 	// Current Current returns the currently logged-in user.
 	Current(ctx context.Context, req *emptypb.Empty, opts ...http.CallOption) (rsp *Admin, err error)
+	DeleteAdmin(ctx context.Context, req *DeleteAdminRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
+	GetAdmin(ctx context.Context, req *GetAdminRequest, opts ...http.CallOption) (rsp *Admin, err error)
+	ListAdmins(ctx context.Context, req *ListAdminsRequest, opts ...http.CallOption) (rsp *AdminSet, err error)
 	// Login Login a user and return the username.
 	Login(ctx context.Context, req *LoginRequest, opts ...http.CallOption) (rsp *Admin, err error)
 	// Logout Logout the currently logged-in user.
 	Logout(ctx context.Context, req *emptypb.Empty, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
+	UpdateAdmin(ctx context.Context, req *UpdateAdminRequest, opts ...http.CallOption) (rsp *Admin, err error)
 }
 
 type AdminServiceHTTPClientImpl struct {
@@ -120,12 +247,64 @@ func NewAdminServiceHTTPClient(client *http.Client) AdminServiceHTTPClient {
 	return &AdminServiceHTTPClientImpl{client}
 }
 
+func (c *AdminServiceHTTPClientImpl) CreateAdmin(ctx context.Context, in *CreateAdminRequest, opts ...http.CallOption) (*Admin, error) {
+	var out Admin
+	pattern := "/v1/admins/create"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationAdminServiceCreateAdmin))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "POST", path, in.Admin, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
 // Current Current returns the currently logged-in user.
 func (c *AdminServiceHTTPClientImpl) Current(ctx context.Context, in *emptypb.Empty, opts ...http.CallOption) (*Admin, error) {
 	var out Admin
-	pattern := "/v1/auth/current"
+	pattern := "/v1/admins/current"
 	path := binding.EncodeURL(pattern, in, true)
 	opts = append(opts, http.Operation(OperationAdminServiceCurrent))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+func (c *AdminServiceHTTPClientImpl) DeleteAdmin(ctx context.Context, in *DeleteAdminRequest, opts ...http.CallOption) (*emptypb.Empty, error) {
+	var out emptypb.Empty
+	pattern := "/v1/admins/{id}"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationAdminServiceDeleteAdmin))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "DELETE", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+func (c *AdminServiceHTTPClientImpl) GetAdmin(ctx context.Context, in *GetAdminRequest, opts ...http.CallOption) (*Admin, error) {
+	var out Admin
+	pattern := "/v1/admins/{id}"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationAdminServiceGetAdmin))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+func (c *AdminServiceHTTPClientImpl) ListAdmins(ctx context.Context, in *ListAdminsRequest, opts ...http.CallOption) (*AdminSet, error) {
+	var out AdminSet
+	pattern := "/v1/admins/list"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationAdminServiceListAdmins))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
 	if err != nil {
@@ -137,7 +316,7 @@ func (c *AdminServiceHTTPClientImpl) Current(ctx context.Context, in *emptypb.Em
 // Login Login a user and return the username.
 func (c *AdminServiceHTTPClientImpl) Login(ctx context.Context, in *LoginRequest, opts ...http.CallOption) (*Admin, error) {
 	var out Admin
-	pattern := "/v1/auth/login"
+	pattern := "/v1/admins/login"
 	path := binding.EncodeURL(pattern, in, false)
 	opts = append(opts, http.Operation(OperationAdminServiceLogin))
 	opts = append(opts, http.PathTemplate(pattern))
@@ -151,11 +330,24 @@ func (c *AdminServiceHTTPClientImpl) Login(ctx context.Context, in *LoginRequest
 // Logout Logout the currently logged-in user.
 func (c *AdminServiceHTTPClientImpl) Logout(ctx context.Context, in *emptypb.Empty, opts ...http.CallOption) (*emptypb.Empty, error) {
 	var out emptypb.Empty
-	pattern := "/v1/auth/logout"
+	pattern := "/v1/admins/logout"
 	path := binding.EncodeURL(pattern, in, false)
 	opts = append(opts, http.Operation(OperationAdminServiceLogout))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+func (c *AdminServiceHTTPClientImpl) UpdateAdmin(ctx context.Context, in *UpdateAdminRequest, opts ...http.CallOption) (*Admin, error) {
+	var out Admin
+	pattern := "/v1/admins/update"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationAdminServiceUpdateAdmin))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "PUT", path, in.Admin, &out, opts...)
 	if err != nil {
 		return nil, err
 	}

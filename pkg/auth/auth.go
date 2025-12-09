@@ -8,8 +8,14 @@ import (
 
 // Auth user auth.
 type Auth struct {
-	Username string `json:"username"`
+	UserID int64  `json:"id"`
+	Access string `json:"access"`
 	jwt.RegisteredClaims
+}
+
+// HasAdminAccess checks if the user has admin access.
+func (a *Auth) HasAdminAccess() bool {
+	return a.Access == "admin"
 }
 
 type authKey struct{}

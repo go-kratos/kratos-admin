@@ -7,7 +7,25 @@ info:
     description: AdminService is the admin service definition.
     version: 0.0.1
 paths:
-    /v1/auth/current:
+    /v1/admins/create:
+        post:
+            tags:
+                - AdminService
+            operationId: AdminService_CreateAdmin
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/kratos.admin.v1.Admin'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/kratos.admin.v1.Admin'
+    /v1/admins/current:
         get:
             tags:
                 - AdminService
@@ -20,7 +38,32 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/kratos.admin.v1.Admin'
-    /v1/auth/login:
+    /v1/admins/list:
+        get:
+            tags:
+                - AdminService
+            operationId: AdminService_ListAdmins
+            parameters:
+                - name: pageNum
+                  in: query
+                  description: The page number to retrieve.
+                  schema:
+                    type: integer
+                    format: int32
+                - name: pageSize
+                  in: query
+                  description: The number of admins per page.
+                  schema:
+                    type: integer
+                    format: int32
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/kratos.admin.v1.AdminSet'
+    /v1/admins/login:
         post:
             tags:
                 - AdminService
@@ -39,7 +82,7 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/kratos.admin.v1.Admin'
-    /v1/auth/logout:
+    /v1/admins/logout:
         post:
             tags:
                 - AdminService
@@ -49,6 +92,65 @@ paths:
                 content:
                     application/json: {}
                 required: true
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+    /v1/admins/update:
+        put:
+            tags:
+                - AdminService
+            operationId: AdminService_UpdateAdmin
+            parameters:
+                - name: updateMask
+                  in: query
+                  description: Required. Mask of fields to update.
+                  schema:
+                    type: string
+                    format: field-mask
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/kratos.admin.v1.Admin'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/kratos.admin.v1.Admin'
+    /v1/admins/{id}:
+        get:
+            tags:
+                - AdminService
+            operationId: AdminService_GetAdmin
+            parameters:
+                - name: id
+                  in: path
+                  description: The ID of the admin to retrieve.
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/kratos.admin.v1.Admin'
+        delete:
+            tags:
+                - AdminService
+            operationId: AdminService_DeleteAdmin
+            parameters:
+                - name: id
+                  in: path
+                  description: The ID of the admin to delete.
+                  required: true
+                  schema:
+                    type: string
             responses:
                 "200":
                     description: OK
@@ -75,6 +177,9 @@ components:
                     description: |-
                         The access level of the user.
                          Possible values are: "admin", "user", etc.
+                password:
+                    type: string
+                    description: The password of the user.
                 createTime:
                     type: string
                     description: The timestamp at which the user was created.
@@ -84,6 +189,27 @@ components:
                     description: The latest timestamp at which the user was updated.
                     format: date-time
             description: Admin is the admin message.
+        kratos.admin.v1.AdminSet:
+            type: object
+            properties:
+                items:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/kratos.admin.v1.Admin'
+                    description: The set of admins.
+                total:
+                    type: integer
+                    description: The total number of admins.
+                    format: int32
+                page:
+                    type: integer
+                    description: The current page number.
+                    format: int32
+                size:
+                    type: integer
+                    description: The number of admins per page.
+                    format: int32
+            description: AdminSet is the set of admins.
         kratos.admin.v1.LoginRequest:
             type: object
             properties:

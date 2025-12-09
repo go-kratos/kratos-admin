@@ -11,6 +11,7 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
+	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
 	sync "sync"
@@ -38,10 +39,12 @@ type Admin struct {
 	// The access level of the user.
 	// Possible values are: "admin", "user", etc.
 	Access string `protobuf:"bytes,5,opt,name=access,proto3" json:"access,omitempty"`
+	// The password of the user.
+	Password string `protobuf:"bytes,6,opt,name=password,proto3" json:"password,omitempty"`
 	// The timestamp at which the user was created.
-	CreateTime *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
+	CreateTime *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
 	// The latest timestamp at which the user was updated.
-	UpdateTime    *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=update_time,json=updateTime,proto3" json:"update_time,omitempty"`
+	UpdateTime    *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=update_time,json=updateTime,proto3" json:"update_time,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -111,6 +114,13 @@ func (x *Admin) GetAccess() string {
 	return ""
 }
 
+func (x *Admin) GetPassword() string {
+	if x != nil {
+		return x.Password
+	}
+	return ""
+}
+
 func (x *Admin) GetCreateTime() *timestamppb.Timestamp {
 	if x != nil {
 		return x.CreateTime
@@ -123,6 +133,79 @@ func (x *Admin) GetUpdateTime() *timestamppb.Timestamp {
 		return x.UpdateTime
 	}
 	return nil
+}
+
+// AdminSet is the set of admins.
+type AdminSet struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The set of admins.
+	Items []*Admin `protobuf:"bytes,1,rep,name=items,proto3" json:"items,omitempty"`
+	// The total number of admins.
+	Total int32 `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"`
+	// The current page number.
+	Page int32 `protobuf:"varint,3,opt,name=page,proto3" json:"page,omitempty"`
+	// The number of admins per page.
+	Size          int32 `protobuf:"varint,4,opt,name=size,proto3" json:"size,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AdminSet) Reset() {
+	*x = AdminSet{}
+	mi := &file_kratos_admin_v1_admin_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AdminSet) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AdminSet) ProtoMessage() {}
+
+func (x *AdminSet) ProtoReflect() protoreflect.Message {
+	mi := &file_kratos_admin_v1_admin_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AdminSet.ProtoReflect.Descriptor instead.
+func (*AdminSet) Descriptor() ([]byte, []int) {
+	return file_kratos_admin_v1_admin_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *AdminSet) GetItems() []*Admin {
+	if x != nil {
+		return x.Items
+	}
+	return nil
+}
+
+func (x *AdminSet) GetTotal() int32 {
+	if x != nil {
+		return x.Total
+	}
+	return 0
+}
+
+func (x *AdminSet) GetPage() int32 {
+	if x != nil {
+		return x.Page
+	}
+	return 0
+}
+
+func (x *AdminSet) GetSize() int32 {
+	if x != nil {
+		return x.Size
+	}
+	return 0
 }
 
 // LoginRequest is the request message for the Login method.
@@ -138,7 +221,7 @@ type LoginRequest struct {
 
 func (x *LoginRequest) Reset() {
 	*x = LoginRequest{}
-	mi := &file_kratos_admin_v1_admin_proto_msgTypes[1]
+	mi := &file_kratos_admin_v1_admin_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -150,7 +233,7 @@ func (x *LoginRequest) String() string {
 func (*LoginRequest) ProtoMessage() {}
 
 func (x *LoginRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_kratos_admin_v1_admin_proto_msgTypes[1]
+	mi := &file_kratos_admin_v1_admin_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -163,7 +246,7 @@ func (x *LoginRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LoginRequest.ProtoReflect.Descriptor instead.
 func (*LoginRequest) Descriptor() ([]byte, []int) {
-	return file_kratos_admin_v1_admin_proto_rawDescGZIP(), []int{1}
+	return file_kratos_admin_v1_admin_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *LoginRequest) GetUsername() string {
@@ -180,28 +263,301 @@ func (x *LoginRequest) GetPassword() string {
 	return ""
 }
 
+// GetAdminRequest is the request message for the GetAdmin method.
+type GetAdminRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The ID of the admin to retrieve.
+	Id            int64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetAdminRequest) Reset() {
+	*x = GetAdminRequest{}
+	mi := &file_kratos_admin_v1_admin_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetAdminRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetAdminRequest) ProtoMessage() {}
+
+func (x *GetAdminRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_kratos_admin_v1_admin_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetAdminRequest.ProtoReflect.Descriptor instead.
+func (*GetAdminRequest) Descriptor() ([]byte, []int) {
+	return file_kratos_admin_v1_admin_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *GetAdminRequest) GetId() int64 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+// ListAdminsResponse is the response message for the ListAdmins method.
+type ListAdminsRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The page number to retrieve.
+	PageNum int32 `protobuf:"varint,1,opt,name=page_num,json=pageNum,proto3" json:"page_num,omitempty"`
+	// The number of admins per page.
+	PageSize      int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListAdminsRequest) Reset() {
+	*x = ListAdminsRequest{}
+	mi := &file_kratos_admin_v1_admin_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListAdminsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListAdminsRequest) ProtoMessage() {}
+
+func (x *ListAdminsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_kratos_admin_v1_admin_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListAdminsRequest.ProtoReflect.Descriptor instead.
+func (*ListAdminsRequest) Descriptor() ([]byte, []int) {
+	return file_kratos_admin_v1_admin_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *ListAdminsRequest) GetPageNum() int32 {
+	if x != nil {
+		return x.PageNum
+	}
+	return 0
+}
+
+func (x *ListAdminsRequest) GetPageSize() int32 {
+	if x != nil {
+		return x.PageSize
+	}
+	return 0
+}
+
+// CreateAdminRequest is the request message for the CreateAdmin method.
+type CreateAdminRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The admin to create.
+	Admin         *Admin `protobuf:"bytes,1,opt,name=admin,proto3" json:"admin,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateAdminRequest) Reset() {
+	*x = CreateAdminRequest{}
+	mi := &file_kratos_admin_v1_admin_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateAdminRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateAdminRequest) ProtoMessage() {}
+
+func (x *CreateAdminRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_kratos_admin_v1_admin_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateAdminRequest.ProtoReflect.Descriptor instead.
+func (*CreateAdminRequest) Descriptor() ([]byte, []int) {
+	return file_kratos_admin_v1_admin_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *CreateAdminRequest) GetAdmin() *Admin {
+	if x != nil {
+		return x.Admin
+	}
+	return nil
+}
+
+// UpdateAdminRequest is the request message for the UpdateAdmin method.
+type UpdateAdminRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The admin to update.
+	Admin *Admin `protobuf:"bytes,1,opt,name=admin,proto3" json:"admin,omitempty"`
+	// Required. Mask of fields to update.
+	UpdateMask    *fieldmaskpb.FieldMask `protobuf:"bytes,2,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdateAdminRequest) Reset() {
+	*x = UpdateAdminRequest{}
+	mi := &file_kratos_admin_v1_admin_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateAdminRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateAdminRequest) ProtoMessage() {}
+
+func (x *UpdateAdminRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_kratos_admin_v1_admin_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateAdminRequest.ProtoReflect.Descriptor instead.
+func (*UpdateAdminRequest) Descriptor() ([]byte, []int) {
+	return file_kratos_admin_v1_admin_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *UpdateAdminRequest) GetAdmin() *Admin {
+	if x != nil {
+		return x.Admin
+	}
+	return nil
+}
+
+func (x *UpdateAdminRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
+	if x != nil {
+		return x.UpdateMask
+	}
+	return nil
+}
+
+// DeleteAdminRequest is the request message for the DeleteAdmin method.
+type DeleteAdminRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The ID of the admin to delete.
+	Id            int64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeleteAdminRequest) Reset() {
+	*x = DeleteAdminRequest{}
+	mi := &file_kratos_admin_v1_admin_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteAdminRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteAdminRequest) ProtoMessage() {}
+
+func (x *DeleteAdminRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_kratos_admin_v1_admin_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteAdminRequest.ProtoReflect.Descriptor instead.
+func (*DeleteAdminRequest) Descriptor() ([]byte, []int) {
+	return file_kratos_admin_v1_admin_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *DeleteAdminRequest) GetId() int64 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
 var File_kratos_admin_v1_admin_proto protoreflect.FileDescriptor
 
 const file_kratos_admin_v1_admin_proto_rawDesc = "" +
 	"\n" +
-	"\x1bkratos/admin/v1/admin.proto\x12\x0fkratos.admin.v1\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1cgoogle/api/annotations.proto\"\xeb\x01\n" +
+	"\x1bkratos/admin/v1/admin.proto\x12\x0fkratos.admin.v1\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1cgoogle/api/annotations.proto\"\x87\x02\n" +
 	"\x05Admin\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x14\n" +
 	"\x05email\x18\x03 \x01(\tR\x05email\x12\x16\n" +
 	"\x06avatar\x18\x04 \x01(\tR\x06avatar\x12\x16\n" +
-	"\x06access\x18\x05 \x01(\tR\x06access\x12;\n" +
-	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
+	"\x06access\x18\x05 \x01(\tR\x06access\x12\x1a\n" +
+	"\bpassword\x18\x06 \x01(\tR\bpassword\x12;\n" +
+	"\vcreate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"createTime\x12;\n" +
-	"\vupdate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\n" +
-	"updateTime\"F\n" +
+	"\vupdate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampR\n" +
+	"updateTime\"v\n" +
+	"\bAdminSet\x12,\n" +
+	"\x05items\x18\x01 \x03(\v2\x16.kratos.admin.v1.AdminR\x05items\x12\x14\n" +
+	"\x05total\x18\x02 \x01(\x05R\x05total\x12\x12\n" +
+	"\x04page\x18\x03 \x01(\x05R\x04page\x12\x12\n" +
+	"\x04size\x18\x04 \x01(\x05R\x04size\"F\n" +
 	"\fLoginRequest\x12\x1a\n" +
 	"\busername\x18\x01 \x01(\tR\busername\x12\x1a\n" +
-	"\bpassword\x18\x02 \x01(\tR\bpassword2\x94\x02\n" +
-	"\fAdminService\x12S\n" +
-	"\aCurrent\x12\x16.google.protobuf.Empty\x1a\x16.kratos.admin.v1.Admin\"\x18\x82\xd3\xe4\x93\x02\x12\x12\x10/v1/auth/current\x12Y\n" +
-	"\x05Login\x12\x1d.kratos.admin.v1.LoginRequest\x1a\x16.kratos.admin.v1.Admin\"\x19\x82\xd3\xe4\x93\x02\x13:\x01*\"\x0e/v1/auth/login\x12T\n" +
-	"\x06Logout\x12\x16.google.protobuf.Empty\x1a\x16.google.protobuf.Empty\"\x1a\x82\xd3\xe4\x93\x02\x14:\x01*\"\x0f/v1/auth/logoutBQ\n" +
+	"\bpassword\x18\x02 \x01(\tR\bpassword\"!\n" +
+	"\x0fGetAdminRequest\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\x03R\x02id\"K\n" +
+	"\x11ListAdminsRequest\x12\x19\n" +
+	"\bpage_num\x18\x01 \x01(\x05R\apageNum\x12\x1b\n" +
+	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\"B\n" +
+	"\x12CreateAdminRequest\x12,\n" +
+	"\x05admin\x18\x01 \x01(\v2\x16.kratos.admin.v1.AdminR\x05admin\"\x7f\n" +
+	"\x12UpdateAdminRequest\x12,\n" +
+	"\x05admin\x18\x01 \x01(\v2\x16.kratos.admin.v1.AdminR\x05admin\x12;\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
+	"updateMask\"$\n" +
+	"\x12DeleteAdminRequest\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\x03R\x02id2\xa0\x06\n" +
+	"\fAdminService\x12U\n" +
+	"\aCurrent\x12\x16.google.protobuf.Empty\x1a\x16.kratos.admin.v1.Admin\"\x1a\x82\xd3\xe4\x93\x02\x14\x12\x12/v1/admins/current\x12[\n" +
+	"\x05Login\x12\x1d.kratos.admin.v1.LoginRequest\x1a\x16.kratos.admin.v1.Admin\"\x1b\x82\xd3\xe4\x93\x02\x15:\x01*\"\x10/v1/admins/login\x12V\n" +
+	"\x06Logout\x12\x16.google.protobuf.Empty\x1a\x16.google.protobuf.Empty\"\x1c\x82\xd3\xe4\x93\x02\x16:\x01*\"\x11/v1/admins/logout\x12]\n" +
+	"\bGetAdmin\x12 .kratos.admin.v1.GetAdminRequest\x1a\x16.kratos.admin.v1.Admin\"\x17\x82\xd3\xe4\x93\x02\x11\x12\x0f/v1/admins/{id}\x12d\n" +
+	"\n" +
+	"ListAdmins\x12\".kratos.admin.v1.ListAdminsRequest\x1a\x19.kratos.admin.v1.AdminSet\"\x17\x82\xd3\xe4\x93\x02\x11\x12\x0f/v1/admins/list\x12l\n" +
+	"\vCreateAdmin\x12#.kratos.admin.v1.CreateAdminRequest\x1a\x16.kratos.admin.v1.Admin\" \x82\xd3\xe4\x93\x02\x1a:\x05admin\"\x11/v1/admins/create\x12l\n" +
+	"\vUpdateAdmin\x12#.kratos.admin.v1.UpdateAdminRequest\x1a\x16.kratos.admin.v1.Admin\" \x82\xd3\xe4\x93\x02\x1a:\x05admin\x1a\x11/v1/admins/update\x12c\n" +
+	"\vDeleteAdmin\x12#.kratos.admin.v1.DeleteAdminRequest\x1a\x16.google.protobuf.Empty\"\x17\x82\xd3\xe4\x93\x02\x11*\x0f/v1/admins/{id}BQ\n" +
 	"\x13api.kratos.admin.v1P\x01Z8github.com/go-kratos/kratos-admin/api/kratos/admin/v1;v1b\x06proto3"
 
 var (
@@ -216,27 +572,48 @@ func file_kratos_admin_v1_admin_proto_rawDescGZIP() []byte {
 	return file_kratos_admin_v1_admin_proto_rawDescData
 }
 
-var file_kratos_admin_v1_admin_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_kratos_admin_v1_admin_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
 var file_kratos_admin_v1_admin_proto_goTypes = []any{
 	(*Admin)(nil),                 // 0: kratos.admin.v1.Admin
-	(*LoginRequest)(nil),          // 1: kratos.admin.v1.LoginRequest
-	(*timestamppb.Timestamp)(nil), // 2: google.protobuf.Timestamp
-	(*emptypb.Empty)(nil),         // 3: google.protobuf.Empty
+	(*AdminSet)(nil),              // 1: kratos.admin.v1.AdminSet
+	(*LoginRequest)(nil),          // 2: kratos.admin.v1.LoginRequest
+	(*GetAdminRequest)(nil),       // 3: kratos.admin.v1.GetAdminRequest
+	(*ListAdminsRequest)(nil),     // 4: kratos.admin.v1.ListAdminsRequest
+	(*CreateAdminRequest)(nil),    // 5: kratos.admin.v1.CreateAdminRequest
+	(*UpdateAdminRequest)(nil),    // 6: kratos.admin.v1.UpdateAdminRequest
+	(*DeleteAdminRequest)(nil),    // 7: kratos.admin.v1.DeleteAdminRequest
+	(*timestamppb.Timestamp)(nil), // 8: google.protobuf.Timestamp
+	(*fieldmaskpb.FieldMask)(nil), // 9: google.protobuf.FieldMask
+	(*emptypb.Empty)(nil),         // 10: google.protobuf.Empty
 }
 var file_kratos_admin_v1_admin_proto_depIdxs = []int32{
-	2, // 0: kratos.admin.v1.Admin.create_time:type_name -> google.protobuf.Timestamp
-	2, // 1: kratos.admin.v1.Admin.update_time:type_name -> google.protobuf.Timestamp
-	3, // 2: kratos.admin.v1.AdminService.Current:input_type -> google.protobuf.Empty
-	1, // 3: kratos.admin.v1.AdminService.Login:input_type -> kratos.admin.v1.LoginRequest
-	3, // 4: kratos.admin.v1.AdminService.Logout:input_type -> google.protobuf.Empty
-	0, // 5: kratos.admin.v1.AdminService.Current:output_type -> kratos.admin.v1.Admin
-	0, // 6: kratos.admin.v1.AdminService.Login:output_type -> kratos.admin.v1.Admin
-	3, // 7: kratos.admin.v1.AdminService.Logout:output_type -> google.protobuf.Empty
-	5, // [5:8] is the sub-list for method output_type
-	2, // [2:5] is the sub-list for method input_type
-	2, // [2:2] is the sub-list for extension type_name
-	2, // [2:2] is the sub-list for extension extendee
-	0, // [0:2] is the sub-list for field type_name
+	8,  // 0: kratos.admin.v1.Admin.create_time:type_name -> google.protobuf.Timestamp
+	8,  // 1: kratos.admin.v1.Admin.update_time:type_name -> google.protobuf.Timestamp
+	0,  // 2: kratos.admin.v1.AdminSet.items:type_name -> kratos.admin.v1.Admin
+	0,  // 3: kratos.admin.v1.CreateAdminRequest.admin:type_name -> kratos.admin.v1.Admin
+	0,  // 4: kratos.admin.v1.UpdateAdminRequest.admin:type_name -> kratos.admin.v1.Admin
+	9,  // 5: kratos.admin.v1.UpdateAdminRequest.update_mask:type_name -> google.protobuf.FieldMask
+	10, // 6: kratos.admin.v1.AdminService.Current:input_type -> google.protobuf.Empty
+	2,  // 7: kratos.admin.v1.AdminService.Login:input_type -> kratos.admin.v1.LoginRequest
+	10, // 8: kratos.admin.v1.AdminService.Logout:input_type -> google.protobuf.Empty
+	3,  // 9: kratos.admin.v1.AdminService.GetAdmin:input_type -> kratos.admin.v1.GetAdminRequest
+	4,  // 10: kratos.admin.v1.AdminService.ListAdmins:input_type -> kratos.admin.v1.ListAdminsRequest
+	5,  // 11: kratos.admin.v1.AdminService.CreateAdmin:input_type -> kratos.admin.v1.CreateAdminRequest
+	6,  // 12: kratos.admin.v1.AdminService.UpdateAdmin:input_type -> kratos.admin.v1.UpdateAdminRequest
+	7,  // 13: kratos.admin.v1.AdminService.DeleteAdmin:input_type -> kratos.admin.v1.DeleteAdminRequest
+	0,  // 14: kratos.admin.v1.AdminService.Current:output_type -> kratos.admin.v1.Admin
+	0,  // 15: kratos.admin.v1.AdminService.Login:output_type -> kratos.admin.v1.Admin
+	10, // 16: kratos.admin.v1.AdminService.Logout:output_type -> google.protobuf.Empty
+	0,  // 17: kratos.admin.v1.AdminService.GetAdmin:output_type -> kratos.admin.v1.Admin
+	1,  // 18: kratos.admin.v1.AdminService.ListAdmins:output_type -> kratos.admin.v1.AdminSet
+	0,  // 19: kratos.admin.v1.AdminService.CreateAdmin:output_type -> kratos.admin.v1.Admin
+	0,  // 20: kratos.admin.v1.AdminService.UpdateAdmin:output_type -> kratos.admin.v1.Admin
+	10, // 21: kratos.admin.v1.AdminService.DeleteAdmin:output_type -> google.protobuf.Empty
+	14, // [14:22] is the sub-list for method output_type
+	6,  // [6:14] is the sub-list for method input_type
+	6,  // [6:6] is the sub-list for extension type_name
+	6,  // [6:6] is the sub-list for extension extendee
+	0,  // [0:6] is the sub-list for field type_name
 }
 
 func init() { file_kratos_admin_v1_admin_proto_init() }
@@ -250,7 +627,7 @@ func file_kratos_admin_v1_admin_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_kratos_admin_v1_admin_proto_rawDesc), len(file_kratos_admin_v1_admin_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   2,
+			NumMessages:   8,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

@@ -15,6 +15,8 @@ export type Admin = {
   // The access level of the user.
   // Possible values are: "admin", "user", etc.
   access: string | undefined;
+  // The password of the user.
+  password: string | undefined;
   // The timestamp at which the user was created.
   createTime: wellKnownTimestamp | undefined;
   // The latest timestamp at which the user was updated.
@@ -26,12 +28,86 @@ export type Admin = {
 // Offsets other than "Z" are also accepted.
 type wellKnownTimestamp = string;
 
+// AdminSet is the set of admins.
+export type AdminSet = {
+  // The set of admins.
+  items: Admin[] | undefined;
+  // The total number of admins.
+  total: number | undefined;
+  // The current page number.
+  page: number | undefined;
+  // The number of admins per page.
+  size: number | undefined;
+};
+
 // LoginRequest is the request message for the Login method.
 export type LoginRequest = {
   // Username of the user.
   username: string | undefined;
   // Password of the user.
   password: string | undefined;
+};
+
+// GetAdminRequest is the request message for the GetAdmin method.
+export type GetAdminRequest = {
+  // The ID of the admin to retrieve.
+  id: number | undefined;
+};
+
+// ListAdminsResponse is the response message for the ListAdmins method.
+export type ListAdminsRequest = {
+  // The page number to retrieve.
+  pageNum: number | undefined;
+  // The number of admins per page.
+  pageSize: number | undefined;
+};
+
+// CreateAdminRequest is the request message for the CreateAdmin method.
+export type CreateAdminRequest = {
+  // The admin to create.
+  admin: Admin | undefined;
+};
+
+// UpdateAdminRequest is the request message for the UpdateAdmin method.
+export type UpdateAdminRequest = {
+  // The admin to update.
+  admin: Admin | undefined;
+  // Required. Mask of fields to update.
+  updateMask: wellKnownFieldMask | undefined;
+};
+
+// In JSON, a field mask is encoded as a single string where paths are
+// separated by a comma. Fields name in each path are converted
+// to/from lower-camel naming conventions.
+// As an example, consider the following message declarations:
+//
+//     message Profile {
+//       User user = 1;
+//       Photo photo = 2;
+//     }
+//     message User {
+//       string display_name = 1;
+//       string address = 2;
+//     }
+//
+// In proto a field mask for `Profile` may look as such:
+//
+//     mask {
+//       paths: "user.display_name"
+//       paths: "photo"
+//     }
+//
+// In JSON, the same mask is represented as below:
+//
+//     {
+//       mask: "user.displayName,photo"
+//     }
+type wellKnownFieldMask = string;
+
+// DeleteAdminRequest is the request message for the DeleteAdmin method.
+export type DeleteAdminRequest = {
+  // The ID of the admin to delete.
+  id: number | undefined;
 };
 
 // AdminService is the admin service definition.
@@ -42,6 +118,11 @@ export interface AdminService {
   Login(request: LoginRequest): Promise<Admin>;
   // Logout the currently logged-in user.
   Logout(request: wellKnownEmpty): Promise<wellKnownEmpty>;
+  GetAdmin(request: GetAdminRequest): Promise<Admin>;
+  ListAdmins(request: ListAdminsRequest): Promise<AdminSet>;
+  CreateAdmin(request: CreateAdminRequest): Promise<Admin>;
+  UpdateAdmin(request: UpdateAdminRequest): Promise<Admin>;
+  DeleteAdmin(request: DeleteAdminRequest): Promise<wellKnownEmpty>;
 }
 
 type RequestType = {
@@ -57,7 +138,7 @@ export function createAdminServiceClient(
 ): AdminService {
   return {
     Current(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `v1/auth/current`; // eslint-disable-line quotes
+      const path = `v1/admins/current`; // eslint-disable-line quotes
       const body = null;
       const queryParams: string[] = [];
       let uri = path;
@@ -74,7 +155,7 @@ export function createAdminServiceClient(
       }) as Promise<Admin>;
     },
     Login(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `v1/auth/login`; // eslint-disable-line quotes
+      const path = `v1/admins/login`; // eslint-disable-line quotes
       const body = JSON.stringify(request);
       const queryParams: string[] = [];
       let uri = path;
@@ -91,7 +172,7 @@ export function createAdminServiceClient(
       }) as Promise<Admin>;
     },
     Logout(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `v1/auth/logout`; // eslint-disable-line quotes
+      const path = `v1/admins/logout`; // eslint-disable-line quotes
       const body = JSON.stringify(request);
       const queryParams: string[] = [];
       let uri = path;
@@ -105,6 +186,106 @@ export function createAdminServiceClient(
       }, {
         service: "AdminService",
         method: "Logout",
+      }) as Promise<wellKnownEmpty>;
+    },
+    GetAdmin(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      if (!request.id) {
+        throw new Error("missing required field request.id");
+      }
+      const path = `v1/admins/${request.id}`; // eslint-disable-line quotes
+      const body = null;
+      const queryParams: string[] = [];
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "GET",
+        body,
+      }, {
+        service: "AdminService",
+        method: "GetAdmin",
+      }) as Promise<Admin>;
+    },
+    ListAdmins(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      const path = `v1/admins/list`; // eslint-disable-line quotes
+      const body = null;
+      const queryParams: string[] = [];
+      if (request.pageNum) {
+        queryParams.push(`pageNum=${encodeURIComponent(request.pageNum.toString())}`)
+      }
+      if (request.pageSize) {
+        queryParams.push(`pageSize=${encodeURIComponent(request.pageSize.toString())}`)
+      }
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "GET",
+        body,
+      }, {
+        service: "AdminService",
+        method: "ListAdmins",
+      }) as Promise<AdminSet>;
+    },
+    CreateAdmin(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      const path = `v1/admins/create`; // eslint-disable-line quotes
+      const body = JSON.stringify(request?.admin ?? {});
+      const queryParams: string[] = [];
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "POST",
+        body,
+      }, {
+        service: "AdminService",
+        method: "CreateAdmin",
+      }) as Promise<Admin>;
+    },
+    UpdateAdmin(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      const path = `v1/admins/update`; // eslint-disable-line quotes
+      const body = JSON.stringify(request?.admin ?? {});
+      const queryParams: string[] = [];
+      if (request.updateMask) {
+        queryParams.push(`updateMask=${encodeURIComponent(request.updateMask.toString())}`)
+      }
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "PUT",
+        body,
+      }, {
+        service: "AdminService",
+        method: "UpdateAdmin",
+      }) as Promise<Admin>;
+    },
+    DeleteAdmin(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      if (!request.id) {
+        throw new Error("missing required field request.id");
+      }
+      const path = `v1/admins/${request.id}`; // eslint-disable-line quotes
+      const body = null;
+      const queryParams: string[] = [];
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "DELETE",
+        body,
+      }, {
+        service: "AdminService",
+        method: "DeleteAdmin",
       }) as Promise<wellKnownEmpty>;
     },
   };

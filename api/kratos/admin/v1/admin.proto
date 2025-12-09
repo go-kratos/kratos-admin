@@ -4,6 +4,7 @@ package kratos.admin.v1;
 
 import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
+import "google/protobuf/field_mask.proto";
 import "google/api/annotations.proto";
 
 option go_package = "github.com/go-kratos/kratos-admin/api/kratos/admin/v1;v1";
@@ -23,10 +24,24 @@ message Admin {
   // The access level of the user.
   // Possible values are: "admin", "user", etc.
   string access = 5;
+  // The password of the user.
+  string password = 6;
   // The timestamp at which the user was created.
-  google.protobuf.Timestamp create_time = 6;
+  google.protobuf.Timestamp create_time = 7;
   // The latest timestamp at which the user was updated.
-  google.protobuf.Timestamp update_time = 7;
+  google.protobuf.Timestamp update_time = 8;
+}
+
+// AdminSet is the set of admins.
+message AdminSet {
+  // The set of admins.
+  repeated Admin items = 1;
+  // The total number of admins.
+  int32 total = 2;
+  // The current page number.
+  int32 page = 3;
+  // The number of admins per page.
+  int32 size = 4;
 }
 
 // AdminService is the admin service definition.
@@ -34,21 +49,48 @@ service AdminService {
   // Current returns the currently logged-in user.
   rpc Current (google.protobuf.Empty) returns (Admin) {
     option (google.api.http) = {
-      get: "/v1/auth/current"
+      get: "/v1/admins/current"
     };
   }
   // Login a user and return the username.
   rpc Login (LoginRequest) returns (Admin) {
     option (google.api.http) = {
-      post: "/v1/auth/login"
+      post: "/v1/admins/login"
       body: "*"
     };
   }
   // Logout the currently logged-in user.
   rpc Logout (google.protobuf.Empty) returns (google.protobuf.Empty) {
     option (google.api.http) = {
-      post: "/v1/auth/logout"
+      post: "/v1/admins/logout"
       body: "*"
+    };
+  }
+  rpc GetAdmin(GetAdminRequest) returns (Admin) {
+    option (google.api.http) = {
+      get: "/v1/admins/{id}"
+    };
+  }
+  rpc ListAdmins(ListAdminsRequest) returns (AdminSet) {
+    option (google.api.http) = {
+      get: "/v1/admins/list"
+    };
+  }
+  rpc CreateAdmin(CreateAdminRequest) returns (Admin) {
+    option (google.api.http) = {
+      post: "/v1/admins/create"
+      body: "admin"
+    };
+  }
+  rpc UpdateAdmin(UpdateAdminRequest) returns (Admin) {
+    option (google.api.http) = {
+      put: "/v1/admins/update"
+      body: "admin"
+    };
+  }
+  rpc DeleteAdmin(DeleteAdminRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/v1/admins/{id}"
     };
   }
 }
@@ -59,4 +101,38 @@ message LoginRequest {
   string username = 1;
   // Password of the user.
   string password = 2;
+}
+
+// GetAdminRequest is the request message for the GetAdmin method.
+message GetAdminRequest {
+  // The ID of the admin to retrieve.
+  int64 id = 1;
+}
+
+// ListAdminsResponse is the response message for the ListAdmins method.
+message ListAdminsRequest {
+  // The page number to retrieve.
+  int32 page_num = 1;
+  // The number of admins per page.
+  int32 page_size = 2;
+}
+
+// CreateAdminRequest is the request message for the CreateAdmin method.
+message CreateAdminRequest {
+  // The admin to create.
+  Admin admin = 1;
+}
+
+// UpdateAdminRequest is the request message for the UpdateAdmin method.
+message UpdateAdminRequest {
+  // The admin to update.
+  Admin admin = 1;
+  // Required. Mask of fields to update.
+  google.protobuf.FieldMask update_mask = 2;
+}
+
+// DeleteAdminRequest is the request message for the DeleteAdmin method.
+message DeleteAdminRequest {
+  // The ID of the admin to delete.
+  int64 id = 1;
 }

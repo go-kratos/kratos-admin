@@ -22,6 +22,8 @@ var (
 	cookieName = cookieNameFromEnv("KRATOS_AUTH_COOKIE")
 	// ErrUnauthorized indicates that the token is invalid.
 	ErrUnauthorized = errors.Unauthorized("UNAUTHORIZED", "Token is invalid")
+	// ErrForbidden indicates that access is denied.
+	ErrForbidden = errors.Forbidden("FORBIDDEN", "Access denied")
 )
 
 // Middleware is an authentication middleware for HTTP servers.
@@ -50,12 +52,12 @@ func Middleware() httpm.FilterFunc {
 }
 
 // SetLoginCookie sets the login cookie in the HTTP response.
-func SetLoginCookie(ctx context.Context, username string, expiresAt time.Time) error {
+func SetLoginCookie(ctx context.Context, userID int64, access string, expiresAt time.Time) error {
 	tr, ok := transport.FromServerContext(ctx)
 	if !ok {
 		return fmt.Errorf("failed to get transport from context")
 	}
-	token, err := GenerateToken(username, jwtSecretKey)
+	token, err := GenerateToken(userID, access, jwtSecretKey)
 	if err != nil {
 		return err
 	}
