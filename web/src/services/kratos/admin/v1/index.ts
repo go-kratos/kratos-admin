@@ -21,7 +21,6 @@ export type Admin = {
   createTime: wellKnownTimestamp | undefined;
   // The latest timestamp at which the user was updated.
   updateTime: wellKnownTimestamp | undefined;
-  age: number | undefined;
 };
 
 // Encoded using RFC 3339, where generated output will always be Z-normalized
@@ -33,8 +32,8 @@ type wellKnownTimestamp = string;
 export type AdminSet = {
   // The set of admins.
   items: Admin[] | undefined;
-  // The total number of admins.
-  total: number | undefined;
+  // The next page token.
+  nextPageToken: string | undefined;
 };
 
 // LoginRequest is the request message for the Login method.

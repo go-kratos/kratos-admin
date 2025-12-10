@@ -183,7 +183,7 @@ func (s *AdminService) ListAdmins(ctx context.Context, req *v1.ListAdminsRequest
 	if err != nil {
 		return nil, err
 	}
-	admins, total, err := s.uc.ListAdmins(ctx,
+	admins, err := s.uc.ListAdmins(ctx,
 		biz.ListFilter(filter),
 		biz.ListOffset(int(pageToken.Offset)),
 		biz.ListLimit(int(req.PageSize)),
@@ -192,7 +192,10 @@ func (s *AdminService) ListAdmins(ctx context.Context, req *v1.ListAdminsRequest
 	if err != nil {
 		return nil, err
 	}
-	adminSet := &v1.AdminSet{Total: total, Items: make([]*v1.Admin, 0, len(admins))}
+	adminSet := &v1.AdminSet{
+		NextPageToken: pageToken.Next(req).String(),
+		Items:         make([]*v1.Admin, 0, len(admins)),
+	}
 	for _, admin := range admins {
 		adminSet.Items = append(adminSet.Items, convertAdmin(admin))
 	}

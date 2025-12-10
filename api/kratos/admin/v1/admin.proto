@@ -37,8 +37,8 @@ message Admin {
 message AdminSet {
   // The set of admins.
   repeated Admin items = 1;
-  // The total number of admins.
-  int32 total = 2;
+  // The next page token.
+  string next_page_token = 2;
 }
 
 // AdminService is the admin service definition.

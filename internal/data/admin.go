@@ -54,7 +54,7 @@ func (r *adminRepo) FindByName(ctx context.Context, name string) (*biz.Admin, er
 	return convertAdmin(po), nil
 }
 
-func (r *adminRepo) ListAdmins(ctx context.Context, opts ...biz.ListOption) ([]*biz.Admin, int32, error) {
+func (r *adminRepo) ListAdmins(ctx context.Context, opts ...biz.ListOption) ([]*biz.Admin, error) {
 	var o biz.ListOptions
 	for _, opt := range opts {
 		opt(&o)
@@ -66,17 +66,13 @@ func (r *adminRepo) ListAdmins(ctx context.Context, opts ...biz.ListOption) ([]*
 		Limit(o.Limit).
 		All(ctx)
 	if err != nil {
-		return nil, 0, err
-	}
-	total, err := r.data.db.Admin.Query().Count(ctx)
-	if err != nil {
-		return nil, 0, err
+		return nil, err
 	}
 	var admins []*biz.Admin
 	for _, po := range pos {
 		admins = append(admins, convertAdmin(po))
 	}
-	return admins, int32(total), nil
+	return admins, nil
 }
 
 func (r *adminRepo) CreateAdmin(ctx context.Context, admin *biz.Admin) (*biz.Admin, error) {

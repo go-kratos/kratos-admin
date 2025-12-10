@@ -122,18 +122,17 @@ func queryBy(filter filtering.Filter) func(*sql.Selector) {
 }
 
 // orderBy builds a SQL order function from an orderBy string.
-// Exmaple: name asc/name desc
+// Exmaple: foo,bar asc/desc
 func orderBy(orderBy string) func(s *sql.Selector) {
-	if orderBy == "" {
-		return func(*sql.Selector) {}
-	}
 	orders := strings.Split(orderBy, " ")
-	if len(orders) > 1 {
+	if len(orders) == 2 {
+		fields := strings.Split(orders[0], ",")
 		switch strings.ToUpper(orders[1]) {
 		case "ASC":
-			return ent.Asc(orders[0])
+			return ent.Asc(fields...)
+		case "DESC":
+			return ent.Desc(fields...)
 		}
 	}
-	// by default is desc
-	return ent.Desc(orders[0])
+	return func(*sql.Selector) {}
 }

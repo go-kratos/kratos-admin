@@ -208,9 +208,6 @@ components:
                     type: string
                     description: The latest timestamp at which the user was updated.
                     format: date-time
-                age:
-                    type: integer
-                    format: int32
             description: Admin is the admin message.
         kratos.admin.v1.AdminSet:
             type: object
@@ -220,10 +217,9 @@ components:
                     items:
                         $ref: '#/components/schemas/kratos.admin.v1.Admin'
                     description: The set of admins.
-                total:
-                    type: integer
-                    description: The total number of admins.
-                    format: int32
+                nextPageToken:
+                    type: string
+                    description: The next page token.
             description: AdminSet is the set of admins.
         kratos.admin.v1.LoginRequest:
             type: object

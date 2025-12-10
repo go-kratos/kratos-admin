@@ -45,7 +45,6 @@ type Admin struct {
 	CreateTime *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
 	// The latest timestamp at which the user was updated.
 	UpdateTime    *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=update_time,json=updateTime,proto3" json:"update_time,omitempty"`
-	Age           int32                  `protobuf:"varint,9,opt,name=age,proto3" json:"age,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -136,20 +135,13 @@ func (x *Admin) GetUpdateTime() *timestamppb.Timestamp {
 	return nil
 }
 
-func (x *Admin) GetAge() int32 {
-	if x != nil {
-		return x.Age
-	}
-	return 0
-}
-
 // AdminSet is the set of admins.
 type AdminSet struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// The set of admins.
 	Items []*Admin `protobuf:"bytes,1,rep,name=items,proto3" json:"items,omitempty"`
-	// The total number of admins.
-	Total         int32 `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"`
+	// The next page token.
+	NextPageToken string `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -191,11 +183,11 @@ func (x *AdminSet) GetItems() []*Admin {
 	return nil
 }
 
-func (x *AdminSet) GetTotal() int32 {
+func (x *AdminSet) GetNextPageToken() string {
 	if x != nil {
-		return x.Total
+		return x.NextPageToken
 	}
-	return 0
+	return ""
 }
 
 // LoginRequest is the request message for the Login method.
@@ -532,7 +524,7 @@ var File_kratos_admin_v1_admin_proto protoreflect.FileDescriptor
 
 const file_kratos_admin_v1_admin_proto_rawDesc = "" +
 	"\n" +
-	"\x1bkratos/admin/v1/admin.proto\x12\x0fkratos.admin.v1\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\"\x99\x02\n" +
+	"\x1bkratos/admin/v1/admin.proto\x12\x0fkratos.admin.v1\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\"\x87\x02\n" +
 	"\x05Admin\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x14\n" +
@@ -543,11 +535,10 @@ const file_kratos_admin_v1_admin_proto_rawDesc = "" +
 	"\vcreate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"createTime\x12;\n" +
 	"\vupdate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampR\n" +
-	"updateTime\x12\x10\n" +
-	"\x03age\x18\t \x01(\x05R\x03age\"N\n" +
+	"updateTime\"`\n" +
 	"\bAdminSet\x12,\n" +
-	"\x05items\x18\x01 \x03(\v2\x16.kratos.admin.v1.AdminR\x05items\x12\x14\n" +
-	"\x05total\x18\x02 \x01(\x05R\x05total\"F\n" +
+	"\x05items\x18\x01 \x03(\v2\x16.kratos.admin.v1.AdminR\x05items\x12&\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"F\n" +
 	"\fLoginRequest\x12\x1a\n" +
 	"\busername\x18\x01 \x01(\tR\busername\x12\x1a\n" +
 	"\bpassword\x18\x02 \x01(\tR\bpassword\"!\n" +
