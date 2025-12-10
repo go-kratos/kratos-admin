@@ -4,8 +4,8 @@
 Google AIP(https://google.aip.dev/general):
 1. Resource-oriented design
 2. Filtering
-3. Field masks
-4. Pagination
+3. Pagination
+4. Field masks
 
 ## Prerequisites
 ```
