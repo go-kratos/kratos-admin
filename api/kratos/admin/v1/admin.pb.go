@@ -45,6 +45,7 @@ type Admin struct {
 	CreateTime *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
 	// The latest timestamp at which the user was updated.
 	UpdateTime    *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=update_time,json=updateTime,proto3" json:"update_time,omitempty"`
+	Age           int32                  `protobuf:"varint,9,opt,name=age,proto3" json:"age,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -133,6 +134,13 @@ func (x *Admin) GetUpdateTime() *timestamppb.Timestamp {
 		return x.UpdateTime
 	}
 	return nil
+}
+
+func (x *Admin) GetAge() int32 {
+	if x != nil {
+		return x.Age
+	}
+	return 0
 }
 
 // AdminSet is the set of admins.
@@ -294,10 +302,10 @@ func (x *GetAdminRequest) GetId() int64 {
 // ListAdminsResponse is the response message for the ListAdmins method.
 type ListAdminsRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Optional. The page number to retrieve.
-	PageNum int32 `protobuf:"varint,1,opt,name=page_num,json=pageNum,proto3" json:"page_num,omitempty"`
 	// Optional. The number of admins per page.
-	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
+	PageSize int32 `protobuf:"varint,1,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
+	// Optional. The page token.
+	PageToken string `protobuf:"bytes,2,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
 	// Optional. The standard list filter.
 	// Supported fields:
 	//   - `timestamp` range (i.e. `timestamp>="2025-01-31T11:30:00-04:00"` where
@@ -345,18 +353,18 @@ func (*ListAdminsRequest) Descriptor() ([]byte, []int) {
 	return file_kratos_admin_v1_admin_proto_rawDescGZIP(), []int{4}
 }
 
-func (x *ListAdminsRequest) GetPageNum() int32 {
-	if x != nil {
-		return x.PageNum
-	}
-	return 0
-}
-
 func (x *ListAdminsRequest) GetPageSize() int32 {
 	if x != nil {
 		return x.PageSize
 	}
 	return 0
+}
+
+func (x *ListAdminsRequest) GetPageToken() string {
+	if x != nil {
+		return x.PageToken
+	}
+	return ""
 }
 
 func (x *ListAdminsRequest) GetFilter() string {
@@ -524,7 +532,7 @@ var File_kratos_admin_v1_admin_proto protoreflect.FileDescriptor
 
 const file_kratos_admin_v1_admin_proto_rawDesc = "" +
 	"\n" +
-	"\x1bkratos/admin/v1/admin.proto\x12\x0fkratos.admin.v1\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1cgoogle/api/annotations.proto\"\x87\x02\n" +
+	"\x1bkratos/admin/v1/admin.proto\x12\x0fkratos.admin.v1\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\"\x99\x02\n" +
 	"\x05Admin\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x14\n" +
@@ -535,7 +543,8 @@ const file_kratos_admin_v1_admin_proto_rawDesc = "" +
 	"\vcreate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"createTime\x12;\n" +
 	"\vupdate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampR\n" +
-	"updateTime\"N\n" +
+	"updateTime\x12\x10\n" +
+	"\x03age\x18\t \x01(\x05R\x03age\"N\n" +
 	"\bAdminSet\x12,\n" +
 	"\x05items\x18\x01 \x03(\v2\x16.kratos.admin.v1.AdminR\x05items\x12\x14\n" +
 	"\x05total\x18\x02 \x01(\x05R\x05total\"F\n" +
@@ -543,10 +552,11 @@ const file_kratos_admin_v1_admin_proto_rawDesc = "" +
 	"\busername\x18\x01 \x01(\tR\busername\x12\x1a\n" +
 	"\bpassword\x18\x02 \x01(\tR\bpassword\"!\n" +
 	"\x0fGetAdminRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\x03R\x02id\"~\n" +
-	"\x11ListAdminsRequest\x12\x19\n" +
-	"\bpage_num\x18\x01 \x01(\x05R\apageNum\x12\x1b\n" +
-	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x16\n" +
+	"\x02id\x18\x01 \x01(\x03R\x02id\"\x82\x01\n" +
+	"\x11ListAdminsRequest\x12\x1b\n" +
+	"\tpage_size\x18\x01 \x01(\x05R\bpageSize\x12\x1d\n" +
+	"\n" +
+	"page_token\x18\x02 \x01(\tR\tpageToken\x12\x16\n" +
 	"\x06filter\x18\x03 \x01(\tR\x06filter\x12\x19\n" +
 	"\border_by\x18\x04 \x01(\tR\aorderBy\"B\n" +
 	"\x12CreateAdminRequest\x12,\n" +
@@ -554,9 +564,9 @@ const file_kratos_admin_v1_admin_proto_rawDesc = "" +
 	"\x12UpdateAdminRequest\x12,\n" +
 	"\x05admin\x18\x01 \x01(\v2\x16.kratos.admin.v1.AdminR\x05admin\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"$\n" +
-	"\x12DeleteAdminRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\x03R\x02id2\xa0\x06\n" +
+	"updateMask\"*\n" +
+	"\x12DeleteAdminRequest\x12\x14\n" +
+	"\x02id\x18\x01 \x01(\x03B\x04\xe2A\x01\x02R\x02id2\xa0\x06\n" +
 	"\fAdminService\x12[\n" +
 	"\x05Login\x12\x1d.kratos.admin.v1.LoginRequest\x1a\x16.kratos.admin.v1.Admin\"\x1b\x82\xd3\xe4\x93\x02\x15:\x01*\"\x10/v1/admins/login\x12V\n" +
 	"\x06Logout\x12\x16.google.protobuf.Empty\x1a\x16.google.protobuf.Empty\"\x1c\x82\xd3\xe4\x93\x02\x16:\x01*\"\x11/v1/admins/logout\x12U\n" +

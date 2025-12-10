@@ -4,7 +4,6 @@ import (
 	v1 "github.com/go-kratos/kratos-admin/api/kratos/admin/v1"
 	"github.com/go-kratos/kratos-admin/internal/conf"
 	"github.com/go-kratos/kratos-admin/internal/service"
-	"github.com/go-kratos/kratos-admin/pkg/auth"
 
 	"github.com/go-kratos/kratos/v2/middleware/recovery"
 	"github.com/go-kratos/kratos/v2/transport/http"
@@ -13,9 +12,9 @@ import (
 // NewHTTPServer new an HTTP server.
 func NewHTTPServer(c *conf.Server, admin *service.AdminService) *http.Server {
 	var opts = []http.ServerOption{
-		http.Filter(
-			auth.Middleware(),
-		),
+		//http.Filter(
+		//auth.Middleware(),
+		//),
 		http.Middleware(
 			recovery.Recovery(),
 		),

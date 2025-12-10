@@ -4,7 +4,6 @@ import (
 	"context"
 	"time"
 
-	"github.com/go-kratos/kit/pagination"
 	"github.com/go-kratos/kratos-admin/internal/biz"
 	"github.com/go-kratos/kratos-admin/internal/data/ent"
 	"github.com/go-kratos/kratos-admin/internal/data/ent/admin"
@@ -27,7 +26,7 @@ type adminRepo struct {
 	data *Data
 }
 
-// NewAdminRepo .
+// NewAdminRepo creates a new AdminRepo instance.
 func NewAdminRepo(data *Data) biz.AdminRepo {
 	return &adminRepo{
 		data: data,
@@ -55,10 +54,16 @@ func (r *adminRepo) FindByName(ctx context.Context, name string) (*biz.Admin, er
 	return convertAdmin(po), nil
 }
 
-func (r *adminRepo) ListAdmins(ctx context.Context, pageRange pagination.Range) ([]*biz.Admin, int32, error) {
+func (r *adminRepo) ListAdmins(ctx context.Context, opts ...biz.ListOption) ([]*biz.Admin, int32, error) {
+	var o biz.ListOptions
+	for _, opt := range opts {
+		opt(&o)
+	}
 	pos, err := r.data.db.Admin.Query().
-		Offset(int(pageRange.Offset)).
-		Limit(int(pageRange.Limit)).
+		Where(queryBy(o.Filter)).
+		Order(orderBy(o.OrderBy)).
+		Offset(o.Offset).
+		Limit(o.Limit).
 		All(ctx)
 	if err != nil {
 		return nil, 0, err
@@ -90,23 +95,15 @@ func (r *adminRepo) CreateAdmin(ctx context.Context, admin *biz.Admin) (*biz.Adm
 	return convertAdmin(po), nil
 }
 
-func (r *adminRepo) UpdateAdmin(ctx context.Context, admin *biz.Admin, fields []string) (*biz.Admin, error) {
-	update := r.data.db.Admin.UpdateOneID(admin.ID).SetUpdateTime(time.Now())
-	for _, field := range fields {
-		switch field {
-		case "name":
-			update.SetName(admin.Name)
-		case "email":
-			update.SetEmail(admin.Email)
-		case "avatar":
-			update.SetAvatar(admin.Avatar)
-		case "access":
-			update.SetAccess(admin.Access)
-		case "password":
-			update.SetPassword(admin.Password)
-		}
-	}
-	po, err := update.Save(ctx)
+func (r *adminRepo) UpdateAdmin(ctx context.Context, admin *biz.Admin) (*biz.Admin, error) {
+	po, err := r.data.db.Admin.UpdateOneID(admin.ID).
+		SetName(admin.Name).
+		SetEmail(admin.Email).
+		SetAvatar(admin.Avatar).
+		SetAccess(admin.Access).
+		SetPassword(admin.Password).
+		SetUpdateTime(time.Now()).
+		Save(ctx)
 	if err != nil {
 		return nil, err
 	}

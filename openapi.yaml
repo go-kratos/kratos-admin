@@ -44,18 +44,17 @@ paths:
                 - AdminService
             operationId: AdminService_ListAdmins
             parameters:
-                - name: pageNum
-                  in: query
-                  description: Optional. The page number to retrieve.
-                  schema:
-                    type: integer
-                    format: int32
                 - name: pageSize
                   in: query
                   description: Optional. The number of admins per page.
                   schema:
                     type: integer
                     format: int32
+                - name: pageToken
+                  in: query
+                  description: Optional. The page token.
+                  schema:
+                    type: string
                 - name: filter
                   in: query
                   description: |-
@@ -209,6 +208,9 @@ components:
                     type: string
                     description: The latest timestamp at which the user was updated.
                     format: date-time
+                age:
+                    type: integer
+                    format: int32
             description: Admin is the admin message.
         kratos.admin.v1.AdminSet:
             type: object

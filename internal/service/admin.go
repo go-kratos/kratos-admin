@@ -4,13 +4,15 @@ import (
 	"context"
 	"time"
 
-	"github.com/go-kratos/kit/pagination"
+	v1 "github.com/go-kratos/kratos-admin/api/kratos/admin/v1"
 	"github.com/go-kratos/kratos-admin/internal/biz"
 	"github.com/go-kratos/kratos-admin/pkg/auth"
+
+	"go.einride.tech/aip/fieldmask"
+	"go.einride.tech/aip/filtering"
+	"go.einride.tech/aip/pagination"
 	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
-
-	v1 "github.com/go-kratos/kratos-admin/api/kratos/admin/v1"
 )
 
 func convertAdmin(m *biz.Admin) *v1.Admin {
@@ -29,13 +31,12 @@ func convertAdmin(m *biz.Admin) *v1.Admin {
 type AdminService struct {
 	v1.UnimplementedAdminServiceServer
 
-	uc        *biz.AdminUsecase
-	paginator pagination.Paginator
+	uc *biz.AdminUsecase
 }
 
 // NewAdminService new a greeter service.
 func NewAdminService(uc *biz.AdminUsecase) *AdminService {
-	return &AdminService{uc: uc, paginator: pagination.NewPaginator(1, 20)}
+	return &AdminService{uc: uc}
 }
 
 func (s *AdminService) Current(ctx context.Context, req *emptypb.Empty) (*v1.Admin, error) {
@@ -108,18 +109,24 @@ func (s *AdminService) UpdateAdmin(ctx context.Context, req *v1.UpdateAdminReque
 	if !a.HasAdminAccess() {
 		return nil, auth.ErrForbidden
 	}
-	admin, err := s.uc.UpdateAdmin(ctx, &biz.Admin{
-		ID:       req.Admin.Id,
-		Name:     req.Admin.Name,
-		Email:    req.Admin.Email,
-		Password: req.Admin.Password,
-		Avatar:   req.Admin.Avatar,
-		Access:   req.Admin.Access,
-	}, req.UpdateMask.Paths)
+	admin, err := s.uc.GetAdmin(ctx, a.UserID)
 	if err != nil {
 		return nil, err
 	}
-	return convertAdmin(admin), nil
+	dst := convertAdmin(admin)
+	fieldmask.Update(req.UpdateMask, dst, req.Admin)
+	updated, err := s.uc.UpdateAdmin(ctx, &biz.Admin{
+		ID:       dst.Id,
+		Name:     dst.Name,
+		Email:    dst.Email,
+		Password: dst.Password,
+		Avatar:   dst.Avatar,
+		Access:   dst.Access,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return convertAdmin(updated), nil
 }
 
 func (s *AdminService) DeleteAdmin(ctx context.Context, req *v1.DeleteAdminRequest) (*emptypb.Empty, error) {
@@ -160,7 +167,28 @@ func (s *AdminService) ListAdmins(ctx context.Context, req *v1.ListAdminsRequest
 	if !a.HasAdminAccess() {
 		return nil, auth.ErrForbidden
 	}
-	admins, total, err := s.uc.ListAdmins(ctx, s.paginator.Resolve(req.PageNum, req.PageSize))
+	pageToken, err := pagination.ParsePageToken(req)
+	if err != nil {
+		return nil, err
+	}
+	declarations, err := filtering.NewDeclarations(
+		filtering.DeclareStandardFunctions(),
+		filtering.DeclareIdent("name", filtering.TypeString),
+		filtering.DeclareIdent("create_time", filtering.TypeTimestamp),
+	)
+	if err != nil {
+		return nil, err
+	}
+	filter, err := filtering.ParseFilter(req, declarations)
+	if err != nil {
+		return nil, err
+	}
+	admins, total, err := s.uc.ListAdmins(ctx,
+		biz.ListFilter(filter),
+		biz.ListOffset(int(pageToken.Offset)),
+		biz.ListLimit(int(req.PageSize)),
+		biz.ListOrderBy(req.OrderBy),
+	)
 	if err != nil {
 		return nil, err
 	}

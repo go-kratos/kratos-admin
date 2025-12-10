@@ -4,7 +4,6 @@ import (
 	"context"
 	"time"
 
-	"github.com/go-kratos/kit/pagination"
 	"github.com/go-kratos/kratos/v2/errors"
 	"github.com/go-kratos/kratos/v2/log"
 )
@@ -25,9 +24,9 @@ type Admin struct {
 type AdminRepo interface {
 	FindByID(context.Context, int64) (*Admin, error)
 	FindByName(context.Context, string) (*Admin, error)
-	ListAdmins(context.Context, pagination.Range) ([]*Admin, int32, error)
+	ListAdmins(context.Context, ...ListOption) ([]*Admin, int32, error)
 	CreateAdmin(context.Context, *Admin) (*Admin, error)
-	UpdateAdmin(context.Context, *Admin, []string) (*Admin, error)
+	UpdateAdmin(context.Context, *Admin) (*Admin, error)
 	DeleteAdmin(context.Context, int64) error
 }
 
@@ -70,8 +69,8 @@ func (uc *AdminUsecase) GetAdmin(ctx context.Context, id int64) (*Admin, error) 
 }
 
 // ListAdmins lists admin users with pagination.
-func (uc *AdminUsecase) ListAdmins(ctx context.Context, pageRange pagination.Range) ([]*Admin, int32, error) {
-	admins, total, err := uc.repo.ListAdmins(ctx, pageRange)
+func (uc *AdminUsecase) ListAdmins(ctx context.Context, opts ...ListOption) ([]*Admin, int32, error) {
+	admins, total, err := uc.repo.ListAdmins(ctx, opts...)
 	if err != nil {
 		return nil, 0, err
 	}
@@ -84,8 +83,8 @@ func (uc *AdminUsecase) CreateAdmin(ctx context.Context, admin *Admin) (*Admin, 
 }
 
 // UpdateAdmin updates an existing admin user.
-func (uc *AdminUsecase) UpdateAdmin(ctx context.Context, admin *Admin, fields []string) (*Admin, error) {
-	return uc.repo.UpdateAdmin(ctx, admin, fields)
+func (uc *AdminUsecase) UpdateAdmin(ctx context.Context, admin *Admin) (*Admin, error) {
+	return uc.repo.UpdateAdmin(ctx, admin)
 }
 
 // DeleteAdmin deletes an admin user by ID.

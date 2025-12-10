@@ -6,6 +6,7 @@ import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/field_mask.proto";
 import "google/api/annotations.proto";
+import "google/api/field_behavior.proto";
 
 option go_package = "github.com/go-kratos/kratos-admin/api/kratos/admin/v1;v1";
 option java_multiple_files = true;
@@ -107,10 +108,10 @@ message GetAdminRequest {
 
 // ListAdminsResponse is the response message for the ListAdmins method.
 message ListAdminsRequest {
-  // Optional. The page number to retrieve.
-  int32 page_num = 1;
   // Optional. The number of admins per page.
-  int32 page_size = 2;
+  int32 page_size = 1;
+  // Optional. The page token.
+  string page_token = 2;
   // Optional. The standard list filter.
   // Supported fields:
   //    * `timestamp` range (i.e. `timestamp>="2025-01-31T11:30:00-04:00"` where
@@ -143,5 +144,5 @@ message UpdateAdminRequest {
 // DeleteAdminRequest is the request message for the DeleteAdmin method.
 message DeleteAdminRequest {
   // Required. The ID of the admin to delete.
-  int64 id = 1;
+  int64 id = 1 [(google.api.field_behavior) = REQUIRED];
 }

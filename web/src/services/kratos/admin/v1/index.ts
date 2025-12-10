@@ -21,6 +21,7 @@ export type Admin = {
   createTime: wellKnownTimestamp | undefined;
   // The latest timestamp at which the user was updated.
   updateTime: wellKnownTimestamp | undefined;
+  age: number | undefined;
 };
 
 // Encoded using RFC 3339, where generated output will always be Z-normalized
@@ -52,10 +53,10 @@ export type GetAdminRequest = {
 
 // ListAdminsResponse is the response message for the ListAdmins method.
 export type ListAdminsRequest = {
-  // Optional. The page number to retrieve.
-  pageNum: number | undefined;
   // Optional. The number of admins per page.
   pageSize: number | undefined;
+  // Optional. The page token.
+  pageToken: string | undefined;
   // Optional. The standard list filter.
   // Supported fields:
   // * `timestamp` range (i.e. `timestamp>="2025-01-31T11:30:00-04:00"` where
@@ -114,6 +115,8 @@ type wellKnownFieldMask = string;
 // DeleteAdminRequest is the request message for the DeleteAdmin method.
 export type DeleteAdminRequest = {
   // Required. The ID of the admin to delete.
+  //
+  // Behaviors: REQUIRED
   id: number | undefined;
 };
 
@@ -199,11 +202,11 @@ export function createAdminServiceClient(
       const path = `v1/admins/list`; // eslint-disable-line quotes
       const body = null;
       const queryParams: string[] = [];
-      if (request.pageNum) {
-        queryParams.push(`pageNum=${encodeURIComponent(request.pageNum.toString())}`)
-      }
       if (request.pageSize) {
         queryParams.push(`pageSize=${encodeURIComponent(request.pageSize.toString())}`)
+      }
+      if (request.pageToken) {
+        queryParams.push(`pageToken=${encodeURIComponent(request.pageToken.toString())}`)
       }
       if (request.filter) {
         queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
