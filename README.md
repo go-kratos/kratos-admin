@@ -1,5 +1,12 @@
 # Kratos Admin Template
 
+## Best Practice
+Google AIP(https://google.aip.dev/general):
+1. Resource-oriented design
+2. Filtering
+3. Field masks
+4. Pagination
+
 ## Prerequisites
 ```
 make init
@@ -57,4 +64,3 @@ const handleLogin = async (username: string, password: string) => {
   }
 };
 ```
-
