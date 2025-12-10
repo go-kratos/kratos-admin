@@ -8,12 +8,12 @@ Google AIP(https://google.aip.dev/general):
 4. Field masks
 
 ## Prerequisites
-```
+```shell
 make init
 ```
 
 ## Generate API files
-```
+```shell
 # Download and update dependencies
 make init
 # Generate API files (include: pb.go, http, grpc, validate, swagger, index.ts) by proto file
@@ -21,7 +21,7 @@ make api
 ```
 
 ## Run Web Application
-```
+```shell
 # Enter web directory, install dependencies and start development server
 cd web
 npm install
