@@ -1,12 +1,15 @@
 package biz
 
-import "go.einride.tech/aip/filtering"
+import (
+	"go.einride.tech/aip/filtering"
+	"go.einride.tech/aip/ordering"
+)
 
 type ListOption func(*ListOptions)
 
 type ListOptions struct {
 	Filter  filtering.Filter
-	OrderBy string
+	OrderBy ordering.OrderBy
 	Offset  int
 	Limit   int
 }
@@ -17,7 +20,7 @@ func ListFilter(filter filtering.Filter) ListOption {
 	}
 }
 
-func ListOrderBy(orderBy string) ListOption {
+func ListOrderBy(orderBy ordering.OrderBy) ListOption {
 	return func(o *ListOptions) {
 		o.OrderBy = orderBy
 	}

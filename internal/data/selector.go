@@ -2,11 +2,11 @@ package data
 
 import (
 	"fmt"
-	"strings"
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/go-kratos/kratos-admin/internal/data/ent"
 	"go.einride.tech/aip/filtering"
+	"go.einride.tech/aip/ordering"
 	expr "google.golang.org/genproto/googleapis/api/expr/v1alpha1"
 )
 
@@ -30,49 +30,6 @@ func constToValue(constExpr *expr.Constant) any {
 	}
 }
 
-// selectorByExpr converts an expression to a SQL selector function.
-func selectorByExpr(currExpr, parentExpr *expr.Expr) func(*sql.Selector) {
-	call := currExpr.GetCallExpr()
-	if call == nil {
-		return nil
-	}
-	return func(s *sql.Selector) {
-		fmt.Println("call.Function:", call.Function, call.Args)
-		var predicate *sql.Predicate
-		switch call.Function {
-		case "=":
-			predicate = sql.EQ(call.Args[0].GetIdentExpr().Name, constToValue(call.Args[1].GetConstExpr()))
-		case "!=":
-			predicate = sql.NEQ(call.Args[0].GetIdentExpr().Name, constToValue(call.Args[1].GetConstExpr()))
-		case ">":
-			predicate = sql.GT(call.Args[0].GetIdentExpr().Name, constToValue(call.Args[1].GetConstExpr()))
-		case "<":
-			predicate = sql.LT(call.Args[0].GetIdentExpr().Name, constToValue(call.Args[1].GetConstExpr()))
-		case ">=":
-			predicate = sql.GTE(call.Args[0].GetIdentExpr().Name, constToValue(call.Args[1].GetConstExpr()))
-		case "<=":
-			predicate = sql.LTE(call.Args[0].GetIdentExpr().Name, constToValue(call.Args[1].GetConstExpr()))
-		}
-		if predicate == nil {
-			return
-		}
-		if parentExpr == nil {
-			s.Where(predicate)
-			return
-		}
-		/*
-			if parentCall := parentExpr.GetCallExpr(); parentCall != nil {
-				switch parentCall.Function {
-				case "AND":
-					s.Where(sql.And(predicate))
-				case "OR":
-					s.Where(sql.Or(predicate))
-				}
-			}
-		*/
-	}
-}
-
 // queryBy builds a SQL selector from a filtering.Filter.
 // Exmaple: name="value" AND age>18
 // More detail in [AIP-160](https://google.aip.dev/160).
@@ -81,6 +38,7 @@ func queryBy(filter filtering.Filter) func(*sql.Selector) {
 		return nil
 	}
 	return func(s *sql.Selector) {
+		var and, or []*sql.Predicate
 		filtering.Walk(func(currExpr, parentExpr *expr.Expr) bool {
 			call := currExpr.GetCallExpr()
 			if call == nil {
@@ -105,33 +63,38 @@ func queryBy(filter filtering.Filter) func(*sql.Selector) {
 				return true
 			}
 			if parentExpr == nil {
-				s.Where(predicate)
+				and = append(and, predicate)
 				return true
 			}
 			if parentCall := parentExpr.GetCallExpr(); parentCall != nil {
+				fmt.Println("parentCall.Function:", parentCall.Function)
 				switch parentCall.Function {
 				case "AND":
-					s.Where(sql.And(predicate))
+					and = append(and, predicate)
 				case "OR":
-					s.Where(sql.Or(predicate))
+					or = append(or, predicate)
 				}
 			}
 			return true
 		}, filter.CheckedExpr.Expr)
+		// Combine AND and OR predicates
+		if len(and) > 0 {
+			s.Where(sql.And(and...))
+		}
+		if len(or) > 0 {
+			s.Where(sql.Or(or...))
+		}
 	}
 }
 
 // orderBy builds a SQL order function from an orderBy string.
 // Exmaple: foo,bar asc/desc
-func orderBy(orderBy string) func(s *sql.Selector) {
-	orders := strings.Split(orderBy, " ")
-	if len(orders) == 2 {
-		fields := strings.Split(orders[0], ",")
-		switch strings.ToUpper(orders[1]) {
-		case "ASC":
-			return ent.Asc(fields...)
-		case "DESC":
-			return ent.Desc(fields...)
+func orderBy(orderBy ordering.OrderBy) func(s *sql.Selector) {
+	for _, field := range orderBy.Fields {
+		if field.Desc {
+			return ent.Desc(field.Path)
+		} else {
+			return ent.Asc(field.Path)
 		}
 	}
 	return func(*sql.Selector) {}
