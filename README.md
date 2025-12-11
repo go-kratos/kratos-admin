@@ -6,6 +6,7 @@ Google AIP(https://google.aip.dev/general):
 2. Filtering
 3. Pagination
 4. Field masks
+5. Field behavior
 
 ## Prerequisites
 ```shell
