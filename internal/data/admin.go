@@ -39,6 +39,7 @@ func (r *adminRepo) FindByID(ctx context.Context, id int64) (*biz.Admin, error) 
 		if ent.IsNotFound(err) {
 			return nil, biz.ErrAdminNotFound
 		}
+		return nil, err
 	}
 	return convertAdmin(po), nil
 }
