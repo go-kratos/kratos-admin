@@ -5,28 +5,29 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/go-kratos/kratos-admin/internal/data/ent"
 	"go.einride.tech/aip/filtering"
 	"go.einride.tech/aip/ordering"
 	expr "google.golang.org/genproto/googleapis/api/expr/v1alpha1"
 )
 
-// orderBy builds a SQL order function from an orderBy string.
+// OrderBy builds a SQL order function from an orderBy string.
 // Example: foo,bar asc/desc
-func orderBy(orderBy ordering.OrderBy) func(s *sql.Selector) {
-	for _, field := range orderBy.Fields {
-		if field.Desc {
-			return ent.Desc(field.Path)
+func OrderBy(orderBy ordering.OrderBy) func(s *sql.Selector) {
+	return func(s *sql.Selector) {
+		for _, field := range orderBy.Fields {
+			if field.Desc {
+				s.OrderBy(sql.Desc(s.C(field.Path)))
+			} else {
+				s.OrderBy(sql.Asc(s.C(field.Path)))
+			}
 		}
-		return ent.Asc(field.Path)
 	}
-	return func(*sql.Selector) {}
 }
 
-// queryBy builds a SQL selector from a filtering.Filter.
+// QueryBy builds a SQL selector from a filtering.Filter.
 // Example: name="value" AND age>18
 // More detail in [AIP-160](https://google.aip.dev/160).
-func queryBy(filter filtering.Filter) func(*sql.Selector) {
+func QueryBy(filter filtering.Filter) func(*sql.Selector) {
 	if filter.CheckedExpr == nil || filter.CheckedExpr.Expr == nil {
 		return nil
 	}
