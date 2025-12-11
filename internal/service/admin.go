@@ -2,6 +2,8 @@ package service
 
 import (
 	"context"
+	"crypto/md5"
+	"encoding/hex"
 	"time"
 
 	v1 "github.com/go-kratos/kratos-admin/api/kratos/admin/v1"
@@ -15,6 +17,11 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
+
+func encodePassword(password string) string {
+	sum := md5.Sum([]byte(password))
+	return hex.EncodeToString(sum[:])
+}
 
 func convertAdmin(m *biz.Admin) *v1.Admin {
 	return &v1.Admin{
@@ -110,6 +117,10 @@ func (s *AdminService) UpdateAdmin(ctx context.Context, req *v1.UpdateAdminReque
 	if !a.HasAdminAccess() {
 		return nil, auth.ErrForbidden
 	}
+	// Encode password if it's not empty
+	if req.Admin.Password != "" {
+		req.Admin.Password = encodePassword(req.Admin.Password)
+	}
 	admin, err := s.GetAdmin(ctx, &v1.GetAdminRequest{Id: a.UserID})
 	if err != nil {
 		return nil, err
@@ -186,6 +197,9 @@ func (s *AdminService) ListAdmins(ctx context.Context, req *v1.ListAdminsRequest
 	orderBy, err := ordering.ParseOrderBy(req)
 	if err != nil {
 		return nil, err
+	}
+	if req.PageSize <= 0 {
+		req.PageSize = 20
 	}
 	admins, err := s.uc.ListAdmins(ctx,
 		biz.ListFilter(filter),

@@ -56,7 +56,7 @@ func (r *adminRepo) FindByName(ctx context.Context, name string) (*biz.Admin, er
 }
 
 func (r *adminRepo) ListAdmins(ctx context.Context, opts ...biz.ListOption) ([]*biz.Admin, error) {
-	var o biz.ListOptions
+	o := biz.ListOptions{Limit: 20}
 	for _, opt := range opts {
 		opt(&o)
 	}
@@ -93,14 +93,18 @@ func (r *adminRepo) CreateAdmin(ctx context.Context, admin *biz.Admin) (*biz.Adm
 }
 
 func (r *adminRepo) UpdateAdmin(ctx context.Context, admin *biz.Admin) (*biz.Admin, error) {
-	po, err := r.data.db.Admin.UpdateOneID(admin.ID).
+	update := r.data.db.Admin.UpdateOneID(admin.ID).
 		SetName(admin.Name).
 		SetEmail(admin.Email).
 		SetAvatar(admin.Avatar).
 		SetAccess(admin.Access).
 		SetPassword(admin.Password).
-		SetUpdateTime(time.Now()).
-		Save(ctx)
+		SetUpdateTime(time.Now())
+	// Only update the password if it's not empty
+	if admin.Password != "" {
+		update.SetPassword(admin.Password)
+	}
+	po, err := update.Save(ctx)
 	if err != nil {
 		return nil, err
 	}
