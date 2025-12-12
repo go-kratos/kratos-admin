@@ -31,7 +31,7 @@ type wellKnownTimestamp = string;
 // AdminSet is the set of admins.
 export type AdminSet = {
   // The set of admins.
-  items: Admin[] | undefined;
+  admins: Admin[] | undefined;
   // The next page token.
   nextPageToken: string | undefined;
 };

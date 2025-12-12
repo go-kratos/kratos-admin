@@ -61,7 +61,7 @@ func (s *AdminService) Current(ctx context.Context, req *emptypb.Empty) (*v1.Adm
 
 // Login implements auth login.
 func (s *AdminService) Login(ctx context.Context, req *v1.LoginRequest) (*v1.Admin, error) {
-	admin, err := s.uc.Login(ctx, req.Username, req.Password)
+	admin, err := s.uc.Login(ctx, req.Username, encodePassword(req.Password))
 	if err != nil {
 		return nil, err
 	}
@@ -212,10 +212,10 @@ func (s *AdminService) ListAdmins(ctx context.Context, req *v1.ListAdminsRequest
 	}
 	adminSet := &v1.AdminSet{
 		NextPageToken: pageToken.Next(req).String(),
-		Items:         make([]*v1.Admin, 0, len(admins)),
+		Admins:        make([]*v1.Admin, 0, len(admins)),
 	}
 	for _, admin := range admins {
-		adminSet.Items = append(adminSet.Items, convertAdmin(admin))
+		adminSet.Admins = append(adminSet.Admins, convertAdmin(admin))
 	}
 	return adminSet, nil
 }

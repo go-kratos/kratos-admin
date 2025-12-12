@@ -32,45 +32,44 @@ type AdminRepo interface {
 
 // AdminUsecase is a Admin usecase.
 type AdminUsecase struct {
-	repo AdminRepo
+	admin AdminRepo
 }
 
 // NewAdminUsecase new a Admin usecase.
 func NewAdminUsecase(repo AdminRepo) *AdminUsecase {
-	return &AdminUsecase{repo: repo}
+	return &AdminUsecase{admin: repo}
 }
 
 // Login logs in with username and password.
 func (uc *AdminUsecase) Login(ctx context.Context, username, password string) (*Admin, error) {
-	user, err := uc.repo.FindByName(ctx, username)
+	user, err := uc.admin.FindByName(ctx, username)
 	if err != nil {
 		return nil, err
 	}
-	// Here you would normally check the password hash
-	if user.Name != password {
+	if user.Password != password {
 		return nil, errors.Unauthorized("AUTH", "invalid credentials")
 	}
 	return user, nil
 }
 
 // Logout logs out the current user.
-func (uc *AdminUsecase) Logout(ctx context.Context, userID int64) error {
-	user, err := uc.repo.FindByID(ctx, userID)
+func (uc *AdminUsecase) Logout(ctx context.Context, adminID int64) error {
+	admin, err := uc.admin.FindByID(ctx, adminID)
 	if err != nil {
 		return err
 	}
-	log.Infof("user %s logged out", user.Name)
+	log.Infof("admin %s logged out", admin.Name)
 	return nil
 }
 
 // Current returns the current logged in user.
 func (uc *AdminUsecase) GetAdmin(ctx context.Context, id int64) (*Admin, error) {
-	return uc.repo.FindByID(ctx, id)
+	return uc.admin.FindByID(ctx, id)
 }
 
 // ListAdmins lists admin users with pagination.
 func (uc *AdminUsecase) ListAdmins(ctx context.Context, opts ...ListOption) ([]*Admin, error) {
-	admins, err := uc.repo.ListAdmins(ctx, opts...)
+	admins, err := uc.admin.ListAdmins(ctx, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -79,15 +78,15 @@ func (uc *AdminUsecase) ListAdmins(ctx context.Context, opts ...ListOption) ([]*
 
 // CreateAdmin creates a new admin user.
 func (uc *AdminUsecase) CreateAdmin(ctx context.Context, admin *Admin) (*Admin, error) {
-	return uc.repo.CreateAdmin(ctx, admin)
+	return uc.admin.CreateAdmin(ctx, admin)
 }
 
 // UpdateAdmin updates an existing admin user.
 func (uc *AdminUsecase) UpdateAdmin(ctx context.Context, admin *Admin) (*Admin, error) {
-	return uc.repo.UpdateAdmin(ctx, admin)
+	return uc.admin.UpdateAdmin(ctx, admin)
 }
 
 // DeleteAdmin deletes an admin user by ID.
 func (uc *AdminUsecase) DeleteAdmin(ctx context.Context, id int64) error {
-	return uc.repo.DeleteAdmin(ctx, id)
+	return uc.admin.DeleteAdmin(ctx, id)
 }

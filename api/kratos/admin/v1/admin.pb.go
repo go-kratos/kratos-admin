@@ -139,7 +139,7 @@ func (x *Admin) GetUpdateTime() *timestamppb.Timestamp {
 type AdminSet struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// The set of admins.
-	Items []*Admin `protobuf:"bytes,1,rep,name=items,proto3" json:"items,omitempty"`
+	Admins []*Admin `protobuf:"bytes,1,rep,name=admins,proto3" json:"admins,omitempty"`
 	// The next page token.
 	NextPageToken string `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -176,9 +176,9 @@ func (*AdminSet) Descriptor() ([]byte, []int) {
 	return file_kratos_admin_v1_admin_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *AdminSet) GetItems() []*Admin {
+func (x *AdminSet) GetAdmins() []*Admin {
 	if x != nil {
-		return x.Items
+		return x.Admins
 	}
 	return nil
 }
@@ -535,9 +535,9 @@ const file_kratos_admin_v1_admin_proto_rawDesc = "" +
 	"\vcreate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"createTime\x12;\n" +
 	"\vupdate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampR\n" +
-	"updateTime\"`\n" +
-	"\bAdminSet\x12,\n" +
-	"\x05items\x18\x01 \x03(\v2\x16.kratos.admin.v1.AdminR\x05items\x12&\n" +
+	"updateTime\"b\n" +
+	"\bAdminSet\x12.\n" +
+	"\x06admins\x18\x01 \x03(\v2\x16.kratos.admin.v1.AdminR\x06admins\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"F\n" +
 	"\fLoginRequest\x12\x1a\n" +
 	"\busername\x18\x01 \x01(\tR\busername\x12\x1a\n" +
@@ -599,7 +599,7 @@ var file_kratos_admin_v1_admin_proto_goTypes = []any{
 var file_kratos_admin_v1_admin_proto_depIdxs = []int32{
 	8,  // 0: kratos.admin.v1.Admin.create_time:type_name -> google.protobuf.Timestamp
 	8,  // 1: kratos.admin.v1.Admin.update_time:type_name -> google.protobuf.Timestamp
-	0,  // 2: kratos.admin.v1.AdminSet.items:type_name -> kratos.admin.v1.Admin
+	0,  // 2: kratos.admin.v1.AdminSet.admins:type_name -> kratos.admin.v1.Admin
 	0,  // 3: kratos.admin.v1.CreateAdminRequest.admin:type_name -> kratos.admin.v1.Admin
 	0,  // 4: kratos.admin.v1.UpdateAdminRequest.admin:type_name -> kratos.admin.v1.Admin
 	9,  // 5: kratos.admin.v1.UpdateAdminRequest.update_mask:type_name -> google.protobuf.FieldMask

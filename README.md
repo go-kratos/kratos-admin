@@ -8,11 +8,6 @@ Google AIP(https://google.aip.dev/general):
 4. Field masks
 5. Field behavior
 
-## Prerequisites
-```shell
-make init
-```
-
 ## Generate API files
 ```shell
 # Download and update dependencies

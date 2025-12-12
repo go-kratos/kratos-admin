@@ -212,7 +212,7 @@ components:
         kratos.admin.v1.AdminSet:
             type: object
             properties:
-                items:
+                admins:
                     type: array
                     items:
                         $ref: '#/components/schemas/kratos.admin.v1.Admin'

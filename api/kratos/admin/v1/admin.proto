@@ -36,7 +36,7 @@ message Admin {
 // AdminSet is the set of admins.
 message AdminSet {
   // The set of admins.
-  repeated Admin items = 1;
+  repeated Admin admins = 1;
   // The next page token.
   string next_page_token = 2;
 }
