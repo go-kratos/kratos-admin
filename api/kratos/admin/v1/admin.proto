@@ -65,28 +65,33 @@ service AdminService {
       get: "/v1/admins/current"
     };
   }
+  // ListAdmins returns a list of admins.
   rpc ListAdmins(ListAdminsRequest) returns (AdminSet) {
     option (google.api.http) = {
       get: "/v1/admins/list"
     };
   }
+  // CreateAdmin creates a new admin.
   rpc CreateAdmin(CreateAdminRequest) returns (Admin) {
     option (google.api.http) = {
       post: "/v1/admins/create"
       body: "admin"
     };
   }
+  // UpdateAdmin updates an existing admin.
   rpc UpdateAdmin(UpdateAdminRequest) returns (Admin) {
     option (google.api.http) = {
       put: "/v1/admins/update"
       body: "admin"
     };
   }
+  // DeleteAdmin deletes an admin by ID.
   rpc DeleteAdmin(DeleteAdminRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       delete: "/v1/admins/{id}"
     };
   }
+  // GetAdmin retrieves an admin by ID.
   rpc GetAdmin(GetAdminRequest) returns (Admin) {
     option (google.api.http) = {
       get: "/v1/admins/{id}"
