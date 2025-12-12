@@ -20,17 +20,19 @@ message Admin {
   string name = 2;
   // The email of the user.
   string email = 3;
+  // The phone number of the user.
+  string phone = 4;
   // The avatar URL of the user.
-  string avatar = 4;
+  string avatar = 5;
   // The access level of the user.
   // Possible values are: "admin", "user", etc.
-  string access = 5;
+  string access = 6;
   // The password of the user.
-  string password = 6;
+  string password = 7;
   // The timestamp at which the user was created.
-  google.protobuf.Timestamp create_time = 7;
+  google.protobuf.Timestamp create_time = 8;
   // The latest timestamp at which the user was updated.
-  google.protobuf.Timestamp update_time = 8;
+  google.protobuf.Timestamp update_time = 9;
 }
 
 // AdminSet is the set of admins.
@@ -94,16 +96,19 @@ service AdminService {
 
 // LoginRequest is the request message for the Login method.
 message LoginRequest {
-  // Required. Username of the user.
-  string username = 1;
   // Required. Password of the user.
-  string password = 2;
+  string password = 1 [(google.api.field_behavior) = REQUIRED];
+  // Required. Exactly one identity must be set.
+  oneof identity {
+    string username = 2;
+    string email = 3;
+  }
 }
 
 // GetAdminRequest is the request message for the GetAdmin method.
 message GetAdminRequest {
   // The ID of the admin to retrieve.
-  int64 id = 1;
+  int64 id = 1 [(google.api.field_behavior) = REQUIRED];
 }
 
 // ListAdminsResponse is the response message for the ListAdmins method.
@@ -130,15 +135,15 @@ message ListAdminsRequest {
 // CreateAdminRequest is the request message for the CreateAdmin method.
 message CreateAdminRequest {
   // Required. The admin to create.
-  Admin admin = 1;
+  Admin admin = 1 [(google.api.field_behavior) = REQUIRED];
 }
 
 // UpdateAdminRequest is the request message for the UpdateAdmin method.
 message UpdateAdminRequest {
   // Required. The admin to update.
-  Admin admin = 1;
+  Admin admin = 1 [(google.api.field_behavior) = REQUIRED];
   // Required. Mask of fields to update.
-  google.protobuf.FieldMask update_mask = 2;
+  google.protobuf.FieldMask update_mask = 2 [(google.api.field_behavior) = REQUIRED];
 }
 
 // DeleteAdminRequest is the request message for the DeleteAdmin method.

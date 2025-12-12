@@ -8,7 +8,7 @@ import (
 )
 
 // GenerateToken generates a JWT token for the given username.
-func GenerateToken(userID int64, access, secret string) (string, error) {
+func GenerateToken(userID int64, access, secret string, expiresAt time.Time) (string, error) {
 	now := time.Now()
 	claims := Auth{
 		UserID: userID,
@@ -20,7 +20,7 @@ func GenerateToken(userID int64, access, secret string) (string, error) {
 			Audience:  []string{"admin"},
 			IssuedAt:  jwt.NewNumericDate(now),
 			NotBefore: jwt.NewNumericDate(now),
-			ExpiresAt: jwt.NewNumericDate(now.Add(7 * 24 * time.Hour)),
+			ExpiresAt: jwt.NewNumericDate(expiresAt),
 		},
 	}
 	return jwt.NewWithClaims(jwt.SigningMethodHS256, claims).SignedString([]byte(secret))

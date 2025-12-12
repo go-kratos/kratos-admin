@@ -18,5 +18,5 @@ func cookieNameFromEnv(key string) string {
 	if name := os.Getenv(key); name != "" {
 		return name
 	}
-	return "authorization"
+	return "access_token"
 }

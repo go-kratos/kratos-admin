@@ -10,6 +10,8 @@ export type Admin = {
   name: string | undefined;
   // The email of the user.
   email: string | undefined;
+  // The phone number of the user.
+  phone: string | undefined;
   // The avatar URL of the user.
   avatar: string | undefined;
   // The access level of the user.
@@ -38,15 +40,19 @@ export type AdminSet = {
 
 // LoginRequest is the request message for the Login method.
 export type LoginRequest = {
-  // Required. Username of the user.
-  username: string | undefined;
   // Required. Password of the user.
+  //
+  // Behaviors: REQUIRED
   password: string | undefined;
+  username?: string;
+  email?: string;
 };
 
 // GetAdminRequest is the request message for the GetAdmin method.
 export type GetAdminRequest = {
   // The ID of the admin to retrieve.
+  //
+  // Behaviors: REQUIRED
   id: number | undefined;
 };
 
@@ -72,14 +78,20 @@ export type ListAdminsRequest = {
 // CreateAdminRequest is the request message for the CreateAdmin method.
 export type CreateAdminRequest = {
   // Required. The admin to create.
+  //
+  // Behaviors: REQUIRED
   admin: Admin | undefined;
 };
 
 // UpdateAdminRequest is the request message for the UpdateAdmin method.
 export type UpdateAdminRequest = {
   // Required. The admin to update.
+  //
+  // Behaviors: REQUIRED
   admin: Admin | undefined;
   // Required. Mask of fields to update.
+  //
+  // Behaviors: REQUIRED
   updateMask: wellKnownFieldMask | undefined;
 };
 

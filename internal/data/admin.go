@@ -55,6 +55,17 @@ func (r *adminRepo) FindByName(ctx context.Context, name string) (*biz.Admin, er
 	return convertAdmin(po), nil
 }
 
+func (r *adminRepo) FindByEmail(ctx context.Context, email string) (*biz.Admin, error) {
+	po, err := r.data.db.Admin.Query().Where(admin.EmailEQ(email)).Only(ctx)
+	if err != nil {
+		if ent.IsNotFound(err) {
+			return nil, biz.ErrAdminNotFound
+		}
+		return nil, err
+	}
+	return convertAdmin(po), nil
+}
+
 func (r *adminRepo) ListAdmins(ctx context.Context, opts ...biz.ListOption) ([]*biz.Admin, error) {
 	o := biz.ListOptions{Limit: 20}
 	for _, opt := range opts {

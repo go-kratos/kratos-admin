@@ -34,17 +34,19 @@ type Admin struct {
 	Name string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
 	// The email of the user.
 	Email string `protobuf:"bytes,3,opt,name=email,proto3" json:"email,omitempty"`
+	// The phone number of the user.
+	Phone string `protobuf:"bytes,4,opt,name=phone,proto3" json:"phone,omitempty"`
 	// The avatar URL of the user.
-	Avatar string `protobuf:"bytes,4,opt,name=avatar,proto3" json:"avatar,omitempty"`
+	Avatar string `protobuf:"bytes,5,opt,name=avatar,proto3" json:"avatar,omitempty"`
 	// The access level of the user.
 	// Possible values are: "admin", "user", etc.
-	Access string `protobuf:"bytes,5,opt,name=access,proto3" json:"access,omitempty"`
+	Access string `protobuf:"bytes,6,opt,name=access,proto3" json:"access,omitempty"`
 	// The password of the user.
-	Password string `protobuf:"bytes,6,opt,name=password,proto3" json:"password,omitempty"`
+	Password string `protobuf:"bytes,7,opt,name=password,proto3" json:"password,omitempty"`
 	// The timestamp at which the user was created.
-	CreateTime *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
+	CreateTime *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
 	// The latest timestamp at which the user was updated.
-	UpdateTime    *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=update_time,json=updateTime,proto3" json:"update_time,omitempty"`
+	UpdateTime    *timestamppb.Timestamp `protobuf:"bytes,9,opt,name=update_time,json=updateTime,proto3" json:"update_time,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -96,6 +98,13 @@ func (x *Admin) GetName() string {
 func (x *Admin) GetEmail() string {
 	if x != nil {
 		return x.Email
+	}
+	return ""
+}
+
+func (x *Admin) GetPhone() string {
+	if x != nil {
+		return x.Phone
 	}
 	return ""
 }
@@ -193,10 +202,15 @@ func (x *AdminSet) GetNextPageToken() string {
 // LoginRequest is the request message for the Login method.
 type LoginRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Required. Username of the user.
-	Username string `protobuf:"bytes,1,opt,name=username,proto3" json:"username,omitempty"`
 	// Required. Password of the user.
-	Password      string `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty"`
+	Password string `protobuf:"bytes,1,opt,name=password,proto3" json:"password,omitempty"`
+	// Required. Exactly one identity must be set.
+	//
+	// Types that are valid to be assigned to Identity:
+	//
+	//	*LoginRequest_Username
+	//	*LoginRequest_Email
+	Identity      isLoginRequest_Identity `protobuf_oneof:"identity"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -231,19 +245,53 @@ func (*LoginRequest) Descriptor() ([]byte, []int) {
 	return file_kratos_admin_v1_admin_proto_rawDescGZIP(), []int{2}
 }
 
-func (x *LoginRequest) GetUsername() string {
-	if x != nil {
-		return x.Username
-	}
-	return ""
-}
-
 func (x *LoginRequest) GetPassword() string {
 	if x != nil {
 		return x.Password
 	}
 	return ""
 }
+
+func (x *LoginRequest) GetIdentity() isLoginRequest_Identity {
+	if x != nil {
+		return x.Identity
+	}
+	return nil
+}
+
+func (x *LoginRequest) GetUsername() string {
+	if x != nil {
+		if x, ok := x.Identity.(*LoginRequest_Username); ok {
+			return x.Username
+		}
+	}
+	return ""
+}
+
+func (x *LoginRequest) GetEmail() string {
+	if x != nil {
+		if x, ok := x.Identity.(*LoginRequest_Email); ok {
+			return x.Email
+		}
+	}
+	return ""
+}
+
+type isLoginRequest_Identity interface {
+	isLoginRequest_Identity()
+}
+
+type LoginRequest_Username struct {
+	Username string `protobuf:"bytes,2,opt,name=username,proto3,oneof"`
+}
+
+type LoginRequest_Email struct {
+	Email string `protobuf:"bytes,3,opt,name=email,proto3,oneof"`
+}
+
+func (*LoginRequest_Username) isLoginRequest_Identity() {}
+
+func (*LoginRequest_Email) isLoginRequest_Identity() {}
 
 // GetAdminRequest is the request message for the GetAdmin method.
 type GetAdminRequest struct {
@@ -524,37 +572,41 @@ var File_kratos_admin_v1_admin_proto protoreflect.FileDescriptor
 
 const file_kratos_admin_v1_admin_proto_rawDesc = "" +
 	"\n" +
-	"\x1bkratos/admin/v1/admin.proto\x12\x0fkratos.admin.v1\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\"\x87\x02\n" +
+	"\x1bkratos/admin/v1/admin.proto\x12\x0fkratos.admin.v1\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\"\x9d\x02\n" +
 	"\x05Admin\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x14\n" +
-	"\x05email\x18\x03 \x01(\tR\x05email\x12\x16\n" +
-	"\x06avatar\x18\x04 \x01(\tR\x06avatar\x12\x16\n" +
-	"\x06access\x18\x05 \x01(\tR\x06access\x12\x1a\n" +
-	"\bpassword\x18\x06 \x01(\tR\bpassword\x12;\n" +
-	"\vcreate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\n" +
+	"\x05email\x18\x03 \x01(\tR\x05email\x12\x14\n" +
+	"\x05phone\x18\x04 \x01(\tR\x05phone\x12\x16\n" +
+	"\x06avatar\x18\x05 \x01(\tR\x06avatar\x12\x16\n" +
+	"\x06access\x18\x06 \x01(\tR\x06access\x12\x1a\n" +
+	"\bpassword\x18\a \x01(\tR\bpassword\x12;\n" +
+	"\vcreate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"createTime\x12;\n" +
-	"\vupdate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampR\n" +
+	"\vupdate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"updateTime\"b\n" +
 	"\bAdminSet\x12.\n" +
 	"\x06admins\x18\x01 \x03(\v2\x16.kratos.admin.v1.AdminR\x06admins\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"F\n" +
-	"\fLoginRequest\x12\x1a\n" +
-	"\busername\x18\x01 \x01(\tR\busername\x12\x1a\n" +
-	"\bpassword\x18\x02 \x01(\tR\bpassword\"!\n" +
-	"\x0fGetAdminRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\x03R\x02id\"\x82\x01\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"r\n" +
+	"\fLoginRequest\x12 \n" +
+	"\bpassword\x18\x01 \x01(\tB\x04\xe2A\x01\x02R\bpassword\x12\x1c\n" +
+	"\busername\x18\x02 \x01(\tH\x00R\busername\x12\x16\n" +
+	"\x05email\x18\x03 \x01(\tH\x00R\x05emailB\n" +
+	"\n" +
+	"\bidentity\"'\n" +
+	"\x0fGetAdminRequest\x12\x14\n" +
+	"\x02id\x18\x01 \x01(\x03B\x04\xe2A\x01\x02R\x02id\"\x82\x01\n" +
 	"\x11ListAdminsRequest\x12\x1b\n" +
 	"\tpage_size\x18\x01 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x02 \x01(\tR\tpageToken\x12\x16\n" +
 	"\x06filter\x18\x03 \x01(\tR\x06filter\x12\x19\n" +
-	"\border_by\x18\x04 \x01(\tR\aorderBy\"B\n" +
-	"\x12CreateAdminRequest\x12,\n" +
-	"\x05admin\x18\x01 \x01(\v2\x16.kratos.admin.v1.AdminR\x05admin\"\x7f\n" +
-	"\x12UpdateAdminRequest\x12,\n" +
-	"\x05admin\x18\x01 \x01(\v2\x16.kratos.admin.v1.AdminR\x05admin\x12;\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
+	"\border_by\x18\x04 \x01(\tR\aorderBy\"H\n" +
+	"\x12CreateAdminRequest\x122\n" +
+	"\x05admin\x18\x01 \x01(\v2\x16.kratos.admin.v1.AdminB\x04\xe2A\x01\x02R\x05admin\"\x8b\x01\n" +
+	"\x12UpdateAdminRequest\x122\n" +
+	"\x05admin\x18\x01 \x01(\v2\x16.kratos.admin.v1.AdminB\x04\xe2A\x01\x02R\x05admin\x12A\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x04\xe2A\x01\x02R\n" +
 	"updateMask\"*\n" +
 	"\x12DeleteAdminRequest\x12\x14\n" +
 	"\x02id\x18\x01 \x01(\x03B\x04\xe2A\x01\x02R\x02id2\xa0\x06\n" +
@@ -630,6 +682,10 @@ func init() { file_kratos_admin_v1_admin_proto_init() }
 func file_kratos_admin_v1_admin_proto_init() {
 	if File_kratos_admin_v1_admin_proto != nil {
 		return
+	}
+	file_kratos_admin_v1_admin_proto_msgTypes[2].OneofWrappers = []any{
+		(*LoginRequest_Username)(nil),
+		(*LoginRequest_Email)(nil),
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{

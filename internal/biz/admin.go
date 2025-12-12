@@ -24,6 +24,7 @@ type Admin struct {
 type AdminRepo interface {
 	FindByID(context.Context, int64) (*Admin, error)
 	FindByName(context.Context, string) (*Admin, error)
+	FindByEmail(context.Context, string) (*Admin, error)
 	ListAdmins(context.Context, ...ListOption) ([]*Admin, error)
 	CreateAdmin(context.Context, *Admin) (*Admin, error)
 	UpdateAdmin(context.Context, *Admin) (*Admin, error)
@@ -40,9 +41,21 @@ func NewAdminUsecase(repo AdminRepo) *AdminUsecase {
 	return &AdminUsecase{admin: repo}
 }
 
-// Login logs in with username and password.
-func (uc *AdminUsecase) Login(ctx context.Context, username, password string) (*Admin, error) {
+// LoginByUsername logs in a user by username and password.
+func (uc *AdminUsecase) LoginByUsername(ctx context.Context, username, password string) (*Admin, error) {
 	user, err := uc.admin.FindByName(ctx, username)
+	if err != nil {
+		return nil, err
+	}
+	if user.Password != password {
+		return nil, errors.Unauthorized("AUTH", "invalid credentials")
+	}
+	return user, nil
+}
+
+// LoginByEmail logs in a user by email and password.
+func (uc *AdminUsecase) LoginByEmail(ctx context.Context, username, password string) (*Admin, error) {
+	user, err := uc.admin.FindByEmail(ctx, username)
 	if err != nil {
 		return nil, err
 	}

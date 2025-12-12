@@ -14,10 +14,10 @@ import (
 var (
 	// noAuthPaths defines the paths that do not require authentication.
 	noAuthPaths = map[string]struct{}{
-		"/v1/auth/login": {},
+		"/v1/admins/login": {},
 	}
-	// jwtSecretKey is the secret key used for signing JWT tokens.
-	jwtSecretKey = authSecretFromEnv("KRATOS_AUTH_SECRET")
+	// authSecretKey is the secret key used for signing JWT tokens.
+	authSecretKey = authSecretFromEnv("KRATOS_AUTH_SECRET")
 	// cookieName is the name of the cookie that stores the authorization token.
 	cookieName = cookieNameFromEnv("KRATOS_AUTH_COOKIE")
 	// ErrUnauthorized indicates that the token is invalid.
@@ -39,7 +39,7 @@ func Middleware() httpm.FilterFunc {
 				http.Error(w, "Unauthorized", http.StatusUnauthorized)
 				return
 			}
-			auth, err := ParseToken(cookie.Value, jwtSecretKey)
+			auth, err := ParseToken(cookie.Value, authSecretKey)
 			if err != nil {
 				ec := errors.FromError(err)
 				http.Error(w, ec.Message, int(ec.Code))
@@ -51,13 +51,13 @@ func Middleware() httpm.FilterFunc {
 	}
 }
 
-// SetLoginCookie sets the login cookie in the HTTP response.
-func SetLoginCookie(ctx context.Context, userID int64, access string, expiresAt time.Time) error {
+// SetCookie sets the login cookie in the HTTP response.
+func SetCookie(ctx context.Context, userID int64, access string, expiresAt time.Time) error {
 	tr, ok := transport.FromServerContext(ctx)
 	if !ok {
 		return fmt.Errorf("failed to get transport from context")
 	}
-	token, err := GenerateToken(userID, access, jwtSecretKey)
+	token, err := GenerateToken(userID, access, authSecretKey, expiresAt)
 	if err != nil {
 		return err
 	}
@@ -71,8 +71,8 @@ func SetLoginCookie(ctx context.Context, userID int64, access string, expiresAt 
 	return nil
 }
 
-// SetLogoutCookie clears the login cookie in the HTTP response.
-func SetLogoutCookie(ctx context.Context) error {
+// DeleteCookie clears the login cookie in the HTTP response.
+func DeleteCookie(ctx context.Context) error {
 	tr, ok := transport.FromServerContext(ctx)
 	if !ok {
 		return fmt.Errorf("failed to get transport from context")

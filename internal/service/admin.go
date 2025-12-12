@@ -9,6 +9,7 @@ import (
 	v1 "github.com/go-kratos/kratos-admin/api/kratos/admin/v1"
 	"github.com/go-kratos/kratos-admin/internal/biz"
 	"github.com/go-kratos/kratos-admin/pkg/auth"
+	"github.com/go-kratos/kratos/v2/errors"
 
 	"go.einride.tech/aip/fieldmask"
 	"go.einride.tech/aip/filtering"
@@ -61,11 +62,25 @@ func (s *AdminService) Current(ctx context.Context, req *emptypb.Empty) (*v1.Adm
 
 // Login implements auth login.
 func (s *AdminService) Login(ctx context.Context, req *v1.LoginRequest) (*v1.Admin, error) {
-	admin, err := s.uc.Login(ctx, req.Username, encodePassword(req.Password))
-	if err != nil {
-		return nil, err
+	var (
+		err   error
+		admin *biz.Admin
+	)
+	switch v := req.Identity.(type) {
+	case *v1.LoginRequest_Username:
+		admin, err = s.uc.LoginByUsername(ctx, v.Username, encodePassword(req.Password))
+		if err != nil {
+			return nil, err
+		}
+	case *v1.LoginRequest_Email:
+		admin, err = s.uc.LoginByEmail(ctx, v.Email, encodePassword(req.Password))
+		if err != nil {
+			return nil, err
+		}
+	default:
+		return nil, errors.BadRequest("AUTH", "unsupported identity type")
 	}
-	if err := auth.SetLoginCookie(ctx, admin.ID, admin.Access, time.Now().Add(7*24*time.Hour)); err != nil {
+	if err := auth.SetCookie(ctx, admin.ID, admin.Access, time.Now().Add(7*24*time.Hour)); err != nil {
 		return nil, err
 	}
 	return convertAdmin(admin), nil
@@ -80,7 +95,7 @@ func (s *AdminService) Logout(ctx context.Context, req *emptypb.Empty) (*emptypb
 	if err := s.uc.Logout(ctx, a.UserID); err != nil {
 		return nil, err
 	}
-	if err := auth.SetLogoutCookie(ctx); err != nil {
+	if err := auth.DeleteCookie(ctx); err != nil {
 		return nil, err
 	}
 	return &emptypb.Empty{}, nil

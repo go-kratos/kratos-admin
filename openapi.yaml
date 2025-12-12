@@ -189,6 +189,9 @@ components:
                 email:
                     type: string
                     description: The email of the user.
+                phone:
+                    type: string
+                    description: The phone number of the user.
                 avatar:
                     type: string
                     description: The avatar URL of the user.
@@ -222,14 +225,17 @@ components:
                     description: The next page token.
             description: AdminSet is the set of admins.
         kratos.admin.v1.LoginRequest:
+            required:
+                - password
             type: object
             properties:
-                username:
-                    type: string
-                    description: Required. Username of the user.
                 password:
                     type: string
                     description: Required. Password of the user.
+                username:
+                    type: string
+                email:
+                    type: string
             description: LoginRequest is the request message for the Login method.
 tags:
     - name: AdminService
