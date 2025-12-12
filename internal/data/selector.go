@@ -10,9 +10,9 @@ import (
 	expr "google.golang.org/genproto/googleapis/api/expr/v1alpha1"
 )
 
-// OrderBy builds a SQL order function from an orderBy string.
+// ApplyOrderBy builds a SQL order function from an orderBy string.
 // Example: foo,bar asc/desc
-func OrderBy(orderBy ordering.OrderBy) func(s *sql.Selector) {
+func ApplyOrderBy(orderBy ordering.OrderBy) func(s *sql.Selector) {
 	return func(s *sql.Selector) {
 		for _, field := range orderBy.Fields {
 			if field.Desc {
@@ -24,10 +24,10 @@ func OrderBy(orderBy ordering.OrderBy) func(s *sql.Selector) {
 	}
 }
 
-// QueryBy builds a SQL selector from a filtering.Filter.
+// ApplyFilter builds a SQL selector from a filtering.Filter.
 // Example: name="value" AND age>18
 // More detail in [AIP-160](https://google.aip.dev/160).
-func QueryBy(filter filtering.Filter) func(*sql.Selector) {
+func ApplyFilter(filter filtering.Filter) func(*sql.Selector) {
 	if filter.CheckedExpr == nil || filter.CheckedExpr.Expr == nil {
 		return nil
 	}

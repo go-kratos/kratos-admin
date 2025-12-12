@@ -72,8 +72,8 @@ func (r *adminRepo) ListAdmins(ctx context.Context, opts ...biz.ListOption) ([]*
 		opt(&o)
 	}
 	pos, err := r.data.db.Admin.Query().
-		Where(QueryBy(o.Filter)).
-		Order(OrderBy(o.OrderBy)).
+		Where(ApplyFilter(o.Filter)).
+		Order(ApplyOrderBy(o.OrderBy)).
 		Offset(o.Offset).
 		Limit(o.Limit).
 		All(ctx)
