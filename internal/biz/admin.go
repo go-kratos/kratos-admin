@@ -14,8 +14,8 @@ type Admin struct {
 	Name       string
 	Email      string
 	Password   string
-	Avatar     string
 	Access     string
+	Avatar     string
 	CreateTime time.Time
 	UpdateTime time.Time
 }

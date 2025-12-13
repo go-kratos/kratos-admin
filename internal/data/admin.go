@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	"github.com/go-kratos/aip-go/ents"
 	"github.com/go-kratos/kratos-admin/internal/biz"
 	"github.com/go-kratos/kratos-admin/internal/data/ent"
 	"github.com/go-kratos/kratos-admin/internal/data/ent/admin"
@@ -72,8 +73,8 @@ func (r *adminRepo) ListAdmins(ctx context.Context, opts ...biz.ListOption) ([]*
 		opt(&o)
 	}
 	pos, err := r.data.db.Admin.Query().
-		Where(ApplyFilter(o.Filter)).
-		Order(ApplyOrderBy(o.OrderBy)).
+		Where(ents.ApplyFilter(o.Filter)).
+		Order(ents.ApplyOrderBy(o.OrderBy)).
 		Offset(o.Offset).
 		Limit(o.Limit).
 		All(ctx)
@@ -107,9 +108,8 @@ func (r *adminRepo) UpdateAdmin(ctx context.Context, admin *biz.Admin) (*biz.Adm
 	update := r.data.db.Admin.UpdateOneID(admin.ID).
 		SetName(admin.Name).
 		SetEmail(admin.Email).
-		SetAvatar(admin.Avatar).
 		SetAccess(admin.Access).
-		SetPassword(admin.Password).
+		SetAvatar(admin.Avatar).
 		SetUpdateTime(time.Now())
 	// Only update the password if it's not empty
 	if admin.Password != "" {

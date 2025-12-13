@@ -48,6 +48,7 @@ func NewAdminService(uc *biz.AdminUsecase) *AdminService {
 	return &AdminService{uc: uc}
 }
 
+// Current implements auth current admin retrieval.
 func (s *AdminService) Current(ctx context.Context, req *emptypb.Empty) (*v1.Admin, error) {
 	a, ok := auth.FromContext(ctx)
 	if !ok {
@@ -155,6 +156,7 @@ func (s *AdminService) UpdateAdmin(ctx context.Context, req *v1.UpdateAdminReque
 	return convertAdmin(updated), nil
 }
 
+// DeleteAdmin implements admin deletion.
 func (s *AdminService) DeleteAdmin(ctx context.Context, req *v1.DeleteAdminRequest) (*emptypb.Empty, error) {
 	a, ok := auth.FromContext(ctx)
 	if !ok {
@@ -185,6 +187,7 @@ func (s *AdminService) GetAdmin(ctx context.Context, req *v1.GetAdminRequest) (*
 	return convertAdmin(admin), nil
 }
 
+// ListAdmins implements admin listing with filtering, ordering, and pagination.
 func (s *AdminService) ListAdmins(ctx context.Context, req *v1.ListAdminsRequest) (*v1.AdminSet, error) {
 	a, ok := auth.FromContext(ctx)
 	if !ok {
