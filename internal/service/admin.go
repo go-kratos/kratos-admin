@@ -229,8 +229,10 @@ func (s *AdminService) ListAdmins(ctx context.Context, req *v1.ListAdminsRequest
 		return nil, err
 	}
 	adminSet := &v1.AdminSet{
-		NextPageToken: pageToken.Next(req).String(),
-		Admins:        make([]*v1.Admin, 0, len(admins)),
+		Admins: make([]*v1.Admin, 0, len(admins)),
+	}
+	if len(admins) >= int(req.PageSize) {
+		adminSet.NextPageToken = pageToken.Next(req).String()
 	}
 	for _, admin := range admins {
 		adminSet.Admins = append(adminSet.Admins, convertAdmin(admin))
