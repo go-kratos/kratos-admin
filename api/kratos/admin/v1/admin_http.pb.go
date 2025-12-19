@@ -30,16 +30,21 @@ const OperationAdminServiceLogout = "/kratos.admin.v1.AdminService/Logout"
 const OperationAdminServiceUpdateAdmin = "/kratos.admin.v1.AdminService/UpdateAdmin"
 
 type AdminServiceHTTPServer interface {
+	// CreateAdmin CreateAdmin creates a new admin.
 	CreateAdmin(context.Context, *CreateAdminRequest) (*Admin, error)
 	// Current Current returns the currently logged-in user.
 	Current(context.Context, *emptypb.Empty) (*Admin, error)
+	// DeleteAdmin DeleteAdmin deletes an admin by ID.
 	DeleteAdmin(context.Context, *DeleteAdminRequest) (*emptypb.Empty, error)
+	// GetAdmin GetAdmin retrieves an admin by ID.
 	GetAdmin(context.Context, *GetAdminRequest) (*Admin, error)
+	// ListAdmins ListAdmins returns a list of admins.
 	ListAdmins(context.Context, *ListAdminsRequest) (*AdminSet, error)
 	// Login Login a user and return the username.
 	Login(context.Context, *LoginRequest) (*Admin, error)
 	// Logout Logout the currently logged-in user.
 	Logout(context.Context, *emptypb.Empty) (*emptypb.Empty, error)
+	// UpdateAdmin UpdateAdmin updates an existing admin.
 	UpdateAdmin(context.Context, *UpdateAdminRequest) (*Admin, error)
 }
 
@@ -226,16 +231,21 @@ func _AdminService_GetAdmin0_HTTP_Handler(srv AdminServiceHTTPServer) func(ctx h
 }
 
 type AdminServiceHTTPClient interface {
+	// CreateAdmin CreateAdmin creates a new admin.
 	CreateAdmin(ctx context.Context, req *CreateAdminRequest, opts ...http.CallOption) (rsp *Admin, err error)
 	// Current Current returns the currently logged-in user.
 	Current(ctx context.Context, req *emptypb.Empty, opts ...http.CallOption) (rsp *Admin, err error)
+	// DeleteAdmin DeleteAdmin deletes an admin by ID.
 	DeleteAdmin(ctx context.Context, req *DeleteAdminRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
+	// GetAdmin GetAdmin retrieves an admin by ID.
 	GetAdmin(ctx context.Context, req *GetAdminRequest, opts ...http.CallOption) (rsp *Admin, err error)
+	// ListAdmins ListAdmins returns a list of admins.
 	ListAdmins(ctx context.Context, req *ListAdminsRequest, opts ...http.CallOption) (rsp *AdminSet, err error)
 	// Login Login a user and return the username.
 	Login(ctx context.Context, req *LoginRequest, opts ...http.CallOption) (rsp *Admin, err error)
 	// Logout Logout the currently logged-in user.
 	Logout(ctx context.Context, req *emptypb.Empty, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
+	// UpdateAdmin UpdateAdmin updates an existing admin.
 	UpdateAdmin(ctx context.Context, req *UpdateAdminRequest, opts ...http.CallOption) (rsp *Admin, err error)
 }
 
@@ -247,6 +257,7 @@ func NewAdminServiceHTTPClient(client *http.Client) AdminServiceHTTPClient {
 	return &AdminServiceHTTPClientImpl{client}
 }
 
+// CreateAdmin CreateAdmin creates a new admin.
 func (c *AdminServiceHTTPClientImpl) CreateAdmin(ctx context.Context, in *CreateAdminRequest, opts ...http.CallOption) (*Admin, error) {
 	var out Admin
 	pattern := "/v1/admins/create"
@@ -274,6 +285,7 @@ func (c *AdminServiceHTTPClientImpl) Current(ctx context.Context, in *emptypb.Em
 	return &out, nil
 }
 
+// DeleteAdmin DeleteAdmin deletes an admin by ID.
 func (c *AdminServiceHTTPClientImpl) DeleteAdmin(ctx context.Context, in *DeleteAdminRequest, opts ...http.CallOption) (*emptypb.Empty, error) {
 	var out emptypb.Empty
 	pattern := "/v1/admins/{id}"
@@ -287,6 +299,7 @@ func (c *AdminServiceHTTPClientImpl) DeleteAdmin(ctx context.Context, in *Delete
 	return &out, nil
 }
 
+// GetAdmin GetAdmin retrieves an admin by ID.
 func (c *AdminServiceHTTPClientImpl) GetAdmin(ctx context.Context, in *GetAdminRequest, opts ...http.CallOption) (*Admin, error) {
 	var out Admin
 	pattern := "/v1/admins/{id}"
@@ -300,6 +313,7 @@ func (c *AdminServiceHTTPClientImpl) GetAdmin(ctx context.Context, in *GetAdminR
 	return &out, nil
 }
 
+// ListAdmins ListAdmins returns a list of admins.
 func (c *AdminServiceHTTPClientImpl) ListAdmins(ctx context.Context, in *ListAdminsRequest, opts ...http.CallOption) (*AdminSet, error) {
 	var out AdminSet
 	pattern := "/v1/admins/list"
@@ -341,6 +355,7 @@ func (c *AdminServiceHTTPClientImpl) Logout(ctx context.Context, in *emptypb.Emp
 	return &out, nil
 }
 
+// UpdateAdmin UpdateAdmin updates an existing admin.
 func (c *AdminServiceHTTPClientImpl) UpdateAdmin(ctx context.Context, in *UpdateAdminRequest, opts ...http.CallOption) (*Admin, error) {
 	var out Admin
 	pattern := "/v1/admins/update"

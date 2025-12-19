@@ -45,9 +45,8 @@ export const errorConfig: RequestConfig = {
   ],
   responseInterceptors: [
     (response) => {
-      const { code } = response as unknown as ResponseStructure;
-      if (code != 200) {
-        toast.error("request error");
+      if (response.status != 200) {
+        toast.error(`Request error: ${response.status}`);
       }
       return response;
     },

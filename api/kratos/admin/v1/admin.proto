@@ -125,6 +125,8 @@ message ListAdminsRequest {
   // Optional. The standard list filter.
   // Supported fields:
   //    * `name` (i.e. `name="John Doe"`)
+  //    * `email` (i.e. `email="admin@go-kratos.dev"`)
+  //    * `phone` (i.e. `phone="+1234567890"`)
   //    * `create_time` range (i.e. `timestamp>="2025-01-31T11:30:00-04:00"` where
   //    the timestamp is in RFC 3339 format)
   //

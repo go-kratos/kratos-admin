@@ -11,6 +11,7 @@ paths:
         post:
             tags:
                 - AdminService
+            description: CreateAdmin creates a new admin.
             operationId: AdminService_CreateAdmin
             requestBody:
                 content:
@@ -42,6 +43,7 @@ paths:
         get:
             tags:
                 - AdminService
+            description: ListAdmins returns a list of admins.
             operationId: AdminService_ListAdmins
             parameters:
                 - name: pageSize
@@ -60,7 +62,8 @@ paths:
                   description: |-
                     Optional. The standard list filter.
                      Supported fields:
-                        * `timestamp` range (i.e. `timestamp>="2025-01-31T11:30:00-04:00"` where
+                        * `name` (i.e. `name="John Doe"`)
+                        * `create_time` range (i.e. `timestamp>="2025-01-31T11:30:00-04:00"` where
                         the timestamp is in RFC 3339 format)
 
                      More detail in [AIP-160](https://google.aip.dev/160).
@@ -120,6 +123,7 @@ paths:
         put:
             tags:
                 - AdminService
+            description: UpdateAdmin updates an existing admin.
             operationId: AdminService_UpdateAdmin
             parameters:
                 - name: updateMask
@@ -145,6 +149,7 @@ paths:
         get:
             tags:
                 - AdminService
+            description: GetAdmin retrieves an admin by ID.
             operationId: AdminService_GetAdmin
             parameters:
                 - name: id
@@ -163,6 +168,7 @@ paths:
         delete:
             tags:
                 - AdminService
+            description: DeleteAdmin deletes an admin by ID.
             operationId: AdminService_DeleteAdmin
             parameters:
                 - name: id

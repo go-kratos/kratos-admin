@@ -348,7 +348,8 @@ type ListAdminsRequest struct {
 	PageToken string `protobuf:"bytes,2,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
 	// Optional. The standard list filter.
 	// Supported fields:
-	//   - `timestamp` range (i.e. `timestamp>="2025-01-31T11:30:00-04:00"` where
+	//   - `name` (i.e. `name="John Doe"`)
+	//   - `create_time` range (i.e. `timestamp>="2025-01-31T11:30:00-04:00"` where
 	//     the timestamp is in RFC 3339 format)
 	//
 	// More detail in [AIP-160](https://google.aip.dev/160).

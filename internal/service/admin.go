@@ -137,7 +137,7 @@ func (s *AdminService) UpdateAdmin(ctx context.Context, req *v1.UpdateAdminReque
 	if req.Admin.Password != "" {
 		req.Admin.Password = encodePassword(req.Admin.Password)
 	}
-	admin, err := s.GetAdmin(ctx, &v1.GetAdminRequest{Id: a.UserID})
+	admin, err := s.GetAdmin(ctx, &v1.GetAdminRequest{Id: req.Admin.Id})
 	if err != nil {
 		return nil, err
 	}
@@ -199,6 +199,8 @@ func (s *AdminService) ListAdmins(ctx context.Context, req *v1.ListAdminsRequest
 	declarations, err := filtering.NewDeclarations(
 		filtering.DeclareStandardFunctions(),
 		filtering.DeclareIdent("name", filtering.TypeString),
+		filtering.DeclareIdent("email", filtering.TypeString),
+		filtering.DeclareIdent("phone", filtering.TypeString),
 		filtering.DeclareIdent("create_time", filtering.TypeTimestamp),
 	)
 	if err != nil {

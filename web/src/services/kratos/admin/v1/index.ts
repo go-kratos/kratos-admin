@@ -64,7 +64,8 @@ export type ListAdminsRequest = {
   pageToken: string | undefined;
   // Optional. The standard list filter.
   // Supported fields:
-  // * `timestamp` range (i.e. `timestamp>="2025-01-31T11:30:00-04:00"` where
+  // * `name` (i.e. `name="John Doe"`)
+  // * `create_time` range (i.e. `timestamp>="2025-01-31T11:30:00-04:00"` where
   // the timestamp is in RFC 3339 format)
   // More detail in [AIP-160](https://google.aip.dev/160).
   filter: string | undefined;
@@ -139,10 +140,15 @@ export interface AdminService {
   Logout(request: wellKnownEmpty): Promise<wellKnownEmpty>;
   // Current returns the currently logged-in user.
   Current(request: wellKnownEmpty): Promise<Admin>;
+  // ListAdmins returns a list of admins.
   ListAdmins(request: ListAdminsRequest): Promise<AdminSet>;
+  // CreateAdmin creates a new admin.
   CreateAdmin(request: CreateAdminRequest): Promise<Admin>;
+  // UpdateAdmin updates an existing admin.
   UpdateAdmin(request: UpdateAdminRequest): Promise<Admin>;
+  // DeleteAdmin deletes an admin by ID.
   DeleteAdmin(request: DeleteAdminRequest): Promise<wellKnownEmpty>;
+  // GetAdmin retrieves an admin by ID.
   GetAdmin(request: GetAdminRequest): Promise<Admin>;
 }
 

@@ -12,52 +12,36 @@
  */
 export default [
   {
-    path: '/user',
+    path: "/user",
     layout: false,
     routes: [
       {
-        name: 'login',
-        path: '/user/login',
-        component: './user/login',
+        name: "login",
+        path: "/user/login",
+        component: "./user/login",
       },
     ],
   },
   {
-    path: '/welcome',
-    name: 'welcome',
-    icon: 'smile',
-    component: './Welcome',
+    path: "/welcome",
+    name: "welcome",
+    icon: "smile",
+    component: "./Welcome",
   },
   {
-    path: '/admin',
-    name: 'admin',
-    icon: 'crown',
-    access: 'canAdmin',
-    routes: [
-      {
-        path: '/admin',
-        redirect: '/admin/sub-page',
-      },
-      {
-        path: '/admin/sub-page',
-        name: 'sub-page',
-        component: './Admin',
-      },
-    ],
+    name: "admin",
+    icon: "crown",
+    path: "/admins",
+    access: "canAdmin",
+    component: "./admins",
   },
   {
-    name: 'list.table-list',
-    icon: 'table',
-    path: '/list',
-    component: './table-list',
+    path: "/",
+    redirect: "/welcome",
   },
   {
-    path: '/',
-    redirect: '/welcome',
-  },
-  {
-    component: '404',
+    component: "404",
     layout: false,
-    path: './*',
+    path: "./*",
   },
 ];
