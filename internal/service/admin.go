@@ -2,8 +2,6 @@ package service
 
 import (
 	"context"
-	"crypto/md5"
-	"encoding/hex"
 	"time"
 
 	v1 "github.com/go-kratos/kratos-admin/api/kratos/admin/v1"
@@ -18,11 +16,6 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
-
-func encodePassword(password string) string {
-	sum := md5.Sum([]byte(password))
-	return hex.EncodeToString(sum[:])
-}
 
 func convertAdmin(m *biz.Admin) *v1.Admin {
 	return &v1.Admin{
@@ -69,12 +62,12 @@ func (s *AdminService) Login(ctx context.Context, req *v1.LoginRequest) (*v1.Adm
 	)
 	switch v := req.Identity.(type) {
 	case *v1.LoginRequest_Username:
-		admin, err = s.uc.LoginByUsername(ctx, v.Username, encodePassword(req.Password))
+		admin, err = s.uc.LoginByUsername(ctx, v.Username, req.Password)
 		if err != nil {
 			return nil, err
 		}
 	case *v1.LoginRequest_Email:
-		admin, err = s.uc.LoginByEmail(ctx, v.Email, encodePassword(req.Password))
+		admin, err = s.uc.LoginByEmail(ctx, v.Email, req.Password)
 		if err != nil {
 			return nil, err
 		}
@@ -132,10 +125,6 @@ func (s *AdminService) UpdateAdmin(ctx context.Context, req *v1.UpdateAdminReque
 	}
 	if !a.HasAdminAccess() {
 		return nil, auth.ErrForbidden
-	}
-	// Encode password if it's not empty
-	if req.Admin.Password != "" {
-		req.Admin.Password = encodePassword(req.Admin.Password)
 	}
 	admin, err := s.GetAdmin(ctx, &v1.GetAdminRequest{Id: req.Admin.Id})
 	if err != nil {

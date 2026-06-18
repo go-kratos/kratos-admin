@@ -11,11 +11,11 @@ plugins:
   - local: ["go", "run", "github.com/go-kratos/kratos/cmd/protoc-gen-go-http/v3@v3.0.0-20260526000039-30da04b769dc"]
     out: api
     opt: paths=source_relative
+  - local: ["go", "run", "go.einride.tech/protoc-gen-typescript-http@v0.10.0"]
+    out: web/src/services
   - local: ["go", "run", "github.com/google/gnostic/cmd/protoc-gen-openapi@v0.7.1"]
     out: .
     strategy: all
     opt:
       - fq_schema_naming=true
       - default_response=false
-  - local: ["go", "run", "go.einride.tech/protoc-gen-typescript-http@v0.10.0"]
-    out: web/src/services

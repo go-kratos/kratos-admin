@@ -6,6 +6,7 @@ import (
 
 	"github.com/go-kratos/kratos/v3/errors"
 	"github.com/go-kratos/kratos/v3/log"
+	"golang.org/x/crypto/bcrypt"
 )
 
 // Admin is a Admin model.
@@ -41,26 +42,36 @@ func NewAdminUsecase(repo AdminRepo) *AdminUsecase {
 	return &AdminUsecase{admin: repo}
 }
 
+// errInvalidCredentials is returned for any failed login, regardless of
+// whether the user exists, to avoid leaking which accounts are registered.
+var errInvalidCredentials = errors.Unauthorized("AUTH", "invalid credentials")
+
 // LoginByUsername logs in a user by username and password.
 func (uc *AdminUsecase) LoginByUsername(ctx context.Context, username, password string) (*Admin, error) {
 	user, err := uc.admin.FindByName(ctx, username)
 	if err != nil {
+		if errors.Is(err, ErrAdminNotFound) {
+			return nil, errInvalidCredentials
+		}
 		return nil, err
 	}
-	if user.Password != password {
-		return nil, errors.Unauthorized("AUTH", "invalid credentials")
+	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)); err != nil {
+		return nil, errInvalidCredentials
 	}
 	return user, nil
 }
 
 // LoginByEmail logs in a user by email and password.
-func (uc *AdminUsecase) LoginByEmail(ctx context.Context, username, password string) (*Admin, error) {
-	user, err := uc.admin.FindByEmail(ctx, username)
+func (uc *AdminUsecase) LoginByEmail(ctx context.Context, email, password string) (*Admin, error) {
+	user, err := uc.admin.FindByEmail(ctx, email)
 	if err != nil {
+		if errors.Is(err, ErrAdminNotFound) {
+			return nil, errInvalidCredentials
+		}
 		return nil, err
 	}
-	if user.Password != password {
-		return nil, errors.Unauthorized("AUTH", "invalid credentials")
+	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)); err != nil {
+		return nil, errInvalidCredentials
 	}
 	return user, nil
 }
@@ -71,7 +82,7 @@ func (uc *AdminUsecase) Logout(ctx context.Context, adminID int64) error {
 	if err != nil {
 		return err
 	}
-	log.Infof("admin %s logged out", admin.Name)
+	log.InfoContext(ctx, "admin logged out", "name", admin.Name)
 	return nil
 }
 
@@ -91,12 +102,36 @@ func (uc *AdminUsecase) ListAdmins(ctx context.Context, opts ...ListOption) ([]*
 
 // CreateAdmin creates a new admin user.
 func (uc *AdminUsecase) CreateAdmin(ctx context.Context, admin *Admin) (*Admin, error) {
+	if admin.Password != "" {
+		hashed, err := hashPassword(admin.Password)
+		if err != nil {
+			return nil, err
+		}
+		admin.Password = hashed
+	}
 	return uc.admin.CreateAdmin(ctx, admin)
 }
 
 // UpdateAdmin updates an existing admin user.
 func (uc *AdminUsecase) UpdateAdmin(ctx context.Context, admin *Admin) (*Admin, error) {
+	// Empty password means "leave unchanged"; only hash when a new one is set.
+	if admin.Password != "" {
+		hashed, err := hashPassword(admin.Password)
+		if err != nil {
+			return nil, err
+		}
+		admin.Password = hashed
+	}
 	return uc.admin.UpdateAdmin(ctx, admin)
+}
+
+// hashPassword hashes a plaintext password using bcrypt.
+func hashPassword(password string) (string, error) {
+	hashed, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		return "", err
+	}
+	return string(hashed), nil
 }
 
 // DeleteAdmin deletes an admin user by ID.

@@ -19,7 +19,9 @@ import UpdateForm from "./components/UpdateForm";
 
 const adminService = createAdminService();
 
-type AdminQueryParams = API.PageParams & {
+type AdminQueryParams = {
+  current?: number;
+  pageSize?: number;
   name?: string;
   email?: string;
   phone?: string;
@@ -38,7 +40,9 @@ const handleList = async (params: AdminQueryParams) => {
   }
   const requestParams: ListAdminsRequest = {
     pageSize: params.pageSize,
+    pageToken: undefined,
     filter: filters.join(" AND ") || undefined,
+    orderBy: undefined,
   };
   const res = await adminService.ListAdmins(requestParams);
   return {
