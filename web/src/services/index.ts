@@ -8,9 +8,14 @@ type Request = {
 };
 
 function requestHandler({ path, method, body }: Request) {
-  const headers: Record<string, string> = {};
+  // Use protojson so proto semantics (oneof, well-known types like Timestamp)
+  // are preserved in both directions. kratos selects the codec from the
+  // Content-Type / Accept subtype, so both headers must name protojson.
+  const headers: Record<string, string> = {
+    Accept: "application/protojson",
+  };
   if (method === "POST" || method === "PUT" || method === "PATCH") {
-    headers["Content-Type"] = "application/json";
+    headers["Content-Type"] = "application/protojson";
   }
   return request("/" + path, {
     method: method,

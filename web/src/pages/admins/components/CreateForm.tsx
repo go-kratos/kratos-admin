@@ -1,5 +1,5 @@
 import { createAdminService } from "@/services/index";
-import { CreateAdminRequest } from "@/services/kratos/admin/v1/index";
+import { Admin } from "@/services/kratos/admin/v1/index";
 import { PlusOutlined } from "@ant-design/icons";
 import {
   type ActionType,
@@ -50,7 +50,7 @@ const CreateForm: FC<CreateFormProps> = (props) => {
         modalProps={{ okButtonProps: { loading } }}
         onFinish={async (value) => {
           try {
-            await run({ admin: value as CreateAdminRequest });
+            await run({ admin: value as Admin });
             return true;
           } catch (error) {
             return false;

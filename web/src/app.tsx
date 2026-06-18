@@ -26,7 +26,7 @@ const adminService = createAdminService();
  * */
 export async function getInitialState(): Promise<{
   settings?: Partial<LayoutSettings>;
-  currentUser?: API.CurrentUser;
+  currentUser?: Admin;
   loading?: boolean;
   fetchUserInfo?: () => Promise<Admin | undefined>;
 }> {
