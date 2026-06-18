@@ -7,11 +7,10 @@ import {
 } from "@/components";
 import { createAdminService } from "@/services/index";
 import { Admin } from "@/services/kratos/admin/v1/index";
-import { LinkOutlined } from "@ant-design/icons";
 import type { Settings as LayoutSettings } from "@ant-design/pro-components";
 import { SettingDrawer } from "@ant-design/pro-components";
 import type { RequestConfig, RunTimeLayoutConfig } from "@umijs/max";
-import { history, Link } from "@umijs/max";
+import { history } from "@umijs/max";
 import defaultSettings from "../config/defaultSettings";
 import { errorConfig } from "./requestErrorConfig";
 
@@ -106,14 +105,7 @@ export const layout: RunTimeLayoutConfig = ({
         width: "331px",
       },
     ],
-    links: isDevOrTest
-      ? [
-          <Link key="openapi" to="/umi/plugin/openapi" target="_blank">
-            <LinkOutlined />
-            <span>OpenAPI 文档</span>
-          </Link>,
-        ]
-      : [],
+    links: [],
     menuHeaderRender: undefined,
     // 自定义 403 页面
     // unAccessible: <div>unAccessible</div>,
