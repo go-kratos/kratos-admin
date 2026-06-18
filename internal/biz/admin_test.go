@@ -164,13 +164,3 @@ func TestUpdateAdmin_EmptyPasswordLeftUnchanged(t *testing.T) {
 		t.Fatalf("empty password must be passed through unchanged, got %q", got.Password)
 	}
 }
-
-func TestDummyHashIsValid(t *testing.T) {
-	// The dummy hash must be a well-formed bcrypt hash so the not-found path
-	// performs a real comparison rather than erroring out early.
-	if err := bcrypt.CompareHashAndPassword([]byte(dummyHash), []byte("anything")); err == nil {
-		t.Fatal("dummy hash unexpectedly matched a password")
-	} else if err != bcrypt.ErrMismatchedHashAndPassword {
-		t.Fatalf("dummy hash is malformed: %v", err)
-	}
-}

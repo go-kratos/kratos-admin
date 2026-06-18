@@ -46,23 +46,11 @@ func NewAdminUsecase(repo AdminRepo) *AdminUsecase {
 // whether the user exists, to avoid leaking which accounts are registered.
 var errInvalidCredentials = errors.Unauthorized("AUTH", "invalid credentials")
 
-// dummyHash is a valid bcrypt hash compared against when the user is not
-// found, so that the failure path costs the same as a real password check
-// and does not expose a timing side channel.
-const dummyHash = "$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy"
-
-// login finds an admin via the given finder and verifies the password.
-// It returns the same opaque error for "not found" and "wrong password".
-func (uc *AdminUsecase) login(
-	ctx context.Context,
-	find func(context.Context, string) (*Admin, error),
-	identity, password string,
-) (*Admin, error) {
-	user, err := find(ctx, identity)
+// LoginByUsername logs in a user by username and password.
+func (uc *AdminUsecase) LoginByUsername(ctx context.Context, username, password string) (*Admin, error) {
+	user, err := uc.admin.FindByName(ctx, username)
 	if err != nil {
 		if errors.Is(err, ErrAdminNotFound) {
-			// Spend the same work as a real comparison, then fail uniformly.
-			_ = bcrypt.CompareHashAndPassword([]byte(dummyHash), []byte(password))
 			return nil, errInvalidCredentials
 		}
 		return nil, err
@@ -73,14 +61,19 @@ func (uc *AdminUsecase) login(
 	return user, nil
 }
 
-// LoginByUsername logs in a user by username and password.
-func (uc *AdminUsecase) LoginByUsername(ctx context.Context, username, password string) (*Admin, error) {
-	return uc.login(ctx, uc.admin.FindByName, username, password)
-}
-
 // LoginByEmail logs in a user by email and password.
 func (uc *AdminUsecase) LoginByEmail(ctx context.Context, email, password string) (*Admin, error) {
-	return uc.login(ctx, uc.admin.FindByEmail, email, password)
+	user, err := uc.admin.FindByEmail(ctx, email)
+	if err != nil {
+		if errors.Is(err, ErrAdminNotFound) {
+			return nil, errInvalidCredentials
+		}
+		return nil, err
+	}
+	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)); err != nil {
+		return nil, errInvalidCredentials
+	}
+	return user, nil
 }
 
 // Logout logs out the current user.
