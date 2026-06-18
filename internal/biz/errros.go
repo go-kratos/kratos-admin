@@ -1,6 +1,6 @@
 package biz
 
-import "github.com/go-kratos/kratos/v2/errors"
+import "github.com/go-kratos/kratos/v3/errors"
 
 var (
 	// ErrAdminNotFound error admin not found.

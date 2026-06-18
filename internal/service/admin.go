@@ -9,7 +9,7 @@ import (
 	v1 "github.com/go-kratos/kratos-admin/api/kratos/admin/v1"
 	"github.com/go-kratos/kratos-admin/internal/biz"
 	"github.com/go-kratos/kratos-admin/pkg/auth"
-	"github.com/go-kratos/kratos/v2/errors"
+	"github.com/go-kratos/kratos/v3/errors"
 
 	"go.einride.tech/aip/fieldmask"
 	"go.einride.tech/aip/filtering"
