@@ -6,8 +6,8 @@ import (
 	"github.com/go-kratos/kratos-admin/internal/service"
 	"github.com/go-kratos/kratos-admin/pkg/validate"
 
-	"github.com/go-kratos/kratos/v2/middleware/recovery"
-	"github.com/go-kratos/kratos/v2/transport/grpc"
+	"github.com/go-kratos/kratos/v3/middleware/recovery"
+	"github.com/go-kratos/kratos/v3/transport/grpc"
 )
 
 // NewGRPCServer new a gRPC server.

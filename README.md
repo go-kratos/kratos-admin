@@ -9,11 +9,16 @@ Google AIP(https://google.aip.dev/general):
 5. Field behavior
 
 ## Generate API files
+Proto generation is driven by [buf](https://buf.build). Dependencies such as
+googleapis are resolved from the Buf Schema Registry (`buf.build/googleapis/googleapis`),
+so there is no vendored `third_party/` directory.
 ```shell
-# Download and update dependencies
+# Install tooling (buf + wire)
 make init
-# Generate API files (include: pb.go, http, grpc, validate, swagger, index.ts) by proto file
+# Generate API files (pb.go, grpc, kratos http, openapi.yaml, web TS clients) from api/*.proto
 make api
+# Generate internal config (internal/conf/conf.pb.go) from internal/*.proto
+make config
 ```
 
 ## Run Web Application
