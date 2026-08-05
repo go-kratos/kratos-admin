@@ -1,5 +1,4 @@
-import { createAdminService } from "@/services/index";
-import { Admin } from "@/services/kratos/admin/v1/index";
+import { type Admin, services } from "@/services";
 import { PlusOutlined } from "@ant-design/icons";
 import {
   type ActionType,
@@ -15,21 +14,16 @@ interface CreateFormProps {
   reload?: ActionType["reload"];
 }
 
-const adminService = createAdminService();
-
 const CreateForm: FC<CreateFormProps> = (props) => {
   const { reload } = props;
   const [messageApi, contextHolder] = message.useMessage();
   const intl = useIntl();
 
-  const { run, loading } = useRequest(adminService.CreateAdmin, {
+  const { run, loading } = useRequest(services.admin.CreateAdmin, {
     manual: true,
     onSuccess: () => {
       messageApi.success("Added successfully");
       reload?.();
-    },
-    onError: () => {
-      messageApi.error("Adding failed, please try again!");
     },
   });
 
@@ -52,7 +46,8 @@ const CreateForm: FC<CreateFormProps> = (props) => {
           try {
             await run({ admin: value as Admin });
             return true;
-          } catch (error) {
+          } catch {
+            // Reporting is handled globally in requestErrorConfig.
             return false;
           }
         }}

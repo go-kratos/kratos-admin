@@ -4,6 +4,8 @@ export default {
   'pages.login.accountLogin.tab': 'অ্যাকাউন্টে লগইন',
   'pages.login.accountLogin.errorMessage':
     'ভুল ব্যবহারকারীর নাম/পাসওয়ার্ড(admin/ant.design)',
+  'pages.login.invalidCredentials':
+    'ব্যবহারকারীর নাম বা পাসওয়ার্ড ভুল',
   'pages.login.failure': 'লগইন ব্যর্থ হয়েছে। আবার চেষ্টা করুন!',
   'pages.login.success': 'সফল লগইন!',
   'pages.login.username.placeholder': 'ব্যবহারকারীর নাম: admin or user',
@@ -70,4 +72,5 @@ export default {
   'pages.searchTable.tenThousand': '000',
   'pages.searchTable.batchDeletion': 'একসাখে ডিলিট',
   'pages.searchTable.batchApproval': 'একসাখে অনুমোদন',
+  'pages.error.permissionDenied': 'এই কাজটি করার অনুমতি আপনার নেই',
 };

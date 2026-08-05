@@ -1,5 +1,4 @@
-import { createAdminService } from "@/services/index";
-import type { Admin } from "@/services/kratos/admin/v1";
+import { type Admin, services } from "@/services";
 import {
   ModalForm,
   ProFormSelect,
@@ -15,22 +14,17 @@ export type UpdateFormProps = {
   values: Partial<Admin>;
 };
 
-const adminService = createAdminService();
-
 const UpdateForm: FC<UpdateFormProps> = (props) => {
   const { onOk, values, trigger } = props;
 
   const intl = useIntl();
   const [messageApi, contextHolder] = message.useMessage();
 
-  const { run, loading } = useRequest(adminService.UpdateAdmin, {
+  const { run, loading } = useRequest(services.admin.UpdateAdmin, {
     manual: true,
     onSuccess: () => {
       messageApi.success("Updated successfully");
       onOk?.();
-    },
-    onError: () => {
-      messageApi.error("Update failed, please try again!");
     },
   });
 
@@ -45,7 +39,8 @@ const UpdateForm: FC<UpdateFormProps> = (props) => {
     try {
       await run({ admin: formValues, updateMask });
       return true;
-    } catch (error) {
+    } catch {
+      // Reporting is handled globally in requestErrorConfig.
       return false;
     }
   };

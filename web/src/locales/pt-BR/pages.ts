@@ -4,6 +4,7 @@ export default {
   'pages.login.accountLogin.tab': 'Login da conta',
   'pages.login.accountLogin.errorMessage':
     'usuário/senha incorreto(admin/ant.design)',
+  'pages.login.invalidCredentials': 'Usuário ou senha incorretos',
   'pages.login.failure': 'Login falhou, por favor tente novamente!',
   'pages.login.success': 'Login efetuado com sucesso!',
   'pages.login.username.placeholder': 'Usuário: admin or user',
@@ -74,4 +75,6 @@ export default {
   'pages.searchTable.tenThousand': '0000',
   'pages.searchTable.batchDeletion': 'deleção em lote',
   'pages.searchTable.batchApproval': 'aprovação em lote',
+  'pages.error.permissionDenied':
+    'Você não tem permissão para executar esta ação',
 };

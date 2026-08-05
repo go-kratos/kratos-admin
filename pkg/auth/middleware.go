@@ -11,6 +11,15 @@ import (
 	httpm "github.com/go-kratos/kratos/v3/transport/http"
 )
 
+// Error reasons reported by this middleware. They mirror the wire-visible names
+// in api/<domain>/<version>/error_reason.proto, but are declared here so `pkg`
+// does not depend on a domain's generated proto. TestReasonsMatchAPIEnum pins
+// the two together so they cannot drift.
+const (
+	reasonUnauthenticated  = "UNAUTHENTICATED"
+	reasonPermissionDenied = "PERMISSION_DENIED"
+)
+
 var (
 	// noAuthPaths defines the paths that do not require authentication.
 	noAuthPaths = map[string]struct{}{
@@ -20,10 +29,10 @@ var (
 	authSecretKey = authSecretFromEnv("KRATOS_AUTH_SECRET")
 	// cookieName is the name of the cookie that stores the authorization token.
 	cookieName = cookieNameFromEnv("KRATOS_AUTH_COOKIE")
-	// ErrUnauthorized indicates that the token is invalid.
-	ErrUnauthorized = errors.Unauthorized("UNAUTHORIZED", "Token is invalid")
-	// ErrForbidden indicates that access is denied.
-	ErrForbidden = errors.Forbidden("FORBIDDEN", "Access denied")
+	// ErrUnauthenticated indicates that the request carried no usable credential.
+	ErrUnauthenticated = errors.Unauthorized(reasonUnauthenticated, "Token is invalid")
+	// ErrPermissionDenied indicates that the caller lacks the required access.
+	ErrPermissionDenied = errors.Forbidden(reasonPermissionDenied, "Access denied")
 )
 
 // Middleware is an authentication middleware for HTTP servers.
@@ -34,15 +43,17 @@ func Middleware() httpm.FilterFunc {
 				next.ServeHTTP(w, r)
 				return
 			}
+			// This filter runs outside the kratos handler chain, so the error
+			// encoder has to be invoked explicitly. Writing plain text here
+			// instead would leave clients unable to read code / reason.
 			cookie, err := r.Cookie(cookieName)
 			if err != nil {
-				http.Error(w, "Unauthorized", http.StatusUnauthorized)
+				httpm.DefaultErrorEncoder(w, r, ErrUnauthenticated)
 				return
 			}
 			auth, err := ParseToken(cookie.Value, authSecretKey)
 			if err != nil {
-				ec := errors.FromError(err)
-				http.Error(w, ec.Message, int(ec.Code))
+				httpm.DefaultErrorEncoder(w, r, err)
 				return
 			}
 			ctx := NewContext(r.Context(), auth)

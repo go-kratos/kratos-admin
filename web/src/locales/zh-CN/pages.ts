@@ -4,6 +4,7 @@ export default {
   "pages.login.accountLogin.tab": "账户密码登录",
   "pages.login.accountLogin.errorMessage":
     "错误的用户名和密码(admin/ant.design)",
+  "pages.login.invalidCredentials": "用户名或密码错误",
   "pages.login.failure": "登录失败，请重试！",
   "pages.login.success": "登录成功！",
   "pages.login.username.placeholder": "用户名: admin or user",
@@ -75,4 +76,5 @@ export default {
   "pages.searchTable.tenThousand": "万",
   "pages.searchTable.batchDeletion": "批量删除",
   "pages.searchTable.batchApproval": "批量审批",
+  "pages.error.permissionDenied": "没有权限执行此操作",
 };

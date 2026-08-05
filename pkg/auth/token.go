@@ -32,14 +32,17 @@ func ParseToken(tokenStr, secret string) (*Auth, error) {
 		return []byte(secret), nil
 	})
 	if err != nil {
-		return nil, err
+		// Map the jwt driver error to a typed one; returning it raw would make
+		// callers see a 500 for a merely expired or malformed token. The cause
+		// is kept so logs can still tell expiry from a bad signature.
+		return nil, ErrUnauthenticated.WithCause(err)
 	}
 	if !token.Valid {
-		return nil, ErrUnauthorized
+		return nil, ErrUnauthenticated
 	}
 	auth, ok := token.Claims.(*Auth)
 	if !ok {
-		return nil, ErrUnauthorized
+		return nil, ErrUnauthenticated
 	}
 	return auth, nil
 }

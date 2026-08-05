@@ -1,6 +1,5 @@
 import { Footer } from "@/components";
-import { createAdminService } from "@/services/index";
-import { LoginRequest } from "@/services/kratos/admin/v1/index";
+import { type LoginRequest, services } from "@/services";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import { LoginForm, ProFormText } from "@ant-design/pro-components";
 import { FormattedMessage, Helmet, SelectLang, useIntl, useModel } from "@umijs/max";
@@ -9,8 +8,6 @@ import { createStyles } from "antd-style";
 import React from "react";
 import { flushSync } from "react-dom";
 import Settings from "../../../../config/defaultSettings";
-
-const adminService = createAdminService();
 
 const useStyles = createStyles(({ token }) => {
   return {
@@ -55,7 +52,7 @@ const Login: React.FC = () => {
 
   const handleSubmit = async (req: LoginRequest) => {
     try {
-      const userInfo = await adminService.Login(req);
+      const userInfo = await services.admin.Login(req);
       const defaultLoginSuccessMessage = intl.formatMessage({
         id: "pages.login.success",
         defaultMessage: "登录成功！",
@@ -70,12 +67,9 @@ const Login: React.FC = () => {
       });
       const urlParams = new URL(window.location.href).searchParams;
       window.location.href = urlParams.get("redirect") || "/";
-    } catch (error) {
-      const defaultLoginFailureMessage = intl.formatMessage({
-        id: "pages.login.failure",
-        defaultMessage: "登录失败，请重试！",
-      });
-      message.error(defaultLoginFailureMessage);
+    } catch {
+      // Reporting the failure is handled globally in requestErrorConfig, which
+      // maps `reason` to the wording for this locale.
     }
   };
 

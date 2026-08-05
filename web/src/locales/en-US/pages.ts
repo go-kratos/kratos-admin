@@ -4,6 +4,7 @@ export default {
   'pages.login.accountLogin.tab': 'Account Login',
   'pages.login.accountLogin.errorMessage':
     'Incorrect username/password(admin/ant.design)',
+  'pages.login.invalidCredentials': 'Incorrect username or password',
   'pages.login.failure': 'Login failed, please try again!',
   'pages.login.success': 'Login successful!',
   'pages.login.username.placeholder': 'Username: admin or user',
@@ -73,4 +74,6 @@ export default {
   'pages.searchTable.tenThousand': '0000',
   'pages.searchTable.batchDeletion': 'batch deletion',
   'pages.searchTable.batchApproval': 'batch approval',
+  'pages.error.permissionDenied':
+    'You do not have permission to perform this action',
 };

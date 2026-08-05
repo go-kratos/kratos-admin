@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package kratos.admin.v1;
+
+option go_package = "github.com/go-kratos/kratos-admin/api/kratos/admin/v1;v1";
+option java_multiple_files = true;
+option java_package = "api.kratos.admin.v1";
+
+// ErrorReason is the stable vocabulary for the `reason` field of the error
+// body. Values are wire-visible: protojson encodes them as their names, so
+// clients branch on the name (e.g. "ADMIN_NOT_FOUND") rather than on an HTTP
+// status. Surfaced in `biz` as `Err<Resource><Cause>`.
+enum ErrorReason {
+  // Unset. Never returned; reserved by proto3 for the zero value.
+  ERROR_REASON_UNSPECIFIED = 0;
+  // The requested admin does not exist.
+  ADMIN_NOT_FOUND = 1;
+  // Login failed. Returned for both an unknown account and a wrong password
+  // so callers cannot probe which accounts are registered.
+  INVALID_CREDENTIALS = 2;
+  // The login request carried no identity, or one this server does not accept.
+  INVALID_IDENTITY_TYPE = 3;
+  // The request carried no usable credential (missing or invalid token).
+  UNAUTHENTICATED = 4;
+  // The caller is authenticated but lacks the required access level.
+  PERMISSION_DENIED = 5;
+}
