@@ -328,5 +328,23 @@ export function createAdminServiceClient(
 // An empty JSON object
 type wellKnownEmpty = Record<never, never>;
 
+// ErrorReason is the stable vocabulary for the `reason` field of the error
+// body. Values are wire-visible: protojson encodes them as their names, so
+// clients branch on the name (e.g. "ADMIN_NOT_FOUND") rather than on an HTTP
+// status. Surfaced in `biz` as `Err<Resource><Cause>`.
+export type ErrorReason =
+  // Unset. Never returned; reserved by proto3 for the zero value.
+  | "ERROR_REASON_UNSPECIFIED"
+  // The requested admin does not exist.
+  | "ADMIN_NOT_FOUND"
+  // Login failed. Returned for both an unknown account and a wrong password
+  // so callers cannot probe which accounts are registered.
+  | "INVALID_CREDENTIALS"
+  // The login request carried no identity, or one this server does not accept.
+  | "INVALID_IDENTITY_TYPE"
+  // The request carried no usable credential (missing or invalid token).
+  | "UNAUTHENTICATED"
+  // The caller is authenticated but lacks the required access level.
+  | "PERMISSION_DENIED";
 
 // @@protoc_insertion_point(typescript-http-eof)
