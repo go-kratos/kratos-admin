@@ -4,6 +4,7 @@ export default {
   'pages.login.accountLogin.tab': 'ورود به حساب کاربری',
   'pages.login.accountLogin.errorMessage':
     'نام کاربری / رمزعبور نادرست (مدیر / ant.design)',
+  'pages.login.invalidCredentials': 'نام کاربری یا رمز عبور نادرست است',
   'pages.login.failure':
     'ورود به سیستم با شکست مواجه شد، لطفا دوباره سعی کنید!',
   'pages.login.success': 'ورود موفق!',
@@ -72,4 +73,5 @@ export default {
   'pages.searchTable.tenThousand': '0000',
   'pages.searchTable.batchDeletion': 'حذف دسته ای',
   'pages.searchTable.batchApproval': 'تصویب دسته ای',
+  'pages.error.permissionDenied': 'شما اجازه انجام این عمل را ندارید',
 };

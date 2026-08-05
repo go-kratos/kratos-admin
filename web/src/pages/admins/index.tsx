@@ -1,5 +1,4 @@
-import { createAdminService } from "@/services/index";
-import { Admin, ListAdminsRequest } from "@/services/kratos/admin/v1";
+import { type Admin, type ListAdminsRequest, services } from "@/services";
 import type {
   ActionType,
   ProColumns,
@@ -16,8 +15,6 @@ import { Button, Drawer, message, Popconfirm } from "antd";
 import React, { useCallback, useRef, useState } from "react";
 import CreateForm from "./components/CreateForm";
 import UpdateForm from "./components/UpdateForm";
-
-const adminService = createAdminService();
 
 type AdminQueryParams = {
   current?: number;
@@ -44,7 +41,7 @@ const handleList = async (params: AdminQueryParams) => {
     filter: filters.join(" AND ") || undefined,
     orderBy: undefined,
   };
-  const res = await adminService.ListAdmins(requestParams);
+  const res = await services.admin.ListAdmins(requestParams);
   return {
     data: res.admins ?? [],
     success: true,
@@ -71,13 +68,13 @@ const TableList: React.FC = () => {
       try {
         setDeleteLoading(true);
         for (const row of selectedRows) {
-          await adminService.DeleteAdmin({ id: row.id });
+          await services.admin.DeleteAdmin({ id: row.id });
         }
         setSelectedRows([]);
         actionRef.current?.reloadAndRest?.();
         messageApi.success("Deleted successfully and will refresh soon");
-      } catch (error) {
-        messageApi.error("Delete failed, please try again");
+      } catch {
+        // Reporting is handled globally in requestErrorConfig.
       } finally {
         setDeleteLoading(false);
       }

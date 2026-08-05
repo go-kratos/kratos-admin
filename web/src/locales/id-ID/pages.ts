@@ -4,6 +4,7 @@ export default {
   'pages.login.accountLogin.tab': 'Login dengan akun',
   'pages.login.accountLogin.errorMessage':
     'Nama pengguna dan kata sandi salah(admin/ant.design)',
+  'pages.login.invalidCredentials': 'Nama pengguna atau kata sandi salah',
   'pages.login.failure': 'Log masuk gagal, silakan coba lagi!',
   'pages.login.success': 'Login berhasil!',
   'pages.login.username.placeholder': 'nama pengguna: admin atau user',
@@ -72,4 +73,6 @@ export default {
   'pages.searchTable.tenThousand': '0000',
   'pages.searchTable.batchDeletion': 'Penghapusan batch',
   'pages.searchTable.batchApproval': 'Persetujuan batch',
+  'pages.error.permissionDenied':
+    'Anda tidak memiliki izin untuk melakukan tindakan ini',
 };

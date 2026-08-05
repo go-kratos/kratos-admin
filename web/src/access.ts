@@ -1,4 +1,4 @@
-import { Admin } from "@/services/kratos/admin/v1/index";
+import type { Admin } from "@/services";
 
 /**
  * @see https://umijs.org/docs/max/access#access

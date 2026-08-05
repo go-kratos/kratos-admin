@@ -4,6 +4,7 @@ export default {
   'pages.login.accountLogin.tab': '賬戶密碼登錄',
   'pages.login.accountLogin.errorMessage':
     '錯誤的用戶名和密碼(admin/ant.design)',
+  'pages.login.invalidCredentials': '用戶名或密碼錯誤',
   'pages.login.failure': '登錄失敗，請重試！',
   'pages.login.success': '登錄成功！',
   'pages.login.username.placeholder': '用戶名: admin or user',
@@ -68,4 +69,5 @@ export default {
   'pages.searchTable.tenThousand': '萬',
   'pages.searchTable.batchDeletion': '批量刪除',
   'pages.searchTable.batchApproval': '批量審批',
+  'pages.error.permissionDenied': '沒有權限執行此操作',
 };

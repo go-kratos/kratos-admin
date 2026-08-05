@@ -5,8 +5,7 @@ import {
   Question,
   SelectLang,
 } from "@/components";
-import { createAdminService } from "@/services/index";
-import { Admin } from "@/services/kratos/admin/v1/index";
+import { type Admin, services } from "@/services";
 import type { Settings as LayoutSettings } from "@ant-design/pro-components";
 import { SettingDrawer } from "@ant-design/pro-components";
 import type { RequestConfig, RunTimeLayoutConfig } from "@umijs/max";
@@ -17,8 +16,6 @@ import { errorConfig } from "./requestErrorConfig";
 const isDev = process.env.NODE_ENV === "development";
 const isDevOrTest = isDev || process.env.CI;
 const loginPath = "/user/login";
-
-const adminService = createAdminService();
 
 /**
  * @see https://umijs.org/docs/api/runtime-config#getinitialstate
@@ -31,11 +28,11 @@ export async function getInitialState(): Promise<{
 }> {
   const fetchUserInfo = async () => {
     try {
-      return await adminService.Current({});
-    } catch (error) {
-      history.push(loginPath);
+      return await services.admin.Current({});
+    } catch {
+      // Redirecting on 401 is handled globally in requestErrorConfig.
+      return undefined;
     }
-    return undefined;
   };
   // 如果不是登录页面，执行
   const { location } = history;

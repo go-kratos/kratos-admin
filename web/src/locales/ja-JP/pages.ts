@@ -4,6 +4,8 @@ export default {
   'pages.login.accountLogin.tab': 'アカウントログイン',
   'pages.login.accountLogin.errorMessage':
     'ユーザー名/パスワードが正しくありません(admin/ant.design)',
+  'pages.login.invalidCredentials':
+    'ユーザー名またはパスワードが正しくありません',
   'pages.login.failure': 'ログインに失敗したら、もう一度試してください!',
   'pages.login.success': 'ログイン成功!',
   'pages.login.username.placeholder': 'ユーザー名：adminまたはuser',
@@ -74,4 +76,5 @@ export default {
   'pages.searchTable.tenThousand': '万',
   'pages.searchTable.batchDeletion': 'バッチ削除',
   'pages.searchTable.batchApproval': 'バッチ承認',
+  'pages.error.permissionDenied': 'この操作を行う権限がありません',
 };

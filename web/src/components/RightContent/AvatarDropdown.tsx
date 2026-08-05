@@ -1,4 +1,4 @@
-import { createAdminService } from "@/services/index";
+import { services } from "@/services";
 import {
   LogoutOutlined,
   SettingOutlined,
@@ -11,8 +11,6 @@ import { createStyles } from "antd-style";
 import React from "react";
 import { flushSync } from "react-dom";
 import HeaderDropdown from "../HeaderDropdown";
-
-const adminService = createAdminService();
 
 export type GlobalHeaderRightProps = {
   menu?: boolean;
@@ -51,7 +49,7 @@ export const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({
    * 退出登录，并且将当前的 url 保存
    */
   const loginOut = async () => {
-    await adminService.Logout({});
+    await services.admin.Logout({});
     const { search, pathname } = window.location;
     const urlParams = new URL(window.location.href).searchParams;
     const searchParams = new URLSearchParams({
