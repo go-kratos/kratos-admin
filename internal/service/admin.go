@@ -45,7 +45,7 @@ func NewAdminService(uc *biz.AdminUsecase) *AdminService {
 func (s *AdminService) Current(ctx context.Context, req *emptypb.Empty) (*v1.Admin, error) {
 	a, ok := auth.FromContext(ctx)
 	if !ok {
-		return nil, auth.ErrUnauthorized
+		return nil, auth.ErrUnauthenticated
 	}
 	admin, err := s.uc.GetAdmin(ctx, a.UserID)
 	if err != nil {
@@ -72,7 +72,7 @@ func (s *AdminService) Login(ctx context.Context, req *v1.LoginRequest) (*v1.Adm
 			return nil, err
 		}
 	default:
-		return nil, errors.BadRequest("AUTH", "unsupported identity type")
+		return nil, errors.BadRequest(v1.ErrorReason_INVALID_IDENTITY_TYPE.String(), "unsupported identity type")
 	}
 	if err := auth.SetCookie(ctx, admin.ID, admin.Access, time.Now().Add(7*24*time.Hour)); err != nil {
 		return nil, err
@@ -84,7 +84,7 @@ func (s *AdminService) Login(ctx context.Context, req *v1.LoginRequest) (*v1.Adm
 func (s *AdminService) Logout(ctx context.Context, req *emptypb.Empty) (*emptypb.Empty, error) {
 	a, ok := auth.FromContext(ctx)
 	if !ok {
-		return nil, auth.ErrUnauthorized
+		return nil, auth.ErrUnauthenticated
 	}
 	if err := s.uc.Logout(ctx, a.UserID); err != nil {
 		return nil, err
@@ -99,10 +99,10 @@ func (s *AdminService) Logout(ctx context.Context, req *emptypb.Empty) (*emptypb
 func (s *AdminService) CreateAdmin(ctx context.Context, req *v1.CreateAdminRequest) (*v1.Admin, error) {
 	a, ok := auth.FromContext(ctx)
 	if !ok {
-		return nil, auth.ErrUnauthorized
+		return nil, auth.ErrUnauthenticated
 	}
 	if !a.HasAdminAccess() {
-		return nil, auth.ErrForbidden
+		return nil, auth.ErrPermissionDenied
 	}
 	admin, err := s.uc.CreateAdmin(ctx, &biz.Admin{
 		Name:     req.Admin.Name,
@@ -121,10 +121,10 @@ func (s *AdminService) CreateAdmin(ctx context.Context, req *v1.CreateAdminReque
 func (s *AdminService) UpdateAdmin(ctx context.Context, req *v1.UpdateAdminRequest) (*v1.Admin, error) {
 	a, ok := auth.FromContext(ctx)
 	if !ok {
-		return nil, auth.ErrUnauthorized
+		return nil, auth.ErrUnauthenticated
 	}
 	if !a.HasAdminAccess() {
-		return nil, auth.ErrForbidden
+		return nil, auth.ErrPermissionDenied
 	}
 	admin, err := s.GetAdmin(ctx, &v1.GetAdminRequest{Id: req.Admin.Id})
 	if err != nil {
@@ -149,10 +149,10 @@ func (s *AdminService) UpdateAdmin(ctx context.Context, req *v1.UpdateAdminReque
 func (s *AdminService) DeleteAdmin(ctx context.Context, req *v1.DeleteAdminRequest) (*emptypb.Empty, error) {
 	a, ok := auth.FromContext(ctx)
 	if !ok {
-		return nil, auth.ErrUnauthorized
+		return nil, auth.ErrUnauthenticated
 	}
 	if !a.HasAdminAccess() {
-		return nil, auth.ErrForbidden
+		return nil, auth.ErrPermissionDenied
 	}
 	if err := s.uc.DeleteAdmin(ctx, req.Id); err != nil {
 		return nil, err
@@ -164,10 +164,10 @@ func (s *AdminService) DeleteAdmin(ctx context.Context, req *v1.DeleteAdminReque
 func (s *AdminService) GetAdmin(ctx context.Context, req *v1.GetAdminRequest) (*v1.Admin, error) {
 	a, ok := auth.FromContext(ctx)
 	if !ok {
-		return nil, auth.ErrUnauthorized
+		return nil, auth.ErrUnauthenticated
 	}
 	if !a.HasAdminAccess() {
-		return nil, auth.ErrForbidden
+		return nil, auth.ErrPermissionDenied
 	}
 	admin, err := s.uc.GetAdmin(ctx, req.Id)
 	if err != nil {
@@ -180,10 +180,10 @@ func (s *AdminService) GetAdmin(ctx context.Context, req *v1.GetAdminRequest) (*
 func (s *AdminService) ListAdmins(ctx context.Context, req *v1.ListAdminsRequest) (*v1.AdminSet, error) {
 	a, ok := auth.FromContext(ctx)
 	if !ok {
-		return nil, auth.ErrUnauthorized
+		return nil, auth.ErrUnauthenticated
 	}
 	if !a.HasAdminAccess() {
-		return nil, auth.ErrForbidden
+		return nil, auth.ErrPermissionDenied
 	}
 	declarations, err := filtering.NewDeclarations(
 		filtering.DeclareStandardFunctions(),

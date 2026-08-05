@@ -42,21 +42,17 @@ func NewAdminUsecase(repo AdminRepo) *AdminUsecase {
 	return &AdminUsecase{admin: repo}
 }
 
-// errInvalidCredentials is returned for any failed login, regardless of
-// whether the user exists, to avoid leaking which accounts are registered.
-var errInvalidCredentials = errors.Unauthorized("AUTH", "invalid credentials")
-
 // LoginByUsername logs in a user by username and password.
 func (uc *AdminUsecase) LoginByUsername(ctx context.Context, username, password string) (*Admin, error) {
 	user, err := uc.admin.FindByName(ctx, username)
 	if err != nil {
 		if errors.Is(err, ErrAdminNotFound) {
-			return nil, errInvalidCredentials
+			return nil, ErrInvalidCredentials
 		}
 		return nil, err
 	}
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)); err != nil {
-		return nil, errInvalidCredentials
+		return nil, ErrInvalidCredentials
 	}
 	return user, nil
 }
@@ -66,12 +62,12 @@ func (uc *AdminUsecase) LoginByEmail(ctx context.Context, email, password string
 	user, err := uc.admin.FindByEmail(ctx, email)
 	if err != nil {
 		if errors.Is(err, ErrAdminNotFound) {
-			return nil, errInvalidCredentials
+			return nil, ErrInvalidCredentials
 		}
 		return nil, err
 	}
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)); err != nil {
-		return nil, errInvalidCredentials
+		return nil, ErrInvalidCredentials
 	}
 	return user, nil
 }
