@@ -122,22 +122,56 @@ const TableList: React.FC = () => {
     {
       title: (
         <FormattedMessage
-          id="pages.searchTable.title.createTime"
-          defaultMessage="CreateTime"
+          id="pages.searchTable.title.status"
+          defaultMessage="Status"
         />
       ),
-      dataIndex: "createdAt",
-      valueType: "dateTime",
+      dataIndex: "status",
+      // 后端的 filter 只声明了 name/email/phone/created_at，status 不可过滤，
+      // 所以不能让 ProTable 为这一列自动生成搜索项。
+      search: false,
+      valueEnum: {
+        ACTIVE: {
+          text: (
+            <FormattedMessage
+              id="pages.searchTable.status.active"
+              defaultMessage="Active"
+            />
+          ),
+          status: "Success",
+        },
+        INACTIVE: {
+          text: (
+            <FormattedMessage
+              id="pages.searchTable.status.inactive"
+              defaultMessage="Inactive"
+            />
+          ),
+          status: "Default",
+        },
+      },
     },
     {
       title: (
         <FormattedMessage
-          id="pages.searchTable.title.updateTime"
-          defaultMessage="UpdateTime"
+          id="pages.searchTable.title.createdAt"
+          defaultMessage="Created at"
+        />
+      ),
+      dataIndex: "createdAt",
+      valueType: "dateTime",
+      search: false,
+    },
+    {
+      title: (
+        <FormattedMessage
+          id="pages.searchTable.title.updatedAt"
+          defaultMessage="Updated at"
         />
       ),
       dataIndex: "updatedAt",
       valueType: "dateTime",
+      search: false,
     },
     {
       title: (
@@ -163,6 +197,7 @@ const TableList: React.FC = () => {
           values={record}
         />,
         <Popconfirm
+          key="delete"
           title="Delete the user"
           description="Are you sure to delete this user?"
           onConfirm={() => {
@@ -171,7 +206,7 @@ const TableList: React.FC = () => {
           okText="Yes"
           cancelText="No"
         >
-          <a key="delete">
+          <a>
             <FormattedMessage
               id="pages.searchTable.delete"
               defaultMessage="Delete"
