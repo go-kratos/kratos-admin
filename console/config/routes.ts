@@ -23,21 +23,21 @@ export default [
     ],
   },
   {
-    path: "/welcome",
-    name: "welcome",
-    icon: "smile",
-    component: "./Welcome",
+    path: "/overview",
+    name: "overview",
+    icon: "dashboard",
+    component: "./Overview",
   },
   {
     name: "admin",
-    icon: "crown",
+    icon: "team",
     path: "/admins",
     access: "canAdmin",
     component: "./admins",
   },
   {
     path: "/",
-    redirect: "/welcome",
+    redirect: "/overview",
   },
   {
     component: "404",
