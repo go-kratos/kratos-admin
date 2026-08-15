@@ -1,6 +1,13 @@
-﻿import { defaultConfig } from 'antd/lib/theme/internal';
+﻿import { MessageChannel } from 'node:worker_threads';
+import { defaultConfig } from 'antd/lib/theme/internal';
 
 defaultConfig.hashed = false;
+
+// jsdom 不提供 MessageChannel，而 @rc-component/form 用它调度 macroTask，
+// 缺失会让表单在挂载时抛错、整棵树都渲染不出来。Node 自带实现，补回全局即可。
+if (typeof global.MessageChannel === 'undefined') {
+  global.MessageChannel = MessageChannel;
+}
 
 const localStorageMock = {
   getItem: jest.fn(),
