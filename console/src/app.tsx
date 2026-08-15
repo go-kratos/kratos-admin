@@ -1,10 +1,4 @@
-import {
-  AvatarDropdown,
-  AvatarName,
-  Footer,
-  Question,
-  SelectLang,
-} from "@/components";
+import { AvatarDropdown, AvatarName, Footer, SelectLang } from "@/components";
 import { type Admin, services } from "@/services";
 import type { Settings as LayoutSettings } from "@ant-design/pro-components";
 import { SettingDrawer } from "@ant-design/pro-components";
@@ -60,10 +54,7 @@ export const layout: RunTimeLayoutConfig = ({
   setInitialState,
 }) => {
   return {
-    actionsRender: () => [
-      <Question key="doc" />,
-      <SelectLang key="SelectLang" />,
-    ],
+    actionsRender: () => [<SelectLang key="SelectLang" />],
     avatarProps: {
       src: initialState?.currentUser?.avatar,
       title: <AvatarName />,
@@ -82,26 +73,6 @@ export const layout: RunTimeLayoutConfig = ({
         history.push(loginPath);
       }
     },
-    bgLayoutImgList: [
-      {
-        src: "https://mdn.alipayobjects.com/yuyan_qk0oxh/afts/img/D2LWSqNny4sAAAAAAAAAAAAAFl94AQBr",
-        left: 85,
-        bottom: 100,
-        height: "303px",
-      },
-      {
-        src: "https://mdn.alipayobjects.com/yuyan_qk0oxh/afts/img/C2TWRpJpiC0AAAAAAAAAAAAAFl94AQBr",
-        bottom: -68,
-        right: -45,
-        height: "303px",
-      },
-      {
-        src: "https://mdn.alipayobjects.com/yuyan_qk0oxh/afts/img/F6vSTbj8KpYAAAAAAAAAAAAAFl94AQBr",
-        bottom: 0,
-        left: 0,
-        width: "331px",
-      },
-    ],
     links: [],
     menuHeaderRender: undefined,
     // 自定义 403 页面
@@ -138,6 +109,7 @@ export const layout: RunTimeLayoutConfig = ({
  * @doc https://umijs.org/docs/max/request#配置
  */
 export const request: RequestConfig = {
-  baseURL: isDev ? "" : "https://proapi.azurewebsites.net",
+  // Same-origin: the console is served alongside the Kratos HTTP server.
+  baseURL: "",
   ...errorConfig,
 };
