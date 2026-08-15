@@ -15,7 +15,7 @@
 wire_gen.go        linguist-generated=true
 openapi.yaml       linguist-generated=true
 internal/data/ent/** linguist-generated=true
-web/src/services/** linguist-generated=true
+console/src/services/** linguist-generated=true
 
 # Binaries.
 *.png binary

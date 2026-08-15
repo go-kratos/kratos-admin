@@ -12,7 +12,7 @@ plugins:
     out: api
     opt: paths=source_relative
   - local: ["go", "run", "go.einride.tech/protoc-gen-typescript-http@v0.10.0"]
-    out: web/src/services
+    out: console/src/services
   - local: ["go", "run", "github.com/google/gnostic/cmd/protoc-gen-openapi@v0.7.1"]
     out: .
     strategy: all

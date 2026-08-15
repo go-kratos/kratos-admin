@@ -15,22 +15,22 @@ so there is no vendored `third_party/` directory.
 ```shell
 # Install tooling (buf + wire)
 make init
-# Generate API files (pb.go, grpc, kratos http, openapi.yaml, web TS clients) from api/*.proto
+# Generate API files (pb.go, grpc, kratos http, openapi.yaml, console TS clients) from api/*.proto
 make api
 # Generate internal config (internal/conf/conf.pb.go) from internal/*.proto
 make config
 ```
 
-## Run Web Application
+## Run Console Application
 ```shell
-# Enter web directory, install dependencies and start development server
-cd web
+# Enter console directory, install dependencies and start development server
+cd console
 npm install
 npm run dev
 ```
 
 The generated clients work with any Promise-based HTTP client that returns JSON.  
-Services are defined and re-exported from this file: `web/src/services/index.ts`.  
+Services are defined and re-exported from this file: `console/src/services/index.ts`.  
 ```typescript
 import { createAdminServiceClient } from "@/services/kratos/admin/v1/index";
 
