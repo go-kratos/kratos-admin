@@ -27,9 +27,19 @@ const useStyles = createStyles(({ token }) => {
       flexDirection: "column",
       height: "100vh",
       overflow: "auto",
+      backgroundColor: token.colorBgLayout,
+      // 顶部一层极淡的品牌色光晕，零外部资源。
       backgroundImage:
-        "url('https://mdn.alipayobjects.com/yuyan_qk0oxh/afts/img/V-_oS6r-i7wAAAAAAAAAAAAAFl94AQBr')",
-      backgroundSize: "100% 100%",
+        "radial-gradient(60% 50% at 50% 0%, rgba(79,70,229,0.06) 0%, rgba(79,70,229,0) 100%)",
+    },
+    card: {
+      width: 400,
+      maxWidth: "calc(100vw - 32px)",
+      margin: "0 auto",
+      padding: "32px 0 8px",
+      backgroundColor: token.colorBgContainer,
+      border: `1px solid ${token.colorBorderSecondary}`,
+      borderRadius: token.borderRadiusLG,
     },
   };
 });
@@ -88,68 +98,72 @@ const Login: React.FC = () => {
       <div
         style={{
           flex: "1",
-          padding: "32px 0",
+          display: "flex",
+          alignItems: "center",
+          padding: "48px 16px",
         }}
       >
-        <LoginForm
-          contentStyle={{
-            minWidth: 280,
-            maxWidth: "75vw",
-          }}
-          logo={<img alt="logo" src="/logo.svg" />}
-          title="Ant Design"
-          subTitle={intl.formatMessage({
-            id: "pages.layouts.userLayout.title",
-          })}
-          onFinish={async (values) => {
-            await handleSubmit(values as LoginRequest);
-          }}
-        >
-          <ProFormText
-            name="username"
-            fieldProps={{
-              size: "large",
-              prefix: <UserOutlined />,
+        <div className={styles.card}>
+          <LoginForm
+            contentStyle={{
+              minWidth: 280,
+              maxWidth: "100%",
             }}
-            placeholder={intl.formatMessage({
-              id: "pages.login.username.placeholder",
-              defaultMessage: "用户名: admin",
+            logo={<img alt="logo" src="/logo.svg" />}
+            title="Kratos Admin"
+            subTitle={intl.formatMessage({
+              id: "pages.layouts.userLayout.title",
             })}
-            rules={[
-              {
-                required: true,
-                message: (
-                  <FormattedMessage
-                    id="pages.login.username.required"
-                    defaultMessage="请输入用户名!"
-                  />
-                ),
-              },
-            ]}
-          />
-          <ProFormText.Password
-            name="password"
-            fieldProps={{
-              size: "large",
-              prefix: <LockOutlined />,
+            onFinish={async (values) => {
+              await handleSubmit(values as LoginRequest);
             }}
-            placeholder={intl.formatMessage({
-              id: "pages.login.password.placeholder",
-              defaultMessage: "密码",
-            })}
-            rules={[
-              {
-                required: true,
-                message: (
-                  <FormattedMessage
-                    id="pages.login.password.required"
-                    defaultMessage="请输入密码！"
-                  />
-                ),
-              },
-            ]}
-          />
-        </LoginForm>
+          >
+            <ProFormText
+              name="username"
+              fieldProps={{
+                size: "large",
+                prefix: <UserOutlined />,
+              }}
+              placeholder={intl.formatMessage({
+                id: "pages.login.username.placeholder",
+                defaultMessage: "用户名",
+              })}
+              rules={[
+                {
+                  required: true,
+                  message: (
+                    <FormattedMessage
+                      id="pages.login.username.required"
+                      defaultMessage="请输入用户名!"
+                    />
+                  ),
+                },
+              ]}
+            />
+            <ProFormText.Password
+              name="password"
+              fieldProps={{
+                size: "large",
+                prefix: <LockOutlined />,
+              }}
+              placeholder={intl.formatMessage({
+                id: "pages.login.password.placeholder",
+                defaultMessage: "密码",
+              })}
+              rules={[
+                {
+                  required: true,
+                  message: (
+                    <FormattedMessage
+                      id="pages.login.password.required"
+                      defaultMessage="请输入密码！"
+                    />
+                  ),
+                },
+              ]}
+            />
+          </LoginForm>
+        </div>
       </div>
       <Footer />
     </div>

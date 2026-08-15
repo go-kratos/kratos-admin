@@ -1,33 +1,10 @@
-﻿// @ts-ignore
-import { startMock } from '@@/requestRecordMock';
 import { TestBrowser } from '@@/testBrowser';
-import { fireEvent, render } from '@testing-library/react';
-import React, { act } from 'react';
+import { render } from '@testing-library/react';
+import React from 'react';
 
-const waitTime = (time: number = 100) => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(true);
-    }, time);
-  });
-};
-
-let server: {
-  close: () => void;
-};
-
+// 这里只验证登录页能渲染出表单，不驱动登录流程：提交需要真实的 Kratos 服务，
+// 断言一套 mock 契约反而会和后端悄悄漂移。
 describe('Login Page', () => {
-  beforeAll(async () => {
-    server = await startMock({
-      port: 8000,
-      scene: 'login',
-    });
-  });
-
-  afterAll(() => {
-    server?.close();
-  });
-
   it('should show login form', async () => {
     const historyRef = React.createRef<any>();
     const rootContainer = render(
@@ -39,63 +16,17 @@ describe('Login Page', () => {
       />,
     );
 
-    await rootContainer.findAllByText('Ant Design');
+    // 标题是硬编码的，不随 locale 变化。
+    await rootContainer.findAllByText('Kratos Admin');
 
-    act(() => {
-      historyRef.current?.push('/user/login');
-    });
-
-    expect(
-      rootContainer.baseElement?.querySelector('.ant-pro-form-login-desc')
-        ?.textContent,
-    ).toBe(
-      'Ant Design is the most influential web design specification in Xihu district',
-    );
+    // 用 id 而非 placeholder 定位，这样改文案不会打破测试。
+    const { baseElement } = rootContainer;
+    expect(baseElement.querySelector('#username')).toBeTruthy();
+    expect(baseElement.querySelector('#password')).toBeTruthy();
+    // LoginForm 的提交按钮是 antd 的 type="primary"，DOM 上没有 type="submit"。
+    expect(baseElement.querySelector('button.ant-btn-primary')).toBeTruthy();
 
     expect(rootContainer.asFragment()).toMatchSnapshot();
-
-    rootContainer.unmount();
-  });
-
-  it('should login success', async () => {
-    const historyRef = React.createRef<any>();
-    const rootContainer = render(
-      <TestBrowser
-        historyRef={historyRef}
-        location={{
-          pathname: '/user/login',
-        }}
-      />,
-    );
-
-    await rootContainer.findAllByText('Ant Design');
-
-    const userNameInput = await rootContainer.findByPlaceholderText(
-      'Username: admin or user',
-    );
-
-    act(() => {
-      fireEvent.change(userNameInput, { target: { value: 'admin' } });
-    });
-
-    const passwordInput = await rootContainer.findByPlaceholderText(
-      'Password: ant.design',
-    );
-
-    act(() => {
-      fireEvent.change(passwordInput, { target: { value: 'ant.design' } });
-    });
-
-    await (await rootContainer.findByText('Login')).click();
-
-    // 等待接口返回结果
-    await waitTime(5000);
-
-    await rootContainer.findAllByText('Ant Design Pro');
-
-    expect(rootContainer.asFragment()).toMatchSnapshot();
-
-    await waitTime(2000);
 
     rootContainer.unmount();
   });
