@@ -2,25 +2,33 @@ package data
 
 import (
 	"context"
-	"time"
 
 	"github.com/go-kratos/aip-go/ents"
 	"github.com/go-kratos/kratos-admin/internal/biz"
 	"github.com/go-kratos/kratos-admin/internal/data/ent"
 	"github.com/go-kratos/kratos-admin/internal/data/ent/admin"
+	"github.com/go-kratos/kratos-admin/internal/data/ent/predicate"
+	"github.com/google/uuid"
 )
 
 func convertAdmin(po *ent.Admin) *biz.Admin {
 	return &biz.Admin{
-		ID:         po.ID,
-		Name:       po.Name,
-		Email:      po.Email,
-		Avatar:     po.Avatar,
-		Access:     po.Access,
-		Password:   po.Password,
-		CreateTime: po.CreateTime,
-		UpdateTime: po.UpdateTime,
+		ID:        po.ID,
+		Name:      po.Name,
+		Email:     po.Email,
+		Avatar:    po.Avatar,
+		Access:    po.Access,
+		Password:  po.Password,
+		Status:    biz.AdminStatus(po.Status),
+		CreatedAt: po.CreatedAt,
+		UpdatedAt: po.UpdatedAt,
 	}
+}
+
+// notDeleted excludes soft-deleted rows. Every read goes through it, so a
+// deleted admin is invisible above `data` without the caller opting in.
+func notDeleted() predicate.Admin {
+	return admin.StatusNEQ(int32(biz.AdminStatusDeleted))
 }
 
 type adminRepo struct {
@@ -34,8 +42,8 @@ func NewAdminRepo(data *Data) biz.AdminRepo {
 	}
 }
 
-func (r *adminRepo) FindByID(ctx context.Context, id int64) (*biz.Admin, error) {
-	po, err := r.data.db.Admin.Get(ctx, id)
+func (r *adminRepo) FindByID(ctx context.Context, id uuid.UUID) (*biz.Admin, error) {
+	po, err := r.data.db.Admin.Query().Where(admin.IDEQ(id), notDeleted()).Only(ctx)
 	if err != nil {
 		if ent.IsNotFound(err) {
 			return nil, biz.ErrAdminNotFound
@@ -46,7 +54,7 @@ func (r *adminRepo) FindByID(ctx context.Context, id int64) (*biz.Admin, error) 
 }
 
 func (r *adminRepo) FindByName(ctx context.Context, name string) (*biz.Admin, error) {
-	po, err := r.data.db.Admin.Query().Where(admin.NameEQ(name)).Only(ctx)
+	po, err := r.data.db.Admin.Query().Where(admin.NameEQ(name), notDeleted()).Only(ctx)
 	if err != nil {
 		if ent.IsNotFound(err) {
 			return nil, biz.ErrAdminNotFound
@@ -57,7 +65,7 @@ func (r *adminRepo) FindByName(ctx context.Context, name string) (*biz.Admin, er
 }
 
 func (r *adminRepo) FindByEmail(ctx context.Context, email string) (*biz.Admin, error) {
-	po, err := r.data.db.Admin.Query().Where(admin.EmailEQ(email)).Only(ctx)
+	po, err := r.data.db.Admin.Query().Where(admin.EmailEQ(email), notDeleted()).Only(ctx)
 	if err != nil {
 		if ent.IsNotFound(err) {
 			return nil, biz.ErrAdminNotFound
@@ -73,7 +81,7 @@ func (r *adminRepo) ListAdmins(ctx context.Context, opts ...biz.ListOption) ([]*
 		opt(&o)
 	}
 	pos, err := r.data.db.Admin.Query().
-		Where(ents.ApplyFilter(o.Filter)).
+		Where(notDeleted(), ents.ApplyFilter(o.Filter)).
 		Order(ents.ApplyOrderBy(o.OrderBy)).
 		Offset(o.Offset).
 		Limit(o.Limit).
@@ -89,15 +97,17 @@ func (r *adminRepo) ListAdmins(ctx context.Context, opts ...biz.ListOption) ([]*
 }
 
 func (r *adminRepo) CreateAdmin(ctx context.Context, admin *biz.Admin) (*biz.Admin, error) {
-	po, err := r.data.db.Admin.Create().
+	create := r.data.db.Admin.Create().
 		SetName(admin.Name).
 		SetEmail(admin.Email).
 		SetAvatar(admin.Avatar).
 		SetAccess(admin.Access).
-		SetPassword(admin.Password).
-		SetCreateTime(time.Now()).
-		SetUpdateTime(time.Now()).
-		Save(ctx)
+		SetPassword(admin.Password)
+	// An unspecified status falls through to the column default.
+	if admin.Status != biz.AdminStatusUnspecified {
+		create.SetStatus(int32(admin.Status))
+	}
+	po, err := create.Save(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -106,22 +116,38 @@ func (r *adminRepo) CreateAdmin(ctx context.Context, admin *biz.Admin) (*biz.Adm
 
 func (r *adminRepo) UpdateAdmin(ctx context.Context, admin *biz.Admin) (*biz.Admin, error) {
 	update := r.data.db.Admin.UpdateOneID(admin.ID).
+		Where(notDeleted()).
 		SetName(admin.Name).
 		SetEmail(admin.Email).
 		SetAccess(admin.Access).
-		SetAvatar(admin.Avatar).
-		SetUpdateTime(time.Now())
+		SetAvatar(admin.Avatar)
 	// Only update the password if it's not empty
 	if admin.Password != "" {
 		update.SetPassword(admin.Password)
 	}
+	// An unspecified status leaves the stored one unchanged.
+	if admin.Status != biz.AdminStatusUnspecified {
+		update.SetStatus(int32(admin.Status))
+	}
 	po, err := update.Save(ctx)
 	if err != nil {
+		if ent.IsNotFound(err) {
+			return nil, biz.ErrAdminNotFound
+		}
 		return nil, err
 	}
 	return convertAdmin(po), nil
 }
 
-func (r *adminRepo) DeleteAdmin(ctx context.Context, id int64) error {
-	return r.data.db.Admin.DeleteOneID(id).Exec(ctx)
+// DeleteAdmin soft-deletes the row: the record stays in storage with a
+// DELETED status, which every read in this repo filters out.
+func (r *adminRepo) DeleteAdmin(ctx context.Context, id uuid.UUID) error {
+	err := r.data.db.Admin.UpdateOneID(id).
+		Where(notDeleted()).
+		SetStatus(int32(biz.AdminStatusDeleted)).
+		Exec(ctx)
+	if ent.IsNotFound(err) {
+		return biz.ErrAdminNotFound
+	}
+	return err
 }

@@ -11,4 +11,6 @@ var (
 	// ErrInvalidCredentials is returned for any failed login, regardless of
 	// whether the user exists, to avoid leaking which accounts are registered.
 	ErrInvalidCredentials = errors.Unauthorized(v1.ErrorReason_INVALID_CREDENTIALS.String(), "invalid credentials")
+	// ErrInvalidAdminID error admin id is not a valid UUID.
+	ErrInvalidAdminID = errors.BadRequest(v1.ErrorReason_INVALID_ADMIN_ID.String(), "invalid admin id")
 )

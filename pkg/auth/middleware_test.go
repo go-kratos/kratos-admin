@@ -8,6 +8,7 @@ import (
 	"time"
 
 	v1 "github.com/go-kratos/kratos-admin/api/kratos/admin/v1"
+	"github.com/google/uuid"
 )
 
 // errorBody mirrors the wire shape of kratos errors.Status.
@@ -100,7 +101,7 @@ func TestReasonsMatchAPIEnum(t *testing.T) {
 }
 
 func TestMiddlewareAllowsValidToken(t *testing.T) {
-	token, err := GenerateToken(42, "admin", authSecretKey, time.Now().Add(time.Hour))
+	token, err := GenerateToken(uuid.New(), "admin", authSecretKey, time.Now().Add(time.Hour))
 	if err != nil {
 		t.Fatalf("GenerateToken: %v", err)
 	}

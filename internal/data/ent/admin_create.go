@@ -8,10 +8,12 @@ import (
 	"fmt"
 	"time"
 
+	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/go-kratos/kratos-admin/internal/data/ent/admin"
+	"github.com/google/uuid"
 )
 
 // AdminCreate is the builder for creating a Admin entity.
@@ -20,6 +22,34 @@ type AdminCreate struct {
 	mutation *AdminMutation
 	hooks    []Hook
 	conflict []sql.ConflictOption
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (_c *AdminCreate) SetCreatedAt(v time.Time) *AdminCreate {
+	_c.mutation.SetCreatedAt(v)
+	return _c
+}
+
+// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
+func (_c *AdminCreate) SetNillableCreatedAt(v *time.Time) *AdminCreate {
+	if v != nil {
+		_c.SetCreatedAt(*v)
+	}
+	return _c
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (_c *AdminCreate) SetUpdatedAt(v time.Time) *AdminCreate {
+	_c.mutation.SetUpdatedAt(v)
+	return _c
+}
+
+// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
+func (_c *AdminCreate) SetNillableUpdatedAt(v *time.Time) *AdminCreate {
+	if v != nil {
+		_c.SetUpdatedAt(*v)
+	}
+	return _c
 }
 
 // SetName sets the "name" field.
@@ -92,37 +122,31 @@ func (_c *AdminCreate) SetNillablePassword(v *string) *AdminCreate {
 	return _c
 }
 
-// SetCreateTime sets the "create_time" field.
-func (_c *AdminCreate) SetCreateTime(v time.Time) *AdminCreate {
-	_c.mutation.SetCreateTime(v)
+// SetStatus sets the "status" field.
+func (_c *AdminCreate) SetStatus(v int32) *AdminCreate {
+	_c.mutation.SetStatus(v)
 	return _c
 }
 
-// SetNillableCreateTime sets the "create_time" field if the given value is not nil.
-func (_c *AdminCreate) SetNillableCreateTime(v *time.Time) *AdminCreate {
+// SetNillableStatus sets the "status" field if the given value is not nil.
+func (_c *AdminCreate) SetNillableStatus(v *int32) *AdminCreate {
 	if v != nil {
-		_c.SetCreateTime(*v)
-	}
-	return _c
-}
-
-// SetUpdateTime sets the "update_time" field.
-func (_c *AdminCreate) SetUpdateTime(v time.Time) *AdminCreate {
-	_c.mutation.SetUpdateTime(v)
-	return _c
-}
-
-// SetNillableUpdateTime sets the "update_time" field if the given value is not nil.
-func (_c *AdminCreate) SetNillableUpdateTime(v *time.Time) *AdminCreate {
-	if v != nil {
-		_c.SetUpdateTime(*v)
+		_c.SetStatus(*v)
 	}
 	return _c
 }
 
 // SetID sets the "id" field.
-func (_c *AdminCreate) SetID(v int64) *AdminCreate {
+func (_c *AdminCreate) SetID(v uuid.UUID) *AdminCreate {
 	_c.mutation.SetID(v)
+	return _c
+}
+
+// SetNillableID sets the "id" field if the given value is not nil.
+func (_c *AdminCreate) SetNillableID(v *uuid.UUID) *AdminCreate {
+	if v != nil {
+		_c.SetID(*v)
+	}
 	return _c
 }
 
@@ -161,6 +185,14 @@ func (_c *AdminCreate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (_c *AdminCreate) defaults() {
+	if _, ok := _c.mutation.CreatedAt(); !ok {
+		v := admin.DefaultCreatedAt()
+		_c.mutation.SetCreatedAt(v)
+	}
+	if _, ok := _c.mutation.UpdatedAt(); !ok {
+		v := admin.DefaultUpdatedAt()
+		_c.mutation.SetUpdatedAt(v)
+	}
 	if _, ok := _c.mutation.Name(); !ok {
 		v := admin.DefaultName
 		_c.mutation.SetName(v)
@@ -181,18 +213,24 @@ func (_c *AdminCreate) defaults() {
 		v := admin.DefaultPassword
 		_c.mutation.SetPassword(v)
 	}
-	if _, ok := _c.mutation.CreateTime(); !ok {
-		v := admin.DefaultCreateTime()
-		_c.mutation.SetCreateTime(v)
+	if _, ok := _c.mutation.Status(); !ok {
+		v := admin.DefaultStatus
+		_c.mutation.SetStatus(v)
 	}
-	if _, ok := _c.mutation.UpdateTime(); !ok {
-		v := admin.DefaultUpdateTime()
-		_c.mutation.SetUpdateTime(v)
+	if _, ok := _c.mutation.ID(); !ok {
+		v := admin.DefaultID()
+		_c.mutation.SetID(v)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
 func (_c *AdminCreate) check() error {
+	if _, ok := _c.mutation.CreatedAt(); !ok {
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Admin.created_at"`)}
+	}
+	if _, ok := _c.mutation.UpdatedAt(); !ok {
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Admin.updated_at"`)}
+	}
 	if _, ok := _c.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "Admin.name"`)}
 	}
@@ -208,11 +246,8 @@ func (_c *AdminCreate) check() error {
 	if _, ok := _c.mutation.Password(); !ok {
 		return &ValidationError{Name: "password", err: errors.New(`ent: missing required field "Admin.password"`)}
 	}
-	if _, ok := _c.mutation.CreateTime(); !ok {
-		return &ValidationError{Name: "create_time", err: errors.New(`ent: missing required field "Admin.create_time"`)}
-	}
-	if _, ok := _c.mutation.UpdateTime(); !ok {
-		return &ValidationError{Name: "update_time", err: errors.New(`ent: missing required field "Admin.update_time"`)}
+	if _, ok := _c.mutation.Status(); !ok {
+		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "Admin.status"`)}
 	}
 	return nil
 }
@@ -228,9 +263,12 @@ func (_c *AdminCreate) sqlSave(ctx context.Context) (*Admin, error) {
 		}
 		return nil, err
 	}
-	if _spec.ID.Value != _node.ID {
-		id := _spec.ID.Value.(int64)
-		_node.ID = int64(id)
+	if _spec.ID.Value != nil {
+		if id, ok := _spec.ID.Value.(*uuid.UUID); ok {
+			_node.ID = *id
+		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
+			return nil, err
+		}
 	}
 	_c.mutation.id = &_node.ID
 	_c.mutation.done = true
@@ -240,12 +278,20 @@ func (_c *AdminCreate) sqlSave(ctx context.Context) (*Admin, error) {
 func (_c *AdminCreate) createSpec() (*Admin, *sqlgraph.CreateSpec) {
 	var (
 		_node = &Admin{config: _c.config}
-		_spec = sqlgraph.NewCreateSpec(admin.Table, sqlgraph.NewFieldSpec(admin.FieldID, field.TypeInt64))
+		_spec = sqlgraph.NewCreateSpec(admin.Table, sqlgraph.NewFieldSpec(admin.FieldID, field.TypeUUID))
 	)
 	_spec.OnConflict = _c.conflict
 	if id, ok := _c.mutation.ID(); ok {
 		_node.ID = id
-		_spec.ID.Value = id
+		_spec.ID.Value = &id
+	}
+	if value, ok := _c.mutation.CreatedAt(); ok {
+		_spec.SetField(admin.FieldCreatedAt, field.TypeTime, value)
+		_node.CreatedAt = value
+	}
+	if value, ok := _c.mutation.UpdatedAt(); ok {
+		_spec.SetField(admin.FieldUpdatedAt, field.TypeTime, value)
+		_node.UpdatedAt = value
 	}
 	if value, ok := _c.mutation.Name(); ok {
 		_spec.SetField(admin.FieldName, field.TypeString, value)
@@ -267,13 +313,9 @@ func (_c *AdminCreate) createSpec() (*Admin, *sqlgraph.CreateSpec) {
 		_spec.SetField(admin.FieldPassword, field.TypeString, value)
 		_node.Password = value
 	}
-	if value, ok := _c.mutation.CreateTime(); ok {
-		_spec.SetField(admin.FieldCreateTime, field.TypeTime, value)
-		_node.CreateTime = value
-	}
-	if value, ok := _c.mutation.UpdateTime(); ok {
-		_spec.SetField(admin.FieldUpdateTime, field.TypeTime, value)
-		_node.UpdateTime = value
+	if value, ok := _c.mutation.Status(); ok {
+		_spec.SetField(admin.FieldStatus, field.TypeInt32, value)
+		_node.Status = value
 	}
 	return _node, _spec
 }
@@ -282,7 +324,7 @@ func (_c *AdminCreate) createSpec() (*Admin, *sqlgraph.CreateSpec) {
 // of the `INSERT` statement. For example:
 //
 //	client.Admin.Create().
-//		SetName(v).
+//		SetCreatedAt(v).
 //		OnConflict(
 //			// Update the row with the new values
 //			// the was proposed for insertion.
@@ -291,7 +333,7 @@ func (_c *AdminCreate) createSpec() (*Admin, *sqlgraph.CreateSpec) {
 //		// Override some of the fields with custom
 //		// update values.
 //		Update(func(u *ent.AdminUpsert) {
-//			SetName(v+v).
+//			SetCreatedAt(v+v).
 //		}).
 //		Exec(ctx)
 func (_c *AdminCreate) OnConflict(opts ...sql.ConflictOption) *AdminUpsertOne {
@@ -326,6 +368,18 @@ type (
 		*sql.UpdateSet
 	}
 )
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *AdminUpsert) SetUpdatedAt(v time.Time) *AdminUpsert {
+	u.Set(admin.FieldUpdatedAt, v)
+	return u
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *AdminUpsert) UpdateUpdatedAt() *AdminUpsert {
+	u.SetExcluded(admin.FieldUpdatedAt)
+	return u
+}
 
 // SetName sets the "name" field.
 func (u *AdminUpsert) SetName(v string) *AdminUpsert {
@@ -387,15 +441,21 @@ func (u *AdminUpsert) UpdatePassword() *AdminUpsert {
 	return u
 }
 
-// SetUpdateTime sets the "update_time" field.
-func (u *AdminUpsert) SetUpdateTime(v time.Time) *AdminUpsert {
-	u.Set(admin.FieldUpdateTime, v)
+// SetStatus sets the "status" field.
+func (u *AdminUpsert) SetStatus(v int32) *AdminUpsert {
+	u.Set(admin.FieldStatus, v)
 	return u
 }
 
-// UpdateUpdateTime sets the "update_time" field to the value that was provided on create.
-func (u *AdminUpsert) UpdateUpdateTime() *AdminUpsert {
-	u.SetExcluded(admin.FieldUpdateTime)
+// UpdateStatus sets the "status" field to the value that was provided on create.
+func (u *AdminUpsert) UpdateStatus() *AdminUpsert {
+	u.SetExcluded(admin.FieldStatus)
+	return u
+}
+
+// AddStatus adds v to the "status" field.
+func (u *AdminUpsert) AddStatus(v int32) *AdminUpsert {
+	u.Add(admin.FieldStatus, v)
 	return u
 }
 
@@ -416,8 +476,8 @@ func (u *AdminUpsertOne) UpdateNewValues() *AdminUpsertOne {
 		if _, exists := u.create.mutation.ID(); exists {
 			s.SetIgnore(admin.FieldID)
 		}
-		if _, exists := u.create.mutation.CreateTime(); exists {
-			s.SetIgnore(admin.FieldCreateTime)
+		if _, exists := u.create.mutation.CreatedAt(); exists {
+			s.SetIgnore(admin.FieldCreatedAt)
 		}
 	}))
 	return u
@@ -448,6 +508,20 @@ func (u *AdminUpsertOne) Update(set func(*AdminUpsert)) *AdminUpsertOne {
 		set(&AdminUpsert{UpdateSet: update})
 	}))
 	return u
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *AdminUpsertOne) SetUpdatedAt(v time.Time) *AdminUpsertOne {
+	return u.Update(func(s *AdminUpsert) {
+		s.SetUpdatedAt(v)
+	})
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *AdminUpsertOne) UpdateUpdatedAt() *AdminUpsertOne {
+	return u.Update(func(s *AdminUpsert) {
+		s.UpdateUpdatedAt()
+	})
 }
 
 // SetName sets the "name" field.
@@ -520,17 +594,24 @@ func (u *AdminUpsertOne) UpdatePassword() *AdminUpsertOne {
 	})
 }
 
-// SetUpdateTime sets the "update_time" field.
-func (u *AdminUpsertOne) SetUpdateTime(v time.Time) *AdminUpsertOne {
+// SetStatus sets the "status" field.
+func (u *AdminUpsertOne) SetStatus(v int32) *AdminUpsertOne {
 	return u.Update(func(s *AdminUpsert) {
-		s.SetUpdateTime(v)
+		s.SetStatus(v)
 	})
 }
 
-// UpdateUpdateTime sets the "update_time" field to the value that was provided on create.
-func (u *AdminUpsertOne) UpdateUpdateTime() *AdminUpsertOne {
+// AddStatus adds v to the "status" field.
+func (u *AdminUpsertOne) AddStatus(v int32) *AdminUpsertOne {
 	return u.Update(func(s *AdminUpsert) {
-		s.UpdateUpdateTime()
+		s.AddStatus(v)
+	})
+}
+
+// UpdateStatus sets the "status" field to the value that was provided on create.
+func (u *AdminUpsertOne) UpdateStatus() *AdminUpsertOne {
+	return u.Update(func(s *AdminUpsert) {
+		s.UpdateStatus()
 	})
 }
 
@@ -550,7 +631,12 @@ func (u *AdminUpsertOne) ExecX(ctx context.Context) {
 }
 
 // Exec executes the UPSERT query and returns the inserted/updated ID.
-func (u *AdminUpsertOne) ID(ctx context.Context) (id int64, err error) {
+func (u *AdminUpsertOne) ID(ctx context.Context) (id uuid.UUID, err error) {
+	if u.create.driver.Dialect() == dialect.MySQL {
+		// In case of "ON CONFLICT", there is no way to get back non-numeric ID
+		// fields from the database since MySQL does not support the RETURNING clause.
+		return id, errors.New("ent: AdminUpsertOne.ID is not supported by MySQL driver. Use AdminUpsertOne.Exec instead")
+	}
 	node, err := u.create.Save(ctx)
 	if err != nil {
 		return id, err
@@ -559,7 +645,7 @@ func (u *AdminUpsertOne) ID(ctx context.Context) (id int64, err error) {
 }
 
 // IDX is like ID, but panics if an error occurs.
-func (u *AdminUpsertOne) IDX(ctx context.Context) int64 {
+func (u *AdminUpsertOne) IDX(ctx context.Context) uuid.UUID {
 	id, err := u.ID(ctx)
 	if err != nil {
 		panic(err)
@@ -614,10 +700,6 @@ func (_c *AdminCreateBulk) Save(ctx context.Context) ([]*Admin, error) {
 					return nil, err
 				}
 				mutation.id = &nodes[i].ID
-				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
-					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = int64(id)
-				}
 				mutation.done = true
 				return nodes[i], nil
 			})
@@ -669,7 +751,7 @@ func (_c *AdminCreateBulk) ExecX(ctx context.Context) {
 //		// Override some of the fields with custom
 //		// update values.
 //		Update(func(u *ent.AdminUpsert) {
-//			SetName(v+v).
+//			SetCreatedAt(v+v).
 //		}).
 //		Exec(ctx)
 func (_c *AdminCreateBulk) OnConflict(opts ...sql.ConflictOption) *AdminUpsertBulk {
@@ -716,8 +798,8 @@ func (u *AdminUpsertBulk) UpdateNewValues() *AdminUpsertBulk {
 			if _, exists := b.mutation.ID(); exists {
 				s.SetIgnore(admin.FieldID)
 			}
-			if _, exists := b.mutation.CreateTime(); exists {
-				s.SetIgnore(admin.FieldCreateTime)
+			if _, exists := b.mutation.CreatedAt(); exists {
+				s.SetIgnore(admin.FieldCreatedAt)
 			}
 		}
 	}))
@@ -749,6 +831,20 @@ func (u *AdminUpsertBulk) Update(set func(*AdminUpsert)) *AdminUpsertBulk {
 		set(&AdminUpsert{UpdateSet: update})
 	}))
 	return u
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *AdminUpsertBulk) SetUpdatedAt(v time.Time) *AdminUpsertBulk {
+	return u.Update(func(s *AdminUpsert) {
+		s.SetUpdatedAt(v)
+	})
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *AdminUpsertBulk) UpdateUpdatedAt() *AdminUpsertBulk {
+	return u.Update(func(s *AdminUpsert) {
+		s.UpdateUpdatedAt()
+	})
 }
 
 // SetName sets the "name" field.
@@ -821,17 +917,24 @@ func (u *AdminUpsertBulk) UpdatePassword() *AdminUpsertBulk {
 	})
 }
 
-// SetUpdateTime sets the "update_time" field.
-func (u *AdminUpsertBulk) SetUpdateTime(v time.Time) *AdminUpsertBulk {
+// SetStatus sets the "status" field.
+func (u *AdminUpsertBulk) SetStatus(v int32) *AdminUpsertBulk {
 	return u.Update(func(s *AdminUpsert) {
-		s.SetUpdateTime(v)
+		s.SetStatus(v)
 	})
 }
 
-// UpdateUpdateTime sets the "update_time" field to the value that was provided on create.
-func (u *AdminUpsertBulk) UpdateUpdateTime() *AdminUpsertBulk {
+// AddStatus adds v to the "status" field.
+func (u *AdminUpsertBulk) AddStatus(v int32) *AdminUpsertBulk {
 	return u.Update(func(s *AdminUpsert) {
-		s.UpdateUpdateTime()
+		s.AddStatus(v)
+	})
+}
+
+// UpdateStatus sets the "status" field to the value that was provided on create.
+func (u *AdminUpsertBulk) UpdateStatus() *AdminUpsertBulk {
+	return u.Update(func(s *AdminUpsert) {
+		s.UpdateStatus()
 	})
 }
 

@@ -8,7 +8,7 @@ import (
 )
 
 // GenerateToken generates a JWT token for the given username.
-func GenerateToken(userID int64, access, secret string, expiresAt time.Time) (string, error) {
+func GenerateToken(userID uuid.UUID, access, secret string, expiresAt time.Time) (string, error) {
 	now := time.Now()
 	claims := Auth{
 		UserID: userID,

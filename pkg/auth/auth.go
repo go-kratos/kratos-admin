@@ -4,12 +4,13 @@ import (
 	"context"
 
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/google/uuid"
 )
 
 // Auth user auth.
 type Auth struct {
-	UserID int64  `json:"id"`
-	Access string `json:"access"`
+	UserID uuid.UUID `json:"id"`
+	Access string    `json:"access"`
 	jwt.RegisteredClaims
 }
 

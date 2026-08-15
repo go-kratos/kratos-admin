@@ -48,7 +48,7 @@ type AdminServiceClient interface {
 	CreateAdmin(ctx context.Context, in *CreateAdminRequest, opts ...grpc.CallOption) (*Admin, error)
 	// UpdateAdmin updates an existing admin.
 	UpdateAdmin(ctx context.Context, in *UpdateAdminRequest, opts ...grpc.CallOption) (*Admin, error)
-	// DeleteAdmin deletes an admin by ID.
+	// DeleteAdmin soft-deletes an admin by ID.
 	DeleteAdmin(ctx context.Context, in *DeleteAdminRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// GetAdmin retrieves an admin by ID.
 	GetAdmin(ctx context.Context, in *GetAdminRequest, opts ...grpc.CallOption) (*Admin, error)
@@ -160,7 +160,7 @@ type AdminServiceServer interface {
 	CreateAdmin(context.Context, *CreateAdminRequest) (*Admin, error)
 	// UpdateAdmin updates an existing admin.
 	UpdateAdmin(context.Context, *UpdateAdminRequest) (*Admin, error)
-	// DeleteAdmin deletes an admin by ID.
+	// DeleteAdmin soft-deletes an admin by ID.
 	DeleteAdmin(context.Context, *DeleteAdminRequest) (*emptypb.Empty, error)
 	// GetAdmin retrieves an admin by ID.
 	GetAdmin(context.Context, *GetAdminRequest) (*Admin, error)

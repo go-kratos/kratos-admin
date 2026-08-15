@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/go-kratos/kratos/v3/errors"
+	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -23,7 +24,7 @@ func newFakeAdminRepo() *fakeAdminRepo {
 	}
 }
 
-func (r *fakeAdminRepo) FindByID(context.Context, int64) (*Admin, error) {
+func (r *fakeAdminRepo) FindByID(context.Context, uuid.UUID) (*Admin, error) {
 	return nil, ErrAdminNotFound
 }
 
@@ -56,7 +57,7 @@ func (r *fakeAdminRepo) UpdateAdmin(_ context.Context, a *Admin) (*Admin, error)
 	return a, nil
 }
 
-func (r *fakeAdminRepo) DeleteAdmin(context.Context, int64) error {
+func (r *fakeAdminRepo) DeleteAdmin(context.Context, uuid.UUID) error {
 	return nil
 }
 
@@ -67,7 +68,7 @@ func seedAdmin(t *testing.T, repo *fakeAdminRepo, name, email, password string) 
 	if err != nil {
 		t.Fatalf("hash password: %v", err)
 	}
-	a := &Admin{ID: 1, Name: name, Email: email, Password: string(hashed)}
+	a := &Admin{ID: uuid.New(), Name: name, Email: email, Password: string(hashed)}
 	repo.byName[name] = a
 	repo.byEmail[email] = a
 	return a
@@ -156,7 +157,7 @@ func TestUpdateAdmin_EmptyPasswordLeftUnchanged(t *testing.T) {
 	repo := newFakeAdminRepo()
 	uc := NewAdminUsecase(repo)
 
-	got, err := uc.UpdateAdmin(context.Background(), &Admin{ID: 1, Name: "bob", Password: ""})
+	got, err := uc.UpdateAdmin(context.Background(), &Admin{ID: uuid.New(), Name: "bob", Password: ""})
 	if err != nil {
 		t.Fatalf("update admin: %v", err)
 	}

@@ -32,7 +32,7 @@ type AdminServiceHTTPServer interface {
 	CreateAdmin(context.Context, *CreateAdminRequest) (*Admin, error)
 	// Current Current returns the currently logged-in user.
 	Current(context.Context, *emptypb.Empty) (*Admin, error)
-	// DeleteAdmin DeleteAdmin deletes an admin by ID.
+	// DeleteAdmin DeleteAdmin soft-deletes an admin by ID.
 	DeleteAdmin(context.Context, *DeleteAdminRequest) (*emptypb.Empty, error)
 	// GetAdmin GetAdmin retrieves an admin by ID.
 	GetAdmin(context.Context, *GetAdminRequest) (*Admin, error)
@@ -227,7 +227,7 @@ type AdminServiceHTTPClient interface {
 	CreateAdmin(ctx context.Context, req *CreateAdminRequest, opts ...http.CallOption) (rsp *Admin, err error)
 	// Current Current returns the currently logged-in user.
 	Current(ctx context.Context, req *emptypb.Empty, opts ...http.CallOption) (rsp *Admin, err error)
-	// DeleteAdmin DeleteAdmin deletes an admin by ID.
+	// DeleteAdmin DeleteAdmin soft-deletes an admin by ID.
 	DeleteAdmin(ctx context.Context, req *DeleteAdminRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 	// GetAdmin GetAdmin retrieves an admin by ID.
 	GetAdmin(ctx context.Context, req *GetAdminRequest, opts ...http.CallOption) (rsp *Admin, err error)
@@ -284,7 +284,7 @@ func (c *AdminServiceHTTPClientImpl) Current(ctx context.Context, in *emptypb.Em
 	return &out, nil
 }
 
-// DeleteAdmin DeleteAdmin deletes an admin by ID.
+// DeleteAdmin DeleteAdmin soft-deletes an admin by ID.
 func (c *AdminServiceHTTPClientImpl) DeleteAdmin(ctx context.Context, in *DeleteAdminRequest, opts ...http.CallOption) (*emptypb.Empty, error) {
 	var out emptypb.Empty
 	pattern := "/v1/admins/{id}"

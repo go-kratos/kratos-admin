@@ -14,8 +14,21 @@ option java_package = "api.kratos.admin.v1";
 
 // Admin is the admin message.
 message Admin {
-  // The unique ID of the user.
-  int64 id = 1;
+  // Status is the lifecycle status of an admin. `DELETED` marks a soft-deleted
+  // record: it stays in storage but is excluded from reads.
+  enum Status {
+    // Unset. On create the server stores `ACTIVE`; on update it leaves the
+    // stored status unchanged.
+    STATUS_UNSPECIFIED = 0;
+    // The admin is in normal use.
+    ACTIVE = 1;
+    // The admin is disabled.
+    INACTIVE = 2;
+    // The admin is soft-deleted.
+    DELETED = 3;
+  }
+  // The unique ID of the user, a UUID assigned by the server.
+  string id = 1;
   // The name of the user.
   string name = 2;
   // The email of the user.
@@ -29,10 +42,12 @@ message Admin {
   string access = 6;
   // The password of the user.
   string password = 7;
+  // The lifecycle status of the user.
+  Status status = 8;
   // The timestamp at which the user was created.
-  google.protobuf.Timestamp create_time = 8;
+  google.protobuf.Timestamp created_at = 9;
   // The latest timestamp at which the user was updated.
-  google.protobuf.Timestamp update_time = 9;
+  google.protobuf.Timestamp updated_at = 10;
 }
 
 // AdminSet is the set of admins.
@@ -85,7 +100,7 @@ service AdminService {
       body: "admin"
     };
   }
-  // DeleteAdmin deletes an admin by ID.
+  // DeleteAdmin soft-deletes an admin by ID.
   rpc DeleteAdmin(DeleteAdminRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       delete: "/v1/admins/{id}"
@@ -113,7 +128,7 @@ message LoginRequest {
 // GetAdminRequest is the request message for the GetAdmin method.
 message GetAdminRequest {
   // The ID of the admin to retrieve.
-  int64 id = 1 [(google.api.field_behavior) = REQUIRED];
+  string id = 1 [(google.api.field_behavior) = REQUIRED];
 }
 
 // ListAdminsResponse is the response message for the ListAdmins method.
@@ -127,16 +142,18 @@ message ListAdminsRequest {
   //    * `name` (i.e. `name="John Doe"`)
   //    * `email` (i.e. `email="admin@go-kratos.dev"`)
   //    * `phone` (i.e. `phone="+1234567890"`)
-  //    * `create_time` range (i.e. `timestamp>="2025-01-31T11:30:00-04:00"` where
+  //    * `created_at` range (i.e. `timestamp>="2025-01-31T11:30:00-04:00"` where
   //    the timestamp is in RFC 3339 format)
+  //
+  // Soft-deleted admins are never returned, regardless of filter.
   //
   // More detail in [AIP-160](https://google.aip.dev/160).
   string filter = 3;
   // Optional. A comma-separated list of fields to order by, sorted in ascending
   // order. Use "desc" after a field name for descending. Supported fields:
-  // - `create_time`
+  // - `created_at`
   //
-  // Example: `create_time desc`.
+  // Example: `created_at desc`.
   string order_by = 4;
 }
 
@@ -156,6 +173,7 @@ message UpdateAdminRequest {
 
 // DeleteAdminRequest is the request message for the DeleteAdmin method.
 message DeleteAdminRequest {
-  // Required. The ID of the admin to delete.
-  int64 id = 1 [(google.api.field_behavior) = REQUIRED];
+  // Required. The ID of the admin to delete. The record is soft-deleted: its
+  // status becomes `DELETED` and it no longer appears in reads.
+  string id = 1 [(google.api.field_behavior) = REQUIRED];
 }

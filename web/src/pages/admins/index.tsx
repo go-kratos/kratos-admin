@@ -126,7 +126,7 @@ const TableList: React.FC = () => {
           defaultMessage="CreateTime"
         />
       ),
-      dataIndex: "createTime",
+      dataIndex: "createdAt",
       valueType: "dateTime",
     },
     {
@@ -136,7 +136,7 @@ const TableList: React.FC = () => {
           defaultMessage="UpdateTime"
         />
       ),
-      dataIndex: "updateTime",
+      dataIndex: "updatedAt",
       valueType: "dateTime",
     },
     {

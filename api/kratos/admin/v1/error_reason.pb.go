@@ -41,6 +41,8 @@ const (
 	ErrorReason_UNAUTHENTICATED ErrorReason = 4
 	// The caller is authenticated but lacks the required access level.
 	ErrorReason_PERMISSION_DENIED ErrorReason = 5
+	// The request carried an admin ID that is not a valid UUID.
+	ErrorReason_INVALID_ADMIN_ID ErrorReason = 6
 )
 
 // Enum value maps for ErrorReason.
@@ -52,6 +54,7 @@ var (
 		3: "INVALID_IDENTITY_TYPE",
 		4: "UNAUTHENTICATED",
 		5: "PERMISSION_DENIED",
+		6: "INVALID_ADMIN_ID",
 	}
 	ErrorReason_value = map[string]int32{
 		"ERROR_REASON_UNSPECIFIED": 0,
@@ -60,6 +63,7 @@ var (
 		"INVALID_IDENTITY_TYPE":    3,
 		"UNAUTHENTICATED":          4,
 		"PERMISSION_DENIED":        5,
+		"INVALID_ADMIN_ID":         6,
 	}
 )
 
@@ -94,14 +98,15 @@ var File_kratos_admin_v1_error_reason_proto protoreflect.FileDescriptor
 
 const file_kratos_admin_v1_error_reason_proto_rawDesc = "" +
 	"\n" +
-	"\"kratos/admin/v1/error_reason.proto\x12\x0fkratos.admin.v1*\xa0\x01\n" +
+	"\"kratos/admin/v1/error_reason.proto\x12\x0fkratos.admin.v1*\xb6\x01\n" +
 	"\vErrorReason\x12\x1c\n" +
 	"\x18ERROR_REASON_UNSPECIFIED\x10\x00\x12\x13\n" +
 	"\x0fADMIN_NOT_FOUND\x10\x01\x12\x17\n" +
 	"\x13INVALID_CREDENTIALS\x10\x02\x12\x19\n" +
 	"\x15INVALID_IDENTITY_TYPE\x10\x03\x12\x13\n" +
 	"\x0fUNAUTHENTICATED\x10\x04\x12\x15\n" +
-	"\x11PERMISSION_DENIED\x10\x05BQ\n" +
+	"\x11PERMISSION_DENIED\x10\x05\x12\x14\n" +
+	"\x10INVALID_ADMIN_ID\x10\x06BQ\n" +
 	"\x13api.kratos.admin.v1P\x01Z8github.com/go-kratos/kratos-admin/api/kratos/admin/v1;v1b\x06proto3"
 
 var (
