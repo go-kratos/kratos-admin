@@ -4,8 +4,8 @@
 
 // Admin is the admin message.
 export type Admin = {
-  // The unique ID of the user.
-  id: number | undefined;
+  // The unique ID of the user, a UUID assigned by the server.
+  id: string | undefined;
   // The name of the user.
   name: string | undefined;
   // The email of the user.
@@ -20,9 +20,11 @@ export type Admin = {
   // The password of the user.
   password: string | undefined;
   // The timestamp at which the user was created.
-  createTime: wellKnownTimestamp | undefined;
+  createdAt: wellKnownTimestamp | undefined;
   // The latest timestamp at which the user was updated.
-  updateTime: wellKnownTimestamp | undefined;
+  updatedAt: wellKnownTimestamp | undefined;
+  // The lifecycle status of the user.
+  status: Admin_Status | undefined;
 };
 
 // Encoded using RFC 3339, where generated output will always be Z-normalized
@@ -30,6 +32,18 @@ export type Admin = {
 // Offsets other than "Z" are also accepted.
 type wellKnownTimestamp = string;
 
+// Status is the lifecycle status of an admin. `DELETED` marks a soft-deleted
+// record: it stays in storage but is excluded from reads.
+export type Admin_Status =
+  // Unset. On create the server stores `ACTIVE`; on update it leaves the
+  // stored status unchanged.
+  | "STATUS_UNSPECIFIED"
+  // The admin is in normal use.
+  | "ACTIVE"
+  // The admin is disabled.
+  | "INACTIVE"
+  // The admin is soft-deleted.
+  | "DELETED";
 // AdminSet is the set of admins.
 export type AdminSet = {
   // The set of admins.
@@ -53,7 +67,7 @@ export type GetAdminRequest = {
   // The ID of the admin to retrieve.
   //
   // Behaviors: REQUIRED
-  id: number | undefined;
+  id: string | undefined;
 };
 
 // ListAdminsResponse is the response message for the ListAdmins method.
@@ -67,14 +81,15 @@ export type ListAdminsRequest = {
   // * `name` (i.e. `name="John Doe"`)
   // * `email` (i.e. `email="admin@go-kratos.dev"`)
   // * `phone` (i.e. `phone="+1234567890"`)
-  // * `create_time` range (i.e. `timestamp>="2025-01-31T11:30:00-04:00"` where
+  // * `created_at` range (i.e. `timestamp>="2025-01-31T11:30:00-04:00"` where
   // the timestamp is in RFC 3339 format)
+  // Soft-deleted admins are never returned, regardless of filter.
   // More detail in [AIP-160](https://google.aip.dev/160).
   filter: string | undefined;
   // Optional. A comma-separated list of fields to order by, sorted in ascending
   // order. Use "desc" after a field name for descending. Supported fields:
-  // - `create_time`
-  // Example: `create_time desc`.
+  // - `created_at`
+  // Example: `created_at desc`.
   orderBy: string | undefined;
 };
 
@@ -128,10 +143,11 @@ type wellKnownFieldMask = string;
 
 // DeleteAdminRequest is the request message for the DeleteAdmin method.
 export type DeleteAdminRequest = {
-  // Required. The ID of the admin to delete.
+  // Required. The ID of the admin to delete. The record is soft-deleted: its
+  // status becomes `DELETED` and it no longer appears in reads.
   //
   // Behaviors: REQUIRED
-  id: number | undefined;
+  id: string | undefined;
 };
 
 // AdminService is the admin service definition.
@@ -148,7 +164,7 @@ export interface AdminService {
   CreateAdmin(request: CreateAdminRequest): Promise<Admin>;
   // UpdateAdmin updates an existing admin.
   UpdateAdmin(request: UpdateAdminRequest): Promise<Admin>;
-  // DeleteAdmin deletes an admin by ID.
+  // DeleteAdmin soft-deletes an admin by ID.
   DeleteAdmin(request: DeleteAdminRequest): Promise<wellKnownEmpty>;
   // GetAdmin retrieves an admin by ID.
   GetAdmin(request: GetAdminRequest): Promise<Admin>;
@@ -345,6 +361,8 @@ export type ErrorReason =
   // The request carried no usable credential (missing or invalid token).
   | "UNAUTHENTICATED"
   // The caller is authenticated but lacks the required access level.
-  | "PERMISSION_DENIED";
+  | "PERMISSION_DENIED"
+  // The request carried an admin ID that is not a valid UUID.
+  | "INVALID_ADMIN_ID";
 
 // @@protoc_insertion_point(typescript-http-eof)

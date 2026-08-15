@@ -9,6 +9,7 @@ import (
 	"github.com/go-kratos/kratos/v3/errors"
 	"github.com/go-kratos/kratos/v3/transport"
 	httpm "github.com/go-kratos/kratos/v3/transport/http"
+	"github.com/google/uuid"
 )
 
 // Error reasons reported by this middleware. They mirror the wire-visible names
@@ -63,7 +64,7 @@ func Middleware() httpm.FilterFunc {
 }
 
 // SetCookie sets the login cookie in the HTTP response.
-func SetCookie(ctx context.Context, userID int64, access string, expiresAt time.Time) error {
+func SetCookie(ctx context.Context, userID uuid.UUID, access string, expiresAt time.Time) error {
 	tr, ok := transport.FromServerContext(ctx)
 	if !ok {
 		return fmt.Errorf("failed to get transport from context")

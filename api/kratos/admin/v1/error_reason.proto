@@ -24,4 +24,6 @@ enum ErrorReason {
   UNAUTHENTICATED = 4;
   // The caller is authenticated but lacks the required access level.
   PERMISSION_DENIED = 5;
+  // The request carried an admin ID that is not a valid UUID.
+  INVALID_ADMIN_ID = 6;
 }

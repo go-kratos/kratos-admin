@@ -7,51 +7,62 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/go-kratos/kratos-admin/internal/data/ent/predicate"
+	"github.com/google/uuid"
 )
 
 // ID filters vertices based on their ID field.
-func ID(id int64) predicate.Admin {
+func ID(id uuid.UUID) predicate.Admin {
 	return predicate.Admin(sql.FieldEQ(FieldID, id))
 }
 
 // IDEQ applies the EQ predicate on the ID field.
-func IDEQ(id int64) predicate.Admin {
+func IDEQ(id uuid.UUID) predicate.Admin {
 	return predicate.Admin(sql.FieldEQ(FieldID, id))
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
-func IDNEQ(id int64) predicate.Admin {
+func IDNEQ(id uuid.UUID) predicate.Admin {
 	return predicate.Admin(sql.FieldNEQ(FieldID, id))
 }
 
 // IDIn applies the In predicate on the ID field.
-func IDIn(ids ...int64) predicate.Admin {
+func IDIn(ids ...uuid.UUID) predicate.Admin {
 	return predicate.Admin(sql.FieldIn(FieldID, ids...))
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
-func IDNotIn(ids ...int64) predicate.Admin {
+func IDNotIn(ids ...uuid.UUID) predicate.Admin {
 	return predicate.Admin(sql.FieldNotIn(FieldID, ids...))
 }
 
 // IDGT applies the GT predicate on the ID field.
-func IDGT(id int64) predicate.Admin {
+func IDGT(id uuid.UUID) predicate.Admin {
 	return predicate.Admin(sql.FieldGT(FieldID, id))
 }
 
 // IDGTE applies the GTE predicate on the ID field.
-func IDGTE(id int64) predicate.Admin {
+func IDGTE(id uuid.UUID) predicate.Admin {
 	return predicate.Admin(sql.FieldGTE(FieldID, id))
 }
 
 // IDLT applies the LT predicate on the ID field.
-func IDLT(id int64) predicate.Admin {
+func IDLT(id uuid.UUID) predicate.Admin {
 	return predicate.Admin(sql.FieldLT(FieldID, id))
 }
 
 // IDLTE applies the LTE predicate on the ID field.
-func IDLTE(id int64) predicate.Admin {
+func IDLTE(id uuid.UUID) predicate.Admin {
 	return predicate.Admin(sql.FieldLTE(FieldID, id))
+}
+
+// CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
+func CreatedAt(v time.Time) predicate.Admin {
+	return predicate.Admin(sql.FieldEQ(FieldCreatedAt, v))
+}
+
+// UpdatedAt applies equality check predicate on the "updated_at" field. It's identical to UpdatedAtEQ.
+func UpdatedAt(v time.Time) predicate.Admin {
+	return predicate.Admin(sql.FieldEQ(FieldUpdatedAt, v))
 }
 
 // Name applies equality check predicate on the "name" field. It's identical to NameEQ.
@@ -79,14 +90,89 @@ func Password(v string) predicate.Admin {
 	return predicate.Admin(sql.FieldEQ(FieldPassword, v))
 }
 
-// CreateTime applies equality check predicate on the "create_time" field. It's identical to CreateTimeEQ.
-func CreateTime(v time.Time) predicate.Admin {
-	return predicate.Admin(sql.FieldEQ(FieldCreateTime, v))
+// Status applies equality check predicate on the "status" field. It's identical to StatusEQ.
+func Status(v int32) predicate.Admin {
+	return predicate.Admin(sql.FieldEQ(FieldStatus, v))
 }
 
-// UpdateTime applies equality check predicate on the "update_time" field. It's identical to UpdateTimeEQ.
-func UpdateTime(v time.Time) predicate.Admin {
-	return predicate.Admin(sql.FieldEQ(FieldUpdateTime, v))
+// CreatedAtEQ applies the EQ predicate on the "created_at" field.
+func CreatedAtEQ(v time.Time) predicate.Admin {
+	return predicate.Admin(sql.FieldEQ(FieldCreatedAt, v))
+}
+
+// CreatedAtNEQ applies the NEQ predicate on the "created_at" field.
+func CreatedAtNEQ(v time.Time) predicate.Admin {
+	return predicate.Admin(sql.FieldNEQ(FieldCreatedAt, v))
+}
+
+// CreatedAtIn applies the In predicate on the "created_at" field.
+func CreatedAtIn(vs ...time.Time) predicate.Admin {
+	return predicate.Admin(sql.FieldIn(FieldCreatedAt, vs...))
+}
+
+// CreatedAtNotIn applies the NotIn predicate on the "created_at" field.
+func CreatedAtNotIn(vs ...time.Time) predicate.Admin {
+	return predicate.Admin(sql.FieldNotIn(FieldCreatedAt, vs...))
+}
+
+// CreatedAtGT applies the GT predicate on the "created_at" field.
+func CreatedAtGT(v time.Time) predicate.Admin {
+	return predicate.Admin(sql.FieldGT(FieldCreatedAt, v))
+}
+
+// CreatedAtGTE applies the GTE predicate on the "created_at" field.
+func CreatedAtGTE(v time.Time) predicate.Admin {
+	return predicate.Admin(sql.FieldGTE(FieldCreatedAt, v))
+}
+
+// CreatedAtLT applies the LT predicate on the "created_at" field.
+func CreatedAtLT(v time.Time) predicate.Admin {
+	return predicate.Admin(sql.FieldLT(FieldCreatedAt, v))
+}
+
+// CreatedAtLTE applies the LTE predicate on the "created_at" field.
+func CreatedAtLTE(v time.Time) predicate.Admin {
+	return predicate.Admin(sql.FieldLTE(FieldCreatedAt, v))
+}
+
+// UpdatedAtEQ applies the EQ predicate on the "updated_at" field.
+func UpdatedAtEQ(v time.Time) predicate.Admin {
+	return predicate.Admin(sql.FieldEQ(FieldUpdatedAt, v))
+}
+
+// UpdatedAtNEQ applies the NEQ predicate on the "updated_at" field.
+func UpdatedAtNEQ(v time.Time) predicate.Admin {
+	return predicate.Admin(sql.FieldNEQ(FieldUpdatedAt, v))
+}
+
+// UpdatedAtIn applies the In predicate on the "updated_at" field.
+func UpdatedAtIn(vs ...time.Time) predicate.Admin {
+	return predicate.Admin(sql.FieldIn(FieldUpdatedAt, vs...))
+}
+
+// UpdatedAtNotIn applies the NotIn predicate on the "updated_at" field.
+func UpdatedAtNotIn(vs ...time.Time) predicate.Admin {
+	return predicate.Admin(sql.FieldNotIn(FieldUpdatedAt, vs...))
+}
+
+// UpdatedAtGT applies the GT predicate on the "updated_at" field.
+func UpdatedAtGT(v time.Time) predicate.Admin {
+	return predicate.Admin(sql.FieldGT(FieldUpdatedAt, v))
+}
+
+// UpdatedAtGTE applies the GTE predicate on the "updated_at" field.
+func UpdatedAtGTE(v time.Time) predicate.Admin {
+	return predicate.Admin(sql.FieldGTE(FieldUpdatedAt, v))
+}
+
+// UpdatedAtLT applies the LT predicate on the "updated_at" field.
+func UpdatedAtLT(v time.Time) predicate.Admin {
+	return predicate.Admin(sql.FieldLT(FieldUpdatedAt, v))
+}
+
+// UpdatedAtLTE applies the LTE predicate on the "updated_at" field.
+func UpdatedAtLTE(v time.Time) predicate.Admin {
+	return predicate.Admin(sql.FieldLTE(FieldUpdatedAt, v))
 }
 
 // NameEQ applies the EQ predicate on the "name" field.
@@ -414,84 +500,44 @@ func PasswordContainsFold(v string) predicate.Admin {
 	return predicate.Admin(sql.FieldContainsFold(FieldPassword, v))
 }
 
-// CreateTimeEQ applies the EQ predicate on the "create_time" field.
-func CreateTimeEQ(v time.Time) predicate.Admin {
-	return predicate.Admin(sql.FieldEQ(FieldCreateTime, v))
+// StatusEQ applies the EQ predicate on the "status" field.
+func StatusEQ(v int32) predicate.Admin {
+	return predicate.Admin(sql.FieldEQ(FieldStatus, v))
 }
 
-// CreateTimeNEQ applies the NEQ predicate on the "create_time" field.
-func CreateTimeNEQ(v time.Time) predicate.Admin {
-	return predicate.Admin(sql.FieldNEQ(FieldCreateTime, v))
+// StatusNEQ applies the NEQ predicate on the "status" field.
+func StatusNEQ(v int32) predicate.Admin {
+	return predicate.Admin(sql.FieldNEQ(FieldStatus, v))
 }
 
-// CreateTimeIn applies the In predicate on the "create_time" field.
-func CreateTimeIn(vs ...time.Time) predicate.Admin {
-	return predicate.Admin(sql.FieldIn(FieldCreateTime, vs...))
+// StatusIn applies the In predicate on the "status" field.
+func StatusIn(vs ...int32) predicate.Admin {
+	return predicate.Admin(sql.FieldIn(FieldStatus, vs...))
 }
 
-// CreateTimeNotIn applies the NotIn predicate on the "create_time" field.
-func CreateTimeNotIn(vs ...time.Time) predicate.Admin {
-	return predicate.Admin(sql.FieldNotIn(FieldCreateTime, vs...))
+// StatusNotIn applies the NotIn predicate on the "status" field.
+func StatusNotIn(vs ...int32) predicate.Admin {
+	return predicate.Admin(sql.FieldNotIn(FieldStatus, vs...))
 }
 
-// CreateTimeGT applies the GT predicate on the "create_time" field.
-func CreateTimeGT(v time.Time) predicate.Admin {
-	return predicate.Admin(sql.FieldGT(FieldCreateTime, v))
+// StatusGT applies the GT predicate on the "status" field.
+func StatusGT(v int32) predicate.Admin {
+	return predicate.Admin(sql.FieldGT(FieldStatus, v))
 }
 
-// CreateTimeGTE applies the GTE predicate on the "create_time" field.
-func CreateTimeGTE(v time.Time) predicate.Admin {
-	return predicate.Admin(sql.FieldGTE(FieldCreateTime, v))
+// StatusGTE applies the GTE predicate on the "status" field.
+func StatusGTE(v int32) predicate.Admin {
+	return predicate.Admin(sql.FieldGTE(FieldStatus, v))
 }
 
-// CreateTimeLT applies the LT predicate on the "create_time" field.
-func CreateTimeLT(v time.Time) predicate.Admin {
-	return predicate.Admin(sql.FieldLT(FieldCreateTime, v))
+// StatusLT applies the LT predicate on the "status" field.
+func StatusLT(v int32) predicate.Admin {
+	return predicate.Admin(sql.FieldLT(FieldStatus, v))
 }
 
-// CreateTimeLTE applies the LTE predicate on the "create_time" field.
-func CreateTimeLTE(v time.Time) predicate.Admin {
-	return predicate.Admin(sql.FieldLTE(FieldCreateTime, v))
-}
-
-// UpdateTimeEQ applies the EQ predicate on the "update_time" field.
-func UpdateTimeEQ(v time.Time) predicate.Admin {
-	return predicate.Admin(sql.FieldEQ(FieldUpdateTime, v))
-}
-
-// UpdateTimeNEQ applies the NEQ predicate on the "update_time" field.
-func UpdateTimeNEQ(v time.Time) predicate.Admin {
-	return predicate.Admin(sql.FieldNEQ(FieldUpdateTime, v))
-}
-
-// UpdateTimeIn applies the In predicate on the "update_time" field.
-func UpdateTimeIn(vs ...time.Time) predicate.Admin {
-	return predicate.Admin(sql.FieldIn(FieldUpdateTime, vs...))
-}
-
-// UpdateTimeNotIn applies the NotIn predicate on the "update_time" field.
-func UpdateTimeNotIn(vs ...time.Time) predicate.Admin {
-	return predicate.Admin(sql.FieldNotIn(FieldUpdateTime, vs...))
-}
-
-// UpdateTimeGT applies the GT predicate on the "update_time" field.
-func UpdateTimeGT(v time.Time) predicate.Admin {
-	return predicate.Admin(sql.FieldGT(FieldUpdateTime, v))
-}
-
-// UpdateTimeGTE applies the GTE predicate on the "update_time" field.
-func UpdateTimeGTE(v time.Time) predicate.Admin {
-	return predicate.Admin(sql.FieldGTE(FieldUpdateTime, v))
-}
-
-// UpdateTimeLT applies the LT predicate on the "update_time" field.
-func UpdateTimeLT(v time.Time) predicate.Admin {
-	return predicate.Admin(sql.FieldLT(FieldUpdateTime, v))
-}
-
-// UpdateTimeLTE applies the LTE predicate on the "update_time" field.
-func UpdateTimeLTE(v time.Time) predicate.Admin {
-	return predicate.Admin(sql.FieldLTE(FieldUpdateTime, v))
+// StatusLTE applies the LTE predicate on the "status" field.
+func StatusLTE(v int32) predicate.Admin {
+	return predicate.Admin(sql.FieldLTE(FieldStatus, v))
 }
 
 // And groups predicates with the AND operator between them.

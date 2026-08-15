@@ -7,42 +7,56 @@ import (
 
 	"github.com/go-kratos/kratos-admin/internal/data/ent/admin"
 	"github.com/go-kratos/kratos-admin/internal/data/ent/schema"
+	"github.com/google/uuid"
 )
 
 // The init function reads all schema descriptors with runtime code
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	adminMixin := schema.Admin{}.Mixin()
+	adminMixinFields0 := adminMixin[0].Fields()
+	_ = adminMixinFields0
+	adminMixinFields1 := adminMixin[1].Fields()
+	_ = adminMixinFields1
 	adminFields := schema.Admin{}.Fields()
 	_ = adminFields
+	// adminDescCreatedAt is the schema descriptor for created_at field.
+	adminDescCreatedAt := adminMixinFields1[0].Descriptor()
+	// admin.DefaultCreatedAt holds the default value on creation for the created_at field.
+	admin.DefaultCreatedAt = adminDescCreatedAt.Default.(func() time.Time)
+	// adminDescUpdatedAt is the schema descriptor for updated_at field.
+	adminDescUpdatedAt := adminMixinFields1[1].Descriptor()
+	// admin.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	admin.DefaultUpdatedAt = adminDescUpdatedAt.Default.(func() time.Time)
+	// admin.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	admin.UpdateDefaultUpdatedAt = adminDescUpdatedAt.UpdateDefault.(func() time.Time)
 	// adminDescName is the schema descriptor for name field.
-	adminDescName := adminFields[1].Descriptor()
+	adminDescName := adminFields[0].Descriptor()
 	// admin.DefaultName holds the default value on creation for the name field.
 	admin.DefaultName = adminDescName.Default.(string)
 	// adminDescEmail is the schema descriptor for email field.
-	adminDescEmail := adminFields[2].Descriptor()
+	adminDescEmail := adminFields[1].Descriptor()
 	// admin.DefaultEmail holds the default value on creation for the email field.
 	admin.DefaultEmail = adminDescEmail.Default.(string)
 	// adminDescAvatar is the schema descriptor for avatar field.
-	adminDescAvatar := adminFields[3].Descriptor()
+	adminDescAvatar := adminFields[2].Descriptor()
 	// admin.DefaultAvatar holds the default value on creation for the avatar field.
 	admin.DefaultAvatar = adminDescAvatar.Default.(string)
 	// adminDescAccess is the schema descriptor for access field.
-	adminDescAccess := adminFields[4].Descriptor()
+	adminDescAccess := adminFields[3].Descriptor()
 	// admin.DefaultAccess holds the default value on creation for the access field.
 	admin.DefaultAccess = adminDescAccess.Default.(string)
 	// adminDescPassword is the schema descriptor for password field.
-	adminDescPassword := adminFields[5].Descriptor()
+	adminDescPassword := adminFields[4].Descriptor()
 	// admin.DefaultPassword holds the default value on creation for the password field.
 	admin.DefaultPassword = adminDescPassword.Default.(string)
-	// adminDescCreateTime is the schema descriptor for create_time field.
-	adminDescCreateTime := adminFields[6].Descriptor()
-	// admin.DefaultCreateTime holds the default value on creation for the create_time field.
-	admin.DefaultCreateTime = adminDescCreateTime.Default.(func() time.Time)
-	// adminDescUpdateTime is the schema descriptor for update_time field.
-	adminDescUpdateTime := adminFields[7].Descriptor()
-	// admin.DefaultUpdateTime holds the default value on creation for the update_time field.
-	admin.DefaultUpdateTime = adminDescUpdateTime.Default.(func() time.Time)
-	// admin.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
-	admin.UpdateDefaultUpdateTime = adminDescUpdateTime.UpdateDefault.(func() time.Time)
+	// adminDescStatus is the schema descriptor for status field.
+	adminDescStatus := adminFields[5].Descriptor()
+	// admin.DefaultStatus holds the default value on creation for the status field.
+	admin.DefaultStatus = adminDescStatus.Default.(int32)
+	// adminDescID is the schema descriptor for id field.
+	adminDescID := adminMixinFields0[0].Descriptor()
+	// admin.DefaultID holds the default value on creation for the id field.
+	admin.DefaultID = adminDescID.Default.(func() uuid.UUID)
 }

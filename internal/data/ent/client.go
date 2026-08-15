@@ -10,6 +10,7 @@ import (
 	"reflect"
 
 	"github.com/go-kratos/kratos-admin/internal/data/ent/migrate"
+	"github.com/google/uuid"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect"
@@ -259,7 +260,7 @@ func (c *AdminClient) UpdateOne(_m *Admin) *AdminUpdateOne {
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *AdminClient) UpdateOneID(id int64) *AdminUpdateOne {
+func (c *AdminClient) UpdateOneID(id uuid.UUID) *AdminUpdateOne {
 	mutation := newAdminMutation(c.config, OpUpdateOne, withAdminID(id))
 	return &AdminUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
@@ -276,7 +277,7 @@ func (c *AdminClient) DeleteOne(_m *Admin) *AdminDeleteOne {
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *AdminClient) DeleteOneID(id int64) *AdminDeleteOne {
+func (c *AdminClient) DeleteOneID(id uuid.UUID) *AdminDeleteOne {
 	builder := c.Delete().Where(admin.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
@@ -293,12 +294,12 @@ func (c *AdminClient) Query() *AdminQuery {
 }
 
 // Get returns a Admin entity by its id.
-func (c *AdminClient) Get(ctx context.Context, id int64) (*Admin, error) {
+func (c *AdminClient) Get(ctx context.Context, id uuid.UUID) (*Admin, error) {
 	return c.Query().Where(admin.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *AdminClient) GetX(ctx context.Context, id int64) *Admin {
+func (c *AdminClient) GetX(ctx context.Context, id uuid.UUID) *Admin {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)

@@ -6,30 +6,51 @@ import (
 
 	"github.com/go-kratos/kratos/v3/errors"
 	"github.com/go-kratos/kratos/v3/log"
+	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
+)
+
+// AdminStatus is the lifecycle status of an admin. The values match the
+// kratos.admin.v1.Admin_Status enum numbers, so `service` and `data` convert
+// with a cast instead of a lookup table.
+type AdminStatus int32
+
+const (
+	// AdminStatusUnspecified means the caller did not state a status: create
+	// stores AdminStatusActive, update leaves the stored status unchanged.
+	AdminStatusUnspecified AdminStatus = 0
+	// AdminStatusActive means the admin can log in.
+	AdminStatusActive AdminStatus = 1
+	// AdminStatusInactive means the admin exists but cannot log in.
+	AdminStatusInactive AdminStatus = 2
+	// AdminStatusDeleted marks a soft-deleted admin; reads exclude it.
+	AdminStatusDeleted AdminStatus = 3
 )
 
 // Admin is a Admin model.
 type Admin struct {
-	ID         int64
-	Name       string
-	Email      string
-	Password   string
-	Access     string
-	Avatar     string
-	CreateTime time.Time
-	UpdateTime time.Time
+	ID        uuid.UUID
+	Name      string
+	Email     string
+	Password  string
+	Access    string
+	Avatar    string
+	Status    AdminStatus
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }
 
 // AdminRepo is a Greater repo.
 type AdminRepo interface {
-	FindByID(context.Context, int64) (*Admin, error)
+	FindByID(context.Context, uuid.UUID) (*Admin, error)
 	FindByName(context.Context, string) (*Admin, error)
 	FindByEmail(context.Context, string) (*Admin, error)
 	ListAdmins(context.Context, ...ListOption) ([]*Admin, error)
 	CreateAdmin(context.Context, *Admin) (*Admin, error)
 	UpdateAdmin(context.Context, *Admin) (*Admin, error)
-	DeleteAdmin(context.Context, int64) error
+	// DeleteAdmin soft-deletes an admin by setting its status to
+	// AdminStatusDeleted.
+	DeleteAdmin(context.Context, uuid.UUID) error
 }
 
 // AdminUsecase is a Admin usecase.
@@ -73,7 +94,7 @@ func (uc *AdminUsecase) LoginByEmail(ctx context.Context, email, password string
 }
 
 // Logout logs out the current user.
-func (uc *AdminUsecase) Logout(ctx context.Context, adminID int64) error {
+func (uc *AdminUsecase) Logout(ctx context.Context, adminID uuid.UUID) error {
 	admin, err := uc.admin.FindByID(ctx, adminID)
 	if err != nil {
 		return err
@@ -83,7 +104,7 @@ func (uc *AdminUsecase) Logout(ctx context.Context, adminID int64) error {
 }
 
 // Current returns the current logged in user.
-func (uc *AdminUsecase) GetAdmin(ctx context.Context, id int64) (*Admin, error) {
+func (uc *AdminUsecase) GetAdmin(ctx context.Context, id uuid.UUID) (*Admin, error) {
 	return uc.admin.FindByID(ctx, id)
 }
 
@@ -130,7 +151,7 @@ func hashPassword(password string) (string, error) {
 	return string(hashed), nil
 }
 
-// DeleteAdmin deletes an admin user by ID.
-func (uc *AdminUsecase) DeleteAdmin(ctx context.Context, id int64) error {
+// DeleteAdmin soft-deletes an admin user by ID.
+func (uc *AdminUsecase) DeleteAdmin(ctx context.Context, id uuid.UUID) error {
 	return uc.admin.DeleteAdmin(ctx, id)
 }

@@ -9,6 +9,7 @@ import (
 	"github.com/go-kratos/kratos-admin/pkg/auth"
 	"github.com/go-kratos/kratos/v3/errors"
 
+	"github.com/google/uuid"
 	"go.einride.tech/aip/fieldmask"
 	"go.einride.tech/aip/filtering"
 	"go.einride.tech/aip/ordering"
@@ -19,14 +20,25 @@ import (
 
 func convertAdmin(m *biz.Admin) *v1.Admin {
 	return &v1.Admin{
-		Id:         m.ID,
-		Name:       m.Name,
-		Email:      m.Email,
-		Avatar:     m.Avatar,
-		Access:     m.Access,
-		CreateTime: timestamppb.New(m.CreateTime),
-		UpdateTime: timestamppb.New(m.UpdateTime),
+		Id:        m.ID.String(),
+		Name:      m.Name,
+		Email:     m.Email,
+		Avatar:    m.Avatar,
+		Access:    m.Access,
+		Status:    v1.Admin_Status(m.Status),
+		CreatedAt: timestamppb.New(m.CreatedAt),
+		UpdatedAt: timestamppb.New(m.UpdatedAt),
 	}
+}
+
+// parseAdminID turns a wire ID into a UUID, reporting a bad one as a typed
+// error so callers see a 400 instead of a not-found.
+func parseAdminID(id string) (uuid.UUID, error) {
+	parsed, err := uuid.Parse(id)
+	if err != nil {
+		return uuid.Nil, biz.ErrInvalidAdminID
+	}
+	return parsed, nil
 }
 
 // AdminService is a greeter service.
@@ -110,6 +122,7 @@ func (s *AdminService) CreateAdmin(ctx context.Context, req *v1.CreateAdminReque
 		Password: req.Admin.Password,
 		Avatar:   req.Admin.Avatar,
 		Access:   req.Admin.Access,
+		Status:   biz.AdminStatus(req.Admin.Status),
 	})
 	if err != nil {
 		return nil, err
@@ -131,13 +144,18 @@ func (s *AdminService) UpdateAdmin(ctx context.Context, req *v1.UpdateAdminReque
 		return nil, err
 	}
 	fieldmask.Update(req.UpdateMask, admin, req.Admin)
+	id, err := parseAdminID(admin.Id)
+	if err != nil {
+		return nil, err
+	}
 	updated, err := s.uc.UpdateAdmin(ctx, &biz.Admin{
-		ID:       admin.Id,
+		ID:       id,
 		Name:     admin.Name,
 		Email:    admin.Email,
 		Password: admin.Password,
 		Avatar:   admin.Avatar,
 		Access:   admin.Access,
+		Status:   biz.AdminStatus(admin.Status),
 	})
 	if err != nil {
 		return nil, err
@@ -154,7 +172,11 @@ func (s *AdminService) DeleteAdmin(ctx context.Context, req *v1.DeleteAdminReque
 	if !a.HasAdminAccess() {
 		return nil, auth.ErrPermissionDenied
 	}
-	if err := s.uc.DeleteAdmin(ctx, req.Id); err != nil {
+	id, err := parseAdminID(req.Id)
+	if err != nil {
+		return nil, err
+	}
+	if err := s.uc.DeleteAdmin(ctx, id); err != nil {
 		return nil, err
 	}
 	return &emptypb.Empty{}, nil
@@ -169,7 +191,11 @@ func (s *AdminService) GetAdmin(ctx context.Context, req *v1.GetAdminRequest) (*
 	if !a.HasAdminAccess() {
 		return nil, auth.ErrPermissionDenied
 	}
-	admin, err := s.uc.GetAdmin(ctx, req.Id)
+	id, err := parseAdminID(req.Id)
+	if err != nil {
+		return nil, err
+	}
+	admin, err := s.uc.GetAdmin(ctx, id)
 	if err != nil {
 		return nil, err
 	}
@@ -190,7 +216,7 @@ func (s *AdminService) ListAdmins(ctx context.Context, req *v1.ListAdminsRequest
 		filtering.DeclareIdent("name", filtering.TypeString),
 		filtering.DeclareIdent("email", filtering.TypeString),
 		filtering.DeclareIdent("phone", filtering.TypeString),
-		filtering.DeclareIdent("create_time", filtering.TypeTimestamp),
+		filtering.DeclareIdent("created_at", filtering.TypeTimestamp),
 	)
 	if err != nil {
 		return nil, err
