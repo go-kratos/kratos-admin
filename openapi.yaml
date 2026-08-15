@@ -215,6 +215,10 @@ components:
                 password:
                     type: string
                     description: The password of the user.
+                status:
+                    type: integer
+                    description: The lifecycle status of the user.
+                    format: enum
                 createdAt:
                     type: string
                     description: The timestamp at which the user was created.
@@ -223,10 +227,6 @@ components:
                     type: string
                     description: The latest timestamp at which the user was updated.
                     format: date-time
-                status:
-                    type: integer
-                    description: The lifecycle status of the user.
-                    format: enum
             description: Admin is the admin message.
         kratos.admin.v1.AdminSet:
             type: object

@@ -19,18 +19,13 @@ export type Admin = {
   access: string | undefined;
   // The password of the user.
   password: string | undefined;
+  // The lifecycle status of the user.
+  status: Admin_Status | undefined;
   // The timestamp at which the user was created.
   createdAt: wellKnownTimestamp | undefined;
   // The latest timestamp at which the user was updated.
   updatedAt: wellKnownTimestamp | undefined;
-  // The lifecycle status of the user.
-  status: Admin_Status | undefined;
 };
-
-// Encoded using RFC 3339, where generated output will always be Z-normalized
-// and uses 0, 3, 6 or 9 fractional digits.
-// Offsets other than "Z" are also accepted.
-type wellKnownTimestamp = string;
 
 // Status is the lifecycle status of an admin. `DELETED` marks a soft-deleted
 // record: it stays in storage but is excluded from reads.
@@ -44,6 +39,11 @@ export type Admin_Status =
   | "INACTIVE"
   // The admin is soft-deleted.
   | "DELETED";
+// Encoded using RFC 3339, where generated output will always be Z-normalized
+// and uses 0, 3, 6 or 9 fractional digits.
+// Offsets other than "Z" are also accepted.
+type wellKnownTimestamp = string;
+
 // AdminSet is the set of admins.
 export type AdminSet = {
   // The set of admins.

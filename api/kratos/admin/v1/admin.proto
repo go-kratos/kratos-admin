@@ -42,12 +42,12 @@ message Admin {
   string access = 6;
   // The password of the user.
   string password = 7;
-  // The timestamp at which the user was created.
-  google.protobuf.Timestamp created_at = 8;
-  // The latest timestamp at which the user was updated.
-  google.protobuf.Timestamp updated_at = 9;
   // The lifecycle status of the user.
-  Status status = 10;
+  Status status = 8;
+  // The timestamp at which the user was created.
+  google.protobuf.Timestamp created_at = 9;
+  // The latest timestamp at which the user was updated.
+  google.protobuf.Timestamp updated_at = 10;
 }
 
 // AdminSet is the set of admins.

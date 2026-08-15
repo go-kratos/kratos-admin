@@ -102,12 +102,12 @@ type Admin struct {
 	Access string `protobuf:"bytes,6,opt,name=access,proto3" json:"access,omitempty"`
 	// The password of the user.
 	Password string `protobuf:"bytes,7,opt,name=password,proto3" json:"password,omitempty"`
-	// The timestamp at which the user was created.
-	CreatedAt *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	// The latest timestamp at which the user was updated.
-	UpdatedAt *timestamppb.Timestamp `protobuf:"bytes,9,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
 	// The lifecycle status of the user.
-	Status        Admin_Status `protobuf:"varint,10,opt,name=status,proto3,enum=kratos.admin.v1.Admin_Status" json:"status,omitempty"`
+	Status Admin_Status `protobuf:"varint,8,opt,name=status,proto3,enum=kratos.admin.v1.Admin_Status" json:"status,omitempty"`
+	// The timestamp at which the user was created.
+	CreatedAt *timestamppb.Timestamp `protobuf:"bytes,9,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	// The latest timestamp at which the user was updated.
+	UpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,10,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -191,6 +191,13 @@ func (x *Admin) GetPassword() string {
 	return ""
 }
 
+func (x *Admin) GetStatus() Admin_Status {
+	if x != nil {
+		return x.Status
+	}
+	return Admin_STATUS_UNSPECIFIED
+}
+
 func (x *Admin) GetCreatedAt() *timestamppb.Timestamp {
 	if x != nil {
 		return x.CreatedAt
@@ -203,13 +210,6 @@ func (x *Admin) GetUpdatedAt() *timestamppb.Timestamp {
 		return x.UpdatedAt
 	}
 	return nil
-}
-
-func (x *Admin) GetStatus() Admin_Status {
-	if x != nil {
-		return x.Status
-	}
-	return Admin_STATUS_UNSPECIFIED
 }
 
 // AdminSet is the set of admins.
@@ -654,13 +654,13 @@ const file_kratos_admin_v1_admin_proto_rawDesc = "" +
 	"\x05phone\x18\x04 \x01(\tR\x05phone\x12\x16\n" +
 	"\x06avatar\x18\x05 \x01(\tR\x06avatar\x12\x16\n" +
 	"\x06access\x18\x06 \x01(\tR\x06access\x12\x1a\n" +
-	"\bpassword\x18\a \x01(\tR\bpassword\x129\n" +
+	"\bpassword\x18\a \x01(\tR\bpassword\x125\n" +
+	"\x06status\x18\b \x01(\x0e2\x1d.kratos.admin.v1.Admin.StatusR\x06status\x129\n" +
 	"\n" +
-	"created_at\x18\b \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
+	"created_at\x18\t \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
 	"\n" +
-	"updated_at\x18\t \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\x125\n" +
-	"\x06status\x18\n" +
-	" \x01(\x0e2\x1d.kratos.admin.v1.Admin.StatusR\x06status\"G\n" +
+	"updated_at\x18\n" +
+	" \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\"G\n" +
 	"\x06Status\x12\x16\n" +
 	"\x12STATUS_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
@@ -733,9 +733,9 @@ var file_kratos_admin_v1_admin_proto_goTypes = []any{
 	(*emptypb.Empty)(nil),         // 11: google.protobuf.Empty
 }
 var file_kratos_admin_v1_admin_proto_depIdxs = []int32{
-	9,  // 0: kratos.admin.v1.Admin.created_at:type_name -> google.protobuf.Timestamp
-	9,  // 1: kratos.admin.v1.Admin.updated_at:type_name -> google.protobuf.Timestamp
-	0,  // 2: kratos.admin.v1.Admin.status:type_name -> kratos.admin.v1.Admin.Status
+	0,  // 0: kratos.admin.v1.Admin.status:type_name -> kratos.admin.v1.Admin.Status
+	9,  // 1: kratos.admin.v1.Admin.created_at:type_name -> google.protobuf.Timestamp
+	9,  // 2: kratos.admin.v1.Admin.updated_at:type_name -> google.protobuf.Timestamp
 	1,  // 3: kratos.admin.v1.AdminSet.admins:type_name -> kratos.admin.v1.Admin
 	1,  // 4: kratos.admin.v1.CreateAdminRequest.admin:type_name -> kratos.admin.v1.Admin
 	1,  // 5: kratos.admin.v1.UpdateAdminRequest.admin:type_name -> kratos.admin.v1.Admin
