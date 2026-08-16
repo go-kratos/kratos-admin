@@ -3,11 +3,9 @@ package data
 import (
 	"context"
 	"log"
-	"os"
 
 	"github.com/go-kratos/kratos-admin/internal/conf"
 	"github.com/go-kratos/kratos-admin/internal/data/ent"
-	"github.com/go-kratos/kratos-admin/internal/data/ent/migrate"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/google/wire"
 )
@@ -22,15 +20,19 @@ type Data struct {
 
 // NewData creates a new Data instance.
 func NewData(c *conf.Data) (*Data, func(), error) {
-	db, err := ent.Open(c.Database.Driver, c.Database.Source)
+	dc := c.GetDatabase()
+	db, err := ent.Open(dc.Driver, dc.Source)
 	if err != nil {
 		log.Fatalf("failed opening connection to database: %v", err)
 	}
-	if os.Getenv("DEPLOY_ENV") == "dev" {
-		// Enable debug mode for detailed logging.
+	if dc.GetDebug() {
 		db = db.Debug()
-		// Run the auto migration tool.
-		if err = db.Schema.Create(context.Background(), migrate.WithDropIndex(true)); err != nil {
+	}
+	// Auto migration is a convenience for local development. In production,
+	// apply schema changes as a separate reviewed step instead.
+	if dc.GetAutoMigrate() {
+		if err := db.Schema.Create(context.Background()); err != nil {
+			db.Close()
 			return nil, nil, err
 		}
 	}
