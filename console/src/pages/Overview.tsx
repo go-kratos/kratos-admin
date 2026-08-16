@@ -1,10 +1,12 @@
 import { type Admin, type AdminSet, services } from '@/services';
+import { DataTable } from '@/components';
 import type { ProColumns } from '@ant-design/pro-components';
-import { PageContainer, ProTable } from '@ant-design/pro-components';
-import { FormattedMessage, Link, useModel, useRequest } from '@umijs/max';
-import { Card, Col, Row, Statistic, Tag, Typography, theme } from 'antd';
+import { PageContainer } from '@ant-design/pro-components';
+import { FormattedMessage, Link, useRequest } from '@umijs/max';
+import { Card, Col, Row, Statistic, Typography, theme } from 'antd';
 import dayjs from 'dayjs';
 import React from 'react';
+import { adminStatusColumn } from './admins/columns';
 
 /**
  * ListAdmins 只返回一页数据加一个 nextPageToken，没有总数字段。所以这里拉一个
@@ -17,12 +19,10 @@ const RECENT_DAYS = 7;
 
 const Overview: React.FC = () => {
   const { token } = theme.useToken();
-  const { initialState } = useModel('@@initialState');
-  const currentUser = initialState?.currentUser;
 
   // umi 的 useRequest 默认按 `{ data }` 形状解包响应，而 ListAdmins 直接返回
   // AdminSet，所以用 formatResult 原样透传。
-  const { data, loading } = useRequest(
+  const { data, loading, error } = useRequest(
     () =>
       services.admin.ListAdmins({
         pageSize: STATS_WINDOW,
@@ -50,9 +50,14 @@ const Overview: React.FC = () => {
   const recentExact =
     !capped || (oldest ? dayjs(oldest).isBefore(since) : true);
 
-  /** 打满窗口时数字只是下界，用 "+" 标出来。 */
-  const approx = (value: number, exact = !capped) =>
-    exact ? `${value}` : `${value}+`;
+  /**
+   * 打满窗口时数字只是下界，用 "+" 标出来。请求失败时显示 "-" —— 此时 admins 是
+   * 空数组，渲染成 0 会把「加载失败」说成「一条都没有」。
+   */
+  const approx = (value: number, exact = !capped) => {
+    if (error) return '-';
+    return exact ? `${value}` : `${value}+`;
+  };
 
   const columns: ProColumns<Admin>[] = [
     {
@@ -63,20 +68,7 @@ const Overview: React.FC = () => {
       title: <FormattedMessage id="pages.searchTable.title.email" />,
       dataIndex: 'email',
     },
-    {
-      title: <FormattedMessage id="pages.searchTable.title.status" />,
-      dataIndex: 'status',
-      valueEnum: {
-        ACTIVE: {
-          text: <FormattedMessage id="pages.searchTable.status.active" />,
-          status: 'Success',
-        },
-        INACTIVE: {
-          text: <FormattedMessage id="pages.searchTable.status.inactive" />,
-          status: 'Default',
-        },
-      },
-    },
+    adminStatusColumn,
     {
       title: <FormattedMessage id="pages.searchTable.title.createdAt" />,
       dataIndex: 'createdAt',
@@ -116,26 +108,8 @@ const Overview: React.FC = () => {
   ];
 
   return (
-    <PageContainer
-      title={
-        currentUser?.name ? (
-          <FormattedMessage
-            id="pages.overview.greeting"
-            values={{ name: currentUser.name }}
-          />
-        ) : (
-          <FormattedMessage id="pages.overview.title" />
-        )
-      }
-      extra={currentUser?.access ? <Tag>{currentUser.access}</Tag> : undefined}
-      content={
-        currentUser?.email ? (
-          <Typography.Text type="secondary">
-            {currentUser.email}
-          </Typography.Text>
-        ) : undefined
-      }
-    >
+    // 头部不重复当前用户的信息：side 布局把头像、用户名放在侧栏底部了。
+    <PageContainer title={<FormattedMessage id="pages.overview.title" />}>
       <Row gutter={[16, 16]}>
         {stats.map((stat) => (
           <Col key={stat.key} xs={24} sm={12} xl={6}>
@@ -143,7 +117,9 @@ const Overview: React.FC = () => {
               <Statistic
                 title={<FormattedMessage id={stat.id} values={stat.values} />}
                 value={stat.value}
-                valueStyle={stat.color ? { color: stat.color } : undefined}
+                styles={
+                  stat.color ? { content: { color: stat.color } } : undefined
+                }
               />
             </Card>
           </Col>
@@ -167,14 +143,12 @@ const Overview: React.FC = () => {
         )}
       </Typography.Paragraph>
 
-      <ProTable<Admin>
+      <DataTable<Admin>
         headerTitle={<FormattedMessage id="pages.overview.recent.title" />}
-        rowKey="id"
         columns={columns}
         dataSource={admins.slice(0, 5)}
         loading={loading}
-        search={false}
-        pagination={false}
+        // 这里只是概览里的一小段摘要，连刷新按钮都不需要。
         options={false}
         toolBarRender={() => [
           <Link key="all" to="/admins">

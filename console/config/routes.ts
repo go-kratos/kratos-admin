@@ -26,6 +26,9 @@ export default [
     path: "/overview",
     name: "overview",
     icon: "dashboard",
+    // 概览页读的是 ListAdmins，服务端同样要求管理员权限，这里必须一致，
+    // 否则非管理员登录后会落在一个只显示 0 和权限错误的页面上。
+    access: "canAdmin",
     component: "./Overview",
   },
   {
@@ -42,6 +45,7 @@ export default [
   {
     component: "404",
     layout: false,
-    path: "./*",
+    // 必须是 "*"：react-router 不认 "./*"，写成那样任何未匹配路径都落不到这里。
+    path: "*",
   },
 ];

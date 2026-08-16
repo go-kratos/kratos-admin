@@ -93,21 +93,19 @@ type Admin struct {
 	Name string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
 	// The email of the user.
 	Email string `protobuf:"bytes,3,opt,name=email,proto3" json:"email,omitempty"`
-	// The phone number of the user.
-	Phone string `protobuf:"bytes,4,opt,name=phone,proto3" json:"phone,omitempty"`
 	// The avatar URL of the user.
-	Avatar string `protobuf:"bytes,5,opt,name=avatar,proto3" json:"avatar,omitempty"`
+	Avatar string `protobuf:"bytes,4,opt,name=avatar,proto3" json:"avatar,omitempty"`
 	// The access level of the user.
 	// Possible values are: "admin", "user", etc.
-	Access string `protobuf:"bytes,6,opt,name=access,proto3" json:"access,omitempty"`
+	Access string `protobuf:"bytes,5,opt,name=access,proto3" json:"access,omitempty"`
 	// The password of the user.
-	Password string `protobuf:"bytes,7,opt,name=password,proto3" json:"password,omitempty"`
+	Password string `protobuf:"bytes,6,opt,name=password,proto3" json:"password,omitempty"`
 	// The lifecycle status of the user.
-	Status Admin_Status `protobuf:"varint,8,opt,name=status,proto3,enum=kratos.admin.v1.Admin_Status" json:"status,omitempty"`
+	Status Admin_Status `protobuf:"varint,7,opt,name=status,proto3,enum=kratos.admin.v1.Admin_Status" json:"status,omitempty"`
 	// The timestamp at which the user was created.
-	CreatedAt *timestamppb.Timestamp `protobuf:"bytes,9,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	CreatedAt *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
 	// The latest timestamp at which the user was updated.
-	UpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,10,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
+	UpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,9,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -159,13 +157,6 @@ func (x *Admin) GetName() string {
 func (x *Admin) GetEmail() string {
 	if x != nil {
 		return x.Email
-	}
-	return ""
-}
-
-func (x *Admin) GetPhone() string {
-	if x != nil {
-		return x.Phone
 	}
 	return ""
 }
@@ -418,7 +409,6 @@ type ListAdminsRequest struct {
 	// Supported fields:
 	//   - `name` (i.e. `name="John Doe"`)
 	//   - `email` (i.e. `email="admin@go-kratos.dev"`)
-	//   - `phone` (i.e. `phone="+1234567890"`)
 	//   - `created_at` range (i.e. `timestamp>="2025-01-31T11:30:00-04:00"` where
 	//     the timestamp is in RFC 3339 format)
 	//
@@ -646,21 +636,19 @@ var File_kratos_admin_v1_admin_proto protoreflect.FileDescriptor
 
 const file_kratos_admin_v1_admin_proto_rawDesc = "" +
 	"\n" +
-	"\x1bkratos/admin/v1/admin.proto\x12\x0fkratos.admin.v1\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\"\x99\x03\n" +
+	"\x1bkratos/admin/v1/admin.proto\x12\x0fkratos.admin.v1\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\"\x83\x03\n" +
 	"\x05Admin\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x14\n" +
-	"\x05email\x18\x03 \x01(\tR\x05email\x12\x14\n" +
-	"\x05phone\x18\x04 \x01(\tR\x05phone\x12\x16\n" +
-	"\x06avatar\x18\x05 \x01(\tR\x06avatar\x12\x16\n" +
-	"\x06access\x18\x06 \x01(\tR\x06access\x12\x1a\n" +
-	"\bpassword\x18\a \x01(\tR\bpassword\x125\n" +
-	"\x06status\x18\b \x01(\x0e2\x1d.kratos.admin.v1.Admin.StatusR\x06status\x129\n" +
+	"\x05email\x18\x03 \x01(\tR\x05email\x12\x16\n" +
+	"\x06avatar\x18\x04 \x01(\tR\x06avatar\x12\x16\n" +
+	"\x06access\x18\x05 \x01(\tR\x06access\x12\x1a\n" +
+	"\bpassword\x18\x06 \x01(\tR\bpassword\x125\n" +
+	"\x06status\x18\a \x01(\x0e2\x1d.kratos.admin.v1.Admin.StatusR\x06status\x129\n" +
 	"\n" +
-	"created_at\x18\t \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
+	"created_at\x18\b \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
 	"\n" +
-	"updated_at\x18\n" +
-	" \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\"G\n" +
+	"updated_at\x18\t \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\"G\n" +
 	"\x06Status\x12\x16\n" +
 	"\x12STATUS_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +

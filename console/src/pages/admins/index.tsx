@@ -1,86 +1,44 @@
-import { type Admin, type ListAdminsRequest, services } from "@/services";
-import type {
-  ActionType,
-  ProColumns,
-  ProDescriptionsItemProps,
-} from "@ant-design/pro-components";
-import {
-  FooterToolbar,
-  PageContainer,
-  ProDescriptions,
-  ProTable,
-} from "@ant-design/pro-components";
+import { type DataTableRef, DataTable } from "@/components";
+import { type Admin, services } from "@/services";
+import type { ProColumns } from "@ant-design/pro-components";
+import { PageContainer } from "@ant-design/pro-components";
 import { FormattedMessage, useIntl } from "@umijs/max";
-import { Button, Drawer, message, Popconfirm } from "antd";
-import React, { useCallback, useRef, useState } from "react";
+import { Popconfirm, Tag, Typography } from "antd";
+import React, { useCallback, useRef } from "react";
+import { adminStatusColumn } from "./columns";
 import CreateForm from "./components/CreateForm";
 import UpdateForm from "./components/UpdateForm";
 
-type AdminQueryParams = {
-  current?: number;
-  pageSize?: number;
-  name?: string;
-  email?: string;
-  phone?: string;
-};
+/** 一次拉取的上限。取满时 DataTable 的 footer 会提示还有更多。 */
+const PAGE_SIZE = 100;
 
-const handleList = async (params: AdminQueryParams) => {
-  const filters: string[] = [];
-  if (params.name) {
-    filters.push(`name="${params.name}"`);
-  }
-  if (params.email) {
-    filters.push(`email="${params.email}"`);
-  }
-  if (params.phone) {
-    filters.push(`phone="${params.phone}"`);
-  }
-  const requestParams: ListAdminsRequest = {
-    pageSize: params.pageSize,
-    pageToken: undefined,
-    filter: filters.join(" AND ") || undefined,
-    orderBy: undefined,
-  };
-  const res = await services.admin.ListAdmins(requestParams);
-  return {
-    data: res.admins ?? [],
-    success: true,
-  };
-};
+/** 把值转成 CEL 字符串字面量，否则搜索词里的引号会让后端解析失败。 */
+const celString = (value: string) =>
+  `"${value.replace(/\\/g, "\\\\").replace(/"/g, '\\"')}"`;
 
 const TableList: React.FC = () => {
-  const actionRef = useRef<ActionType | null>(null);
-
-  const [showDetail, setShowDetail] = useState<boolean>(false);
-  const [currentRow, setCurrentRow] = useState<Admin>();
-  const [selectedRowsState, setSelectedRows] = useState<Admin[]>([]);
-  const [deleteLoading, setDeleteLoading] = useState(false);
-  const [messageApi, contextHolder] = message.useMessage();
+  const tableRef = useRef<DataTableRef<Admin>>(null);
   const intl = useIntl();
 
-  /**
-   *  Delete node
-   *
-   * @param selectedRows
-   */
-  const handleRemove = useCallback(
-    async (selectedRows: Admin[]) => {
-      try {
-        setDeleteLoading(true);
-        for (const row of selectedRows) {
-          await services.admin.DeleteAdmin({ id: row.id });
-        }
-        setSelectedRows([]);
-        actionRef.current?.reloadAndRest?.();
-        messageApi.success("Deleted successfully and will refresh soon");
-      } catch {
-        // Reporting is handled globally in requestErrorConfig.
-      } finally {
-        setDeleteLoading(false);
-      }
-    },
-    [messageApi]
-  );
+  const handleList = useCallback(async (params: { keyword?: string }) => {
+    const word = params.keyword?.trim();
+    // `:` 是 AIP 的 has 操作符，后端映射成 LIKE %x%，所以一个输入框可以同时
+    // 模糊匹配名称和邮箱。
+    const filter = word
+      ? `name:${celString(word)} OR email:${celString(word)}`
+      : undefined;
+    const res = await services.admin.ListAdmins({
+      pageSize: PAGE_SIZE,
+      pageToken: undefined,
+      filter,
+      orderBy: "created_at desc",
+    });
+    return {
+      data: res.admins ?? [],
+      success: true,
+      hasMore: Boolean(res.nextPageToken),
+    };
+  }, []);
 
   const columns: ProColumns<Admin>[] = [
     {
@@ -91,6 +49,9 @@ const TableList: React.FC = () => {
         />
       ),
       dataIndex: "name",
+      render: (_, record) => (
+        <Typography.Text strong>{record.name}</Typography.Text>
+      ),
     },
     {
       title: (
@@ -100,15 +61,9 @@ const TableList: React.FC = () => {
         />
       ),
       dataIndex: "email",
-    },
-    {
-      title: (
-        <FormattedMessage
-          id="pages.searchTable.title.phone"
-          defaultMessage="Phone"
-        />
-      ),
-      dataIndex: "phone",
+      // 邮箱比名称长，复制出来比读出来更常用。
+      copyable: true,
+      ellipsis: true,
     },
     {
       title: (
@@ -118,39 +73,24 @@ const TableList: React.FC = () => {
         />
       ),
       dataIndex: "access",
-    },
-    {
-      title: (
-        <FormattedMessage
-          id="pages.searchTable.title.status"
-          defaultMessage="Status"
-        />
-      ),
-      dataIndex: "status",
-      // 后端的 filter 只声明了 name/email/phone/created_at，status 不可过滤，
-      // 所以不能让 ProTable 为这一列自动生成搜索项。
+      width: 120,
+      // 与 status 同理：后端只声明 name/email/created_at 可过滤。
       search: false,
-      valueEnum: {
-        ACTIVE: {
-          text: (
-            <FormattedMessage
-              id="pages.searchTable.status.active"
-              defaultMessage="Active"
-            />
-          ),
-          status: "Success",
-        },
-        INACTIVE: {
-          text: (
-            <FormattedMessage
-              id="pages.searchTable.status.inactive"
-              defaultMessage="Inactive"
-            />
-          ),
-          status: "Default",
-        },
-      },
+      // access 的取值是 "admin" / "user" 这类标识符，和表单里的 options 一样
+      // 直接展示，不做翻译。
+      render: (_, record) =>
+        record.access ? (
+          <Tag
+            variant="filled"
+            color={record.access === "admin" ? "purple" : undefined}
+          >
+            {record.access}
+          </Tag>
+        ) : (
+          "-"
+        ),
     },
+    adminStatusColumn,
     {
       title: (
         <FormattedMessage
@@ -160,18 +100,7 @@ const TableList: React.FC = () => {
       ),
       dataIndex: "createdAt",
       valueType: "dateTime",
-      search: false,
-    },
-    {
-      title: (
-        <FormattedMessage
-          id="pages.searchTable.title.updatedAt"
-          defaultMessage="Updated at"
-        />
-      ),
-      dataIndex: "updatedAt",
-      valueType: "dateTime",
-      search: false,
+      width: 200,
     },
     {
       title: (
@@ -182,6 +111,7 @@ const TableList: React.FC = () => {
       ),
       dataIndex: "option",
       valueType: "option",
+      width: 120,
       render: (_, record) => [
         <UpdateForm
           trigger={
@@ -193,18 +123,18 @@ const TableList: React.FC = () => {
             </a>
           }
           key="edit"
-          onOk={actionRef.current?.reload}
+          onOk={() => tableRef.current?.reload()}
           values={record}
         />,
         <Popconfirm
           key="delete"
-          title="Delete the user"
-          description="Are you sure to delete this user?"
-          onConfirm={() => {
-            handleRemove([record]);
-          }}
-          okText="Yes"
-          cancelText="No"
+          title={intl.formatMessage({
+            id: "pages.searchTable.deleteConfirm.title",
+          })}
+          description={intl.formatMessage({
+            id: "pages.searchTable.deleteConfirm.description",
+          })}
+          onConfirm={() => tableRef.current?.remove([record])}
         >
           <a>
             <FormattedMessage
@@ -218,81 +148,28 @@ const TableList: React.FC = () => {
   ];
 
   return (
-    <PageContainer>
-      {contextHolder}
-      <ProTable<Admin, AdminQueryParams>
-        headerTitle={intl.formatMessage({
-          id: "pages.searchTable.title",
-          defaultMessage: "Enquiry form",
-        })}
-        actionRef={actionRef}
-        rowKey="id"
-        search={{
-          labelWidth: 120,
-        }}
-        toolBarRender={() => [
-          <CreateForm key="create" reload={actionRef.current?.reload} />,
-        ]}
-        request={handleList}
+    <PageContainer
+      title={intl.formatMessage({ id: "pages.searchTable.title" })}
+      content={
+        <Typography.Text type="secondary">
+          <FormattedMessage id="pages.searchTable.description" />
+        </Typography.Text>
+      }
+      // 主操作放页头右上角，和标题同一视线高度；工具栏只留搜索与刷新。
+      extra={[
+        <CreateForm key="create" reload={() => tableRef.current?.reload()} />,
+      ]}
+    >
+      <DataTable<Admin>
+        ref={tableRef}
         columns={columns}
-        rowSelection={{
-          onChange: (_, selectedRows) => {
-            setSelectedRows(selectedRows);
-          },
-        }}
+        request={handleList}
+        pageSize={PAGE_SIZE}
+        searchPlaceholder={intl.formatMessage({
+          id: "pages.searchTable.searchPlaceholder",
+        })}
+        onDelete={(row) => services.admin.DeleteAdmin({ id: row.id })}
       />
-      {selectedRowsState?.length > 0 && (
-        <FooterToolbar
-          extra={
-            <div>
-              <FormattedMessage
-                id="pages.searchTable.chosen"
-                defaultMessage="Chosen"
-              />{" "}
-              <a style={{ fontWeight: 600 }}>{selectedRowsState.length}</a>{" "}
-              <FormattedMessage
-                id="pages.searchTable.item"
-                defaultMessage="Items"
-              />
-            </div>
-          }
-        >
-          <Button
-            loading={deleteLoading}
-            onClick={() => {
-              handleRemove(selectedRowsState);
-            }}
-          >
-            <FormattedMessage
-              id="pages.searchTable.batchDeletion"
-              defaultMessage="Batch deletion"
-            />
-          </Button>
-        </FooterToolbar>
-      )}
-      <Drawer
-        width={600}
-        open={showDetail}
-        onClose={() => {
-          setCurrentRow(undefined);
-          setShowDetail(false);
-        }}
-        closable={false}
-      >
-        {currentRow?.name && (
-          <ProDescriptions<Admin>
-            column={2}
-            title={currentRow?.name}
-            request={async () => ({
-              data: currentRow || {},
-            })}
-            params={{
-              id: currentRow?.name,
-            }}
-            columns={columns as ProDescriptionsItemProps<Admin>[]}
-          />
-        )}
-      </Drawer>
     </PageContainer>
   );
 };

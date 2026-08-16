@@ -140,6 +140,12 @@ export default defineConfig({
     // 解决首次加载时白屏的问题
     { src: join(PUBLIC_PATH, "scripts/loading.js"), async: true },
   ],
+  /**
+   * @name favicon
+   * @description 显式声明而非依赖 /favicon.ico 的浏览器约定，否则部署到子路径时
+   * 约定会失效。
+   */
+  favicons: [join(PUBLIC_PATH, "favicon.ico")],
   //================ pro 插件配置 =================
   presets: ["umi-presets-pro"],
   utoopack: {},

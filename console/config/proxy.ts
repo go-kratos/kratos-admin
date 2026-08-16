@@ -12,7 +12,8 @@ export default {
    */
   dev: {
     "/v1/": {
-      target: "http://localhost:8000",
+      // 后端换端口时用 API_TARGET 覆盖，不必改代码。
+      target: process.env.API_TARGET ?? "http://localhost:8000",
       changeOrigin: true,
     },
   },

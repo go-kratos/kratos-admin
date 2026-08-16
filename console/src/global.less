@@ -22,13 +22,63 @@ body,
   left: unset;
 }
 
-// 侧栏与顶栏的分界线。ProLayout 没有对应的 token，只能在这里补。
-// 颜色取 config/theme.ts 的 colorBorderSecondary。
-.ant-pro-sider {
-  border-inline-end: 1px solid #e9ebef;
+// 侧栏的分界线。pro-layout 自己在内层容器上画了一条，所以不另加边框（再加一条会
+// 变成 2px 的粗线），只改颜色：它原本是 rgba(35,35,35,0.05)，叠白底约等于 #F4F4F4，
+// 比表格的分割线浅。色值须与 config/theme.ts 的 colorBorderSecondary 一致。
+// 要 !important：那条规则由 cssinjs 运行时注入，靠特异性压不稳。
+//
+// 顶栏不用管：layout 是 'side'，pro-layout 不渲染独立顶栏，头像和右上操作都在侧栏里。
+.ant-pro-sider .ant-layout-sider-children {
+  border-inline-end-color: #eaeaea !important;
 }
-.ant-pro-layout .ant-pro-layout-header {
-  border-block-end: 1px solid #e9ebef;
+
+// 侧栏标题默认带一个 0.4s 的淡入（pro-layout 的 proLayoutTitleHide），每次进页面
+// 都要闪一下。
+//
+// 用后代选择器而非子选择器：真实结构是 .ant-pro-sider-logo > a > h1，中间那层 <a>
+// 很容易漏掉。用 !important 是因为 pro-layout 的样式由 cssinjs 运行时注入、选择器
+// 带 hash，靠特异性和加载顺序压不稳。
+.ant-pro-sider-logo h1 {
+  animation: none !important;
+}
+
+// 表头与 footer 的分割线要贯穿整张卡片。ProTable 默认把表格放在有水平内边距的
+// ProCard 里，分割线只画在单元格上，左右各缺一段。
+//
+// 做法是卡片不留水平内边距，改由工具栏和单元格各自负责。两处取同一个值，所以首列
+// 的 checkbox 和工具栏里的搜索框左边界天然对齐。24px 与 PageContainer 内容区的
+// paddingInlinePageContainerContent 一致。
+.ant-pro-table {
+  > .ant-pro-card > .ant-pro-card-body {
+    padding-inline: 0;
+  }
+
+  .ant-pro-table-list-toolbar-container {
+    padding-inline: 24px;
+  }
+
+  // 这几处都要 !important：antd 对单元格内边距有一条特异性更高的规则（cssinjs
+  // 运行时注入），不加会被压回默认的 8px / 16px。
+  .ant-table-thead > tr > th:first-child,
+  .ant-table-tbody > tr > td:first-child {
+    padding-inline-start: 24px !important;
+  }
+  .ant-table-thead > tr > th:last-child,
+  .ant-table-tbody > tr > td:last-child {
+    padding-inline-end: 24px !important;
+  }
+
+  // 勾选列 antd 默认还额外居中，checkbox 会落在列中间而不是 24px 处。
+  // 列宽不在这里设：antd 把它写进 <colgroup>，CSS 改不动，见 DataTable 的
+  // rowSelection.columnWidth。
+  .ant-table-thead > tr > th.ant-table-selection-column,
+  .ant-table-tbody > tr > td.ant-table-selection-column {
+    text-align: start;
+  }
+
+  .ant-table-footer {
+    padding-inline: 24px !important;
+  }
 }
 
 // 等宽数字，让表格里的计数和时间上下对齐。

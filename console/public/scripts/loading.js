@@ -14,188 +14,45 @@
           margin: 0;
           padding: 0;
         }
-        #root {
-          background-repeat: no-repeat;
-          background-size: 100% auto;
-        }
 
-        .loading-title {
-          font-size: 1.1rem;
-        }
-
-        .loading-sub-title {
-          margin-top: 20px;
-          font-size: 1rem;
-          color: #888;
-        }
-
-        .page-loading-warp {
+        .page-loading {
           display: flex;
+          flex-direction: column;
           align-items: center;
           justify-content: center;
-          padding: 26px;
+          height: 100%;
+          min-height: 362px;
+          /* 与 config/theme.ts 的 colorBgLayout 保持一致，
+             避免首屏到应用挂载之间闪一下白。 */
+          background-color: #fdfdfd;
+          font-family:
+            Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue',
+            'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', Arial, sans-serif;
         }
-        .ant-spin {
-          position: absolute;
-          display: none;
-          -webkit-box-sizing: border-box;
-          box-sizing: border-box;
-          margin: 0;
-          padding: 0;
-          color: rgba(0, 0, 0, 0.65);
-          color: #4F46E5;
+
+        .page-loading-logo {
+          width: 48px;
+          height: 48px;
+        }
+
+        .page-loading-title {
+          margin-top: 20px;
           font-size: 14px;
-          font-variant: tabular-nums;
-          line-height: 1.5;
-          text-align: center;
-          list-style: none;
-          opacity: 0;
-          -webkit-transition: -webkit-transform 0.3s
-            cubic-bezier(0.78, 0.14, 0.15, 0.86);
-          transition: -webkit-transform 0.3s
-            cubic-bezier(0.78, 0.14, 0.15, 0.86);
-          transition: transform 0.3s cubic-bezier(0.78, 0.14, 0.15, 0.86);
-          transition: transform 0.3s cubic-bezier(0.78, 0.14, 0.15, 0.86),
-            -webkit-transform 0.3s cubic-bezier(0.78, 0.14, 0.15, 0.86);
-          -webkit-font-feature-settings: "tnum";
-          font-feature-settings: "tnum";
-        }
-
-        .ant-spin-spinning {
-          position: static;
-          display: inline-block;
-          opacity: 1;
-        }
-
-        .ant-spin-dot {
-          position: relative;
-          display: inline-block;
-          width: 20px;
-          height: 20px;
-          font-size: 20px;
-        }
-
-        .ant-spin-dot-item {
-          position: absolute;
-          display: block;
-          width: 9px;
-          height: 9px;
-          background-color: #4F46E5;
-          border-radius: 100%;
-          -webkit-transform: scale(0.75);
-          -ms-transform: scale(0.75);
-          transform: scale(0.75);
-          -webkit-transform-origin: 50% 50%;
-          -ms-transform-origin: 50% 50%;
-          transform-origin: 50% 50%;
-          opacity: 0.3;
-          -webkit-animation: antspinmove 1s infinite linear alternate;
-          animation: antSpinMove 1s infinite linear alternate;
-        }
-
-        .ant-spin-dot-item:nth-child(1) {
-          top: 0;
-          left: 0;
-        }
-
-        .ant-spin-dot-item:nth-child(2) {
-          top: 0;
-          right: 0;
-          -webkit-animation-delay: 0.4s;
-          animation-delay: 0.4s;
-        }
-
-        .ant-spin-dot-item:nth-child(3) {
-          right: 0;
-          bottom: 0;
-          -webkit-animation-delay: 0.8s;
-          animation-delay: 0.8s;
-        }
-
-        .ant-spin-dot-item:nth-child(4) {
-          bottom: 0;
-          left: 0;
-          -webkit-animation-delay: 1.2s;
-          animation-delay: 1.2s;
-        }
-
-        .ant-spin-dot-spin {
-          -webkit-transform: rotate(45deg);
-          -ms-transform: rotate(45deg);
-          transform: rotate(45deg);
-          -webkit-animation: antrotate 1.2s infinite linear;
-          animation: antRotate 1.2s infinite linear;
-        }
-
-        .ant-spin-lg .ant-spin-dot {
-          width: 32px;
-          height: 32px;
-          font-size: 32px;
-        }
-
-        .ant-spin-lg .ant-spin-dot i {
-          width: 14px;
-          height: 14px;
-        }
-
-        @media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
-          .ant-spin-blur {
-            background: #fff;
-            opacity: 0.5;
-          }
-        }
-
-        @-webkit-keyframes antSpinMove {
-          to {
-            opacity: 1;
-          }
-        }
-
-        @keyframes antSpinMove {
-          to {
-            opacity: 1;
-          }
-        }
-
-        @-webkit-keyframes antRotate {
-          to {
-            -webkit-transform: rotate(405deg);
-            transform: rotate(405deg);
-          }
-        }
-
-        @keyframes antRotate {
-          to {
-            -webkit-transform: rotate(405deg);
-            transform: rotate(405deg);
-          }
+          color: #505456;
         }
       </style>
 
-      <div style="
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        height: 100%;
-        min-height: 362px;
-      ">
-        <div class="page-loading-warp">
-          <div class="ant-spin ant-spin-lg ant-spin-spinning">
-            <span class="ant-spin-dot ant-spin-dot-spin">
-              <i class="ant-spin-dot-item"></i>
-              <i class="ant-spin-dot-item"></i>
-              <i class="ant-spin-dot-item"></i>
-              <i class="ant-spin-dot-item"></i>
-            </span>
-          </div>
-        </div>
-        <div class="loading-title">
-          正在加载资源
-        </div>
-        <div class="loading-sub-title">
-          初次加载资源可能需要较多时间 请耐心等待
-        </div>
+      <div class="page-loading">
+        <!-- 内联而非引用 public/logo.svg：这段占位的存在就是为了消除白屏，
+             再等一次网络请求会自相矛盾。改 logo 时两处都要动。 -->
+        <svg class="page-loading-logo" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+          <rect width="200" height="200" rx="44" fill="#7624F4"/>
+          <g fill="#FFFFFF">
+            <rect x="52" y="46" width="26" height="108" rx="6"/>
+            <path d="M132 46h30l-58 54 58 54h-32l-52-50v-8z"/>
+          </g>
+        </svg>
+        <div class="page-loading-title">正在加载</div>
       </div>
     `;
   }

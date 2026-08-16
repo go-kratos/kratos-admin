@@ -215,7 +215,6 @@ func (s *AdminService) ListAdmins(ctx context.Context, req *v1.ListAdminsRequest
 		filtering.DeclareStandardFunctions(),
 		filtering.DeclareIdent("name", filtering.TypeString),
 		filtering.DeclareIdent("email", filtering.TypeString),
-		filtering.DeclareIdent("phone", filtering.TypeString),
 		filtering.DeclareIdent("created_at", filtering.TypeTimestamp),
 	)
 	if err != nil {

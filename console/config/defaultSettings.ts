@@ -1,5 +1,5 @@
 import type { ProLayoutProps } from '@ant-design/pro-components';
-import { brandColor, layoutToken } from './theme';
+import { brandColor, buildLayoutToken } from './theme';
 
 const Settings: ProLayoutProps & {
   logo?: string;
@@ -14,7 +14,9 @@ const Settings: ProLayoutProps & {
   title: 'Kratos Admin',
   logo: '/logo.svg',
   iconfontUrl: '',
-  token: layoutToken,
+  // 首屏用默认主题色的那一套；SettingDrawer 换色后由 src/app.tsx 重新派生，
+  // 见那里对 token 覆盖顺序的说明。
+  token: buildLayoutToken(brandColor),
 };
 
 export default Settings;

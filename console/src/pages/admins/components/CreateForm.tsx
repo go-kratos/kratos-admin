@@ -1,7 +1,6 @@
 import { type Admin, services } from "@/services";
 import { PlusOutlined } from "@ant-design/icons";
 import {
-  type ActionType,
   ModalForm,
   ProFormSelect,
   ProFormText,
@@ -11,7 +10,8 @@ import { Button, message } from "antd";
 import type { FC } from "react";
 
 interface CreateFormProps {
-  reload?: ActionType["reload"];
+  /** 创建成功后刷新列表。 */
+  reload?: () => void;
 }
 
 const CreateForm: FC<CreateFormProps> = (props) => {
@@ -22,7 +22,9 @@ const CreateForm: FC<CreateFormProps> = (props) => {
   const { run, loading } = useRequest(services.admin.CreateAdmin, {
     manual: true,
     onSuccess: () => {
-      messageApi.success("Added successfully");
+      messageApi.success(
+        intl.formatMessage({ id: "pages.searchTable.createSuccess" })
+      );
       reload?.();
     },
   });
@@ -40,8 +42,9 @@ const CreateForm: FC<CreateFormProps> = (props) => {
             <FormattedMessage id="pages.searchTable.new" defaultMessage="New" />
           </Button>
         }
-        width="400px"
-        modalProps={{ okButtonProps: { loading } }}
+        // 480 而不是更窄：四个字段竖排下来高度接近 500，太窄会显得瘦长。
+        width={480}
+        modalProps={{ okButtonProps: { loading }, destroyOnHidden: true }}
         onFinish={async (value) => {
           try {
             await run({ admin: value as Admin });
@@ -52,94 +55,79 @@ const CreateForm: FC<CreateFormProps> = (props) => {
           }
         }}
       >
+        {/* 不给字段设 width：pro-form 的 "md" 是固定 328px，在弹窗里会让输入框右侧
+            空出一段。不设就跟着容器占满。 */}
         <ProFormText
-          rules={[
-            {
-              required: true,
-              message: (
-                <FormattedMessage
-                  id="pages.searchTable.required.name"
-                  defaultMessage="Name is required"
-                />
-              ),
-            },
-          ]}
-          label={intl.formatMessage({
-            id: "pages.searchTable.title.name",
-            defaultMessage: "Name",
-          })}
-          width="md"
           name="name"
-        />
-        <ProFormText
+          label={intl.formatMessage({ id: "pages.searchTable.title.name" })}
+          placeholder={intl.formatMessage({
+            id: "pages.searchTable.placeholder.name",
+          })}
           rules={[
             {
               required: true,
               message: (
-                <FormattedMessage
-                  id="pages.searchTable.required.email"
-                  defaultMessage="Email is required"
-                />
+                <FormattedMessage id="pages.searchTable.required.name" />
               ),
             },
           ]}
-          label={intl.formatMessage({
-            id: "pages.searchTable.title.email",
-            defaultMessage: "Email",
-          })}
-          width="md"
+        />
+        <ProFormText
           name="email"
-        />
-        <ProFormText
+          label={intl.formatMessage({ id: "pages.searchTable.title.email" })}
+          placeholder={intl.formatMessage({
+            id: "pages.searchTable.placeholder.email",
+          })}
           rules={[
             {
               required: true,
               message: (
-                <FormattedMessage
-                  id="pages.searchTable.required.password"
-                  defaultMessage="Password is required"
-                />
+                <FormattedMessage id="pages.searchTable.required.email" />
+              ),
+            },
+            {
+              type: "email",
+              message: (
+                <FormattedMessage id="pages.searchTable.invalid.email" />
               ),
             },
           ]}
-          label={intl.formatMessage({
-            id: "pages.searchTable.title.password",
-            defaultMessage: "Password",
-          })}
-          width="md"
+        />
+        {/* Password 而非 type="password"：它自带明文切换，创建账号时能核对输入。 */}
+        <ProFormText.Password
           name="password"
-          fieldProps={{ type: "password" }}
+          label={intl.formatMessage({ id: "pages.searchTable.title.password" })}
+          placeholder={intl.formatMessage({
+            id: "pages.searchTable.placeholder.password",
+          })}
+          rules={[
+            {
+              required: true,
+              message: (
+                <FormattedMessage id="pages.searchTable.required.password" />
+              ),
+            },
+          ]}
         />
         <ProFormSelect
+          name="access"
+          label={intl.formatMessage({ id: "pages.searchTable.title.access" })}
+          placeholder={intl.formatMessage({
+            id: "pages.searchTable.placeholder.access",
+          })}
+          // 取值是后端约定的标识符，直接展示不做翻译，与表格里的 access 标签一致。
+          options={[
+            { label: "user", value: "user" },
+            { label: "admin", value: "admin" },
+          ]}
           rules={[
             {
               required: true,
               message: (
-                <FormattedMessage
-                  id="pages.searchTable.required.access"
-                  defaultMessage="Access is required"
-                />
+                <FormattedMessage id="pages.searchTable.required.access" />
               ),
             },
           ]}
-          label={intl.formatMessage({
-            id: "pages.searchTable.title.access",
-            defaultMessage: "Access",
-          })}
-          width="md"
-          name="access"
-          options={[
-            { label: "User", value: "user" },
-            { label: "Admin", value: "admin" },
-          ]}
-        />
-        <ProFormText
-          label={intl.formatMessage({
-            id: "pages.searchTable.title.phone",
-            defaultMessage: "Phone",
-          })}
-          width="md"
-          name="phone"
         />
       </ModalForm>
     </>

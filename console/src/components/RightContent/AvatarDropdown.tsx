@@ -1,26 +1,26 @@
 import { services } from "@/services";
-import {
-  LogoutOutlined,
-  SettingOutlined,
-  UserOutlined,
-} from "@ant-design/icons";
-import { history, useModel } from "@umijs/max";
+import { LogoutOutlined } from "@ant-design/icons";
+import { history, useIntl, useModel } from "@umijs/max";
 import type { MenuProps } from "antd";
-import { Spin } from "antd";
+import { Dropdown, Spin } from "antd";
 import { createStyles } from "antd-style";
 import React from "react";
 import { flushSync } from "react-dom";
-import HeaderDropdown from "../HeaderDropdown";
 
 export type GlobalHeaderRightProps = {
-  menu?: boolean;
   children?: React.ReactNode;
 };
 
 export const AvatarName = () => {
   const { initialState } = useModel("@@initialState");
   const { currentUser } = initialState || {};
-  return <span className="anticon">{currentUser?.name}</span>;
+  // 不要用 antd 的 anticon 类：它带 vertical-align:-0.125em 和 line-height:0，
+  // 那是给图标对齐文字基线用的，套在纯文本上会把用户名往下压半个字。
+  return (
+    <span style={{ display: "inline-flex", alignItems: "center" }}>
+      {currentUser?.name}
+    </span>
+  );
 };
 
 const useStyles = createStyles(({ token }) => {
@@ -42,101 +42,59 @@ const useStyles = createStyles(({ token }) => {
 });
 
 export const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({
-  menu,
   children,
 }) => {
-  /**
-   * 退出登录，并且将当前的 url 保存
-   */
+  const { styles } = useStyles();
+  const intl = useIntl();
+  const { initialState, setInitialState } = useModel("@@initialState");
+
+  /** 退出登录，并把当前地址放进 redirect 以便登录后回到原处。 */
   const loginOut = async () => {
     await services.admin.Logout({});
     const { search, pathname } = window.location;
-    const urlParams = new URL(window.location.href).searchParams;
     const searchParams = new URLSearchParams({
       redirect: pathname + search,
     });
-    /** 此方法会跳转到 redirect 参数所在的位置 */
-    const redirect = urlParams.get("redirect");
-    // Note: There may be security issues, please note
-    if (window.location.pathname !== "/user/login" && !redirect) {
-      history.replace({
-        pathname: "/user/login",
-        search: searchParams.toString(),
-      });
-    }
+    history.replace({
+      pathname: "/user/login",
+      search: searchParams.toString(),
+    });
   };
-  const { styles } = useStyles();
 
-  const { initialState, setInitialState } = useModel("@@initialState");
-
-  const onMenuClick: MenuProps["onClick"] = (event) => {
-    const { key } = event;
+  const onMenuClick: MenuProps["onClick"] = ({ key }) => {
     if (key === "logout") {
       flushSync(() => {
         setInitialState((s) => ({ ...s, currentUser: undefined }));
       });
       loginOut();
-      return;
     }
-    history.push(`/account/${key}`);
   };
 
   const loading = (
     <span className={styles.action}>
-      <Spin
-        size="small"
-        style={{
-          marginLeft: 8,
-          marginRight: 8,
-        }}
-      />
+      <Spin size="small" style={{ marginLeft: 8, marginRight: 8 }} />
     </span>
   );
 
-  if (!initialState) {
+  if (!initialState?.currentUser?.name) {
     return loading;
   }
-
-  const { currentUser } = initialState;
-
-  if (!currentUser?.name) {
-    return loading;
-  }
-
-  const menuItems = [
-    ...(menu
-      ? [
-          {
-            key: "center",
-            icon: <UserOutlined />,
-            label: "个人中心",
-          },
-          {
-            key: "settings",
-            icon: <SettingOutlined />,
-            label: "个人设置",
-          },
-          {
-            type: "divider" as const,
-          },
-        ]
-      : []),
-    {
-      key: "logout",
-      icon: <LogoutOutlined />,
-      label: "退出登录",
-    },
-  ];
 
   return (
-    <HeaderDropdown
+    <Dropdown
       menu={{
         selectedKeys: [],
         onClick: onMenuClick,
-        items: menuItems,
+        items: [
+          {
+            key: "logout",
+            icon: <LogoutOutlined />,
+            label: intl.formatMessage({ id: "menu.account.logout" }),
+          },
+        ],
       }}
     >
       {children}
-    </HeaderDropdown>
+    </Dropdown>
   );
 };

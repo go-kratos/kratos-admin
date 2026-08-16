@@ -10,8 +10,6 @@ export type Admin = {
   name: string | undefined;
   // The email of the user.
   email: string | undefined;
-  // The phone number of the user.
-  phone: string | undefined;
   // The avatar URL of the user.
   avatar: string | undefined;
   // The access level of the user.
@@ -80,7 +78,6 @@ export type ListAdminsRequest = {
   // Supported fields:
   // * `name` (i.e. `name="John Doe"`)
   // * `email` (i.e. `email="admin@go-kratos.dev"`)
-  // * `phone` (i.e. `phone="+1234567890"`)
   // * `created_at` range (i.e. `timestamp>="2025-01-31T11:30:00-04:00"` where
   // the timestamp is in RFC 3339 format)
   // Soft-deleted admins are never returned, regardless of filter.

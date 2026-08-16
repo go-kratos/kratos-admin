@@ -1,14 +1,21 @@
-import { AvatarDropdown, AvatarName, Footer, SelectLang } from "@/components";
+import {
+  AvatarDropdown,
+  AvatarName,
+  Footer,
+  Logo,
+  SelectLang,
+} from "@/components";
 import { type Admin, services } from "@/services";
 import type { Settings as LayoutSettings } from "@ant-design/pro-components";
 import { SettingDrawer } from "@ant-design/pro-components";
 import type { RequestConfig, RunTimeLayoutConfig } from "@umijs/max";
-import { history } from "@umijs/max";
+import { getIntl, history } from "@umijs/max";
+import { Result } from "antd";
 import defaultSettings from "../config/defaultSettings";
+import { brandColor, buildLayoutToken } from "../config/theme";
 import { errorConfig } from "./requestErrorConfig";
 
-const isDev = process.env.NODE_ENV === "development";
-const isDevOrTest = isDev || process.env.CI;
+const isDevOrTest = process.env.NODE_ENV === "development" || process.env.CI;
 const loginPath = "/user/login";
 
 /**
@@ -17,35 +24,18 @@ const loginPath = "/user/login";
 export async function getInitialState(): Promise<{
   settings?: Partial<LayoutSettings>;
   currentUser?: Admin;
-  loading?: boolean;
-  fetchUserInfo?: () => Promise<Admin | undefined>;
 }> {
-  const fetchUserInfo = async () => {
-    try {
-      return await services.admin.Current({});
-    } catch {
-      // Redirecting on 401 is handled globally in requestErrorConfig.
-      return undefined;
-    }
-  };
-  // 如果不是登录页面，执行
-  const { location } = history;
-  if (
-    ![loginPath, "/user/register", "/user/register-result"].includes(
-      location.pathname
-    )
-  ) {
-    const currentUser = await fetchUserInfo();
-    return {
-      fetchUserInfo,
-      currentUser,
-      settings: defaultSettings as Partial<LayoutSettings>,
-    };
+  const settings = defaultSettings as Partial<LayoutSettings>;
+  // 登录页不取用户信息，否则每次打开登录页都会先吃一个 401。
+  if (history.location.pathname === loginPath) {
+    return { settings };
   }
-  return {
-    fetchUserInfo,
-    settings: defaultSettings as Partial<LayoutSettings>,
-  };
+  try {
+    return { currentUser: await services.admin.Current({}), settings };
+  } catch {
+    // 401 的跳转由 requestErrorConfig 统一处理。
+    return { settings };
+  }
 }
 
 // ProLayout 支持的api https://procomponents.ant.design/components/layout
@@ -53,53 +43,66 @@ export const layout: RunTimeLayoutConfig = ({
   initialState,
   setInitialState,
 }) => {
+  // SettingDrawer 换色后写在这里，未改动时回落到默认品牌色。
+  const themeColor = initialState?.settings?.colorPrimary ?? brandColor;
   return {
     actionsRender: () => [<SelectLang key="SelectLang" />],
     avatarProps: {
-      src: initialState?.currentUser?.avatar,
+      // 空字符串要转成 undefined，否则 antd 会当成有效地址去加载，头像位置留白。
+      src: initialState?.currentUser?.avatar || undefined,
+      // 没有头像时用用户名首字母兜底，比通用的小人图标更容易辨认是谁。能渲染到
+      // 这里说明 name 一定存在（见 AvatarDropdown 的 loading 分支）。
+      children: initialState?.currentUser?.name?.[0]?.toUpperCase(),
+      style: { backgroundColor: themeColor, color: "#FFFFFF" },
       title: <AvatarName />,
       render: (_, avatarChildren) => (
         <AvatarDropdown>{avatarChildren}</AvatarDropdown>
       ),
     },
-    waterMarkProps: {
-      content: initialState?.currentUser?.name,
-    },
     footerRender: () => <Footer />,
     onPageChange: () => {
-      const { location } = history;
-      // 如果没有登录，重定向到 login
-      if (!initialState?.currentUser && location.pathname !== loginPath) {
-        history.push(loginPath);
+      const { pathname, search } = history.location;
+      if (!initialState?.currentUser && pathname !== loginPath) {
+        // 带上 redirect，登录后能回到原来的位置。
+        history.push(
+          `${loginPath}?redirect=${encodeURIComponent(pathname + search)}`
+        );
       }
     },
-    links: [],
-    menuHeaderRender: undefined,
-    // 自定义 403 页面
-    // unAccessible: <div>unAccessible</div>,
-    // 增加一个 loading 的状态
-    childrenRender: (children) => {
-      // if (initialState?.loading) return <PageLoading />;
-      return (
-        <>
-          {children}
-          {isDevOrTest && (
-            <SettingDrawer
-              disableUrlParams
-              enableDarkTheme
-              settings={initialState?.settings}
-              onSettingChange={(settings) => {
-                setInitialState((preInitialState) => ({
-                  ...preInitialState,
-                  settings,
-                }));
-              }}
-            />
-          )}
-        </>
-      );
-    },
+    // umi 内建的 403 页面文案写死了中文，换成走 i18n 的版本。
+    unAccessible: (
+      <Result
+        status="403"
+        title="403"
+        subTitle={getIntl().formatMessage({ id: "pages.403.subTitle" })}
+      />
+    ),
+    childrenRender: (children) => (
+      <>
+        {children}
+        {isDevOrTest && (
+          <SettingDrawer
+            disableUrlParams
+            enableDarkTheme
+            settings={initialState?.settings}
+            onSettingChange={(settings) => {
+              setInitialState((preInitialState) => ({
+                ...preInitialState,
+                settings,
+              }));
+            }}
+          />
+        )}
+      </>
+    ),
     ...initialState?.settings,
+    // 以下两项必须排在 settings 展开之后，否则会被 defaultSettings 里的静态值盖掉。
+    //
+    // SettingDrawer 只写 settings.colorPrimary，而侧栏配色读的是 token.sider.*，
+    // 两者不相通 —— 不在这里重新派生，换主题色时侧栏和内容区底色会停在默认色上。
+    token: buildLayoutToken(themeColor),
+    // 同理，public/logo.svg 的 fill 写死在文件里，只有换成组件才能跟着主题色走。
+    logo: <Logo color={themeColor} />,
   };
 };
 

@@ -1,4 +1,15 @@
 # Kratos Admin Template
+A Kratos service template with an Ant Design Pro console: sign-in, an overview
+dashboard, and admin management backed by AIP filtering and pagination.
+
+![Sign in](docs/login.png)
+
+<table>
+  <tr>
+    <td width="50%"><img src="docs/overview.png" alt="Overview"></td>
+    <td width="50%"><img src="docs/admins.png" alt="Admin management"></td>
+  </tr>
+</table>
 
 ## Best Practice
 Google AIP(https://google.aip.dev/general):
@@ -7,6 +18,20 @@ Google AIP(https://google.aip.dev/general):
 3. Pagination
 4. Field masks
 5. Field behavior
+
+## Console
+The `console/` directory holds an Ant Design Pro frontend that talks to the
+service through the generated TypeScript clients: an overview dashboard, admin
+management backed by AIP filtering and pagination, and a sign-in page.
+
+![Overview](docs/overview.png)
+
+<table>
+  <tr>
+    <td width="50%"><img src="docs/admin.png" alt="Admin management"></td>
+    <td width="50%"><img src="docs/login.png" alt="Sign in"></td>
+  </tr>
+</table>
 
 ## Generate API files
 Proto generation is driven by [buf](https://buf.build). Dependencies such as

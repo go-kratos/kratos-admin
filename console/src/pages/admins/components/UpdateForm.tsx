@@ -23,21 +23,22 @@ const UpdateForm: FC<UpdateFormProps> = (props) => {
   const { run, loading } = useRequest(services.admin.UpdateAdmin, {
     manual: true,
     onSuccess: () => {
-      messageApi.success("Updated successfully");
+      messageApi.success(
+        intl.formatMessage({ id: "pages.searchTable.updateSuccess" })
+      );
       onOk?.();
     },
   });
 
   const onFinish = async (formValues: Admin) => {
-    if (!values.id) {
-      messageApi.error("Missing admin id");
-      return false;
+    // 只把要改的字段列进 mask。password 留空意为「不改」，若也列进去，服务端的
+    // fieldmask.Update 会把它当成一次显式清空。
+    const paths = ["name", "email", "access"];
+    if (formValues.password) {
+      paths.push("password");
     }
-    const updateMask = ["name", "email", "phone", "access", "password"].join(
-      ","
-    );
     try {
-      await run({ admin: formValues, updateMask });
+      await run({ admin: formValues, updateMask: paths.join(",") });
       return true;
     } catch {
       // Reporting is handled globally in requestErrorConfig.
@@ -51,95 +52,84 @@ const UpdateForm: FC<UpdateFormProps> = (props) => {
       <ModalForm<Admin>
         title={intl.formatMessage({
           id: "pages.searchTable.updateForm.basicConfig",
-          defaultMessage: "基本信息",
+          defaultMessage: "Basic Information",
         })}
         trigger={trigger}
         initialValues={values}
-        width="400px"
+        // 与新建弹窗同宽，两个表单看起来才是一套。
+        width={480}
         modalProps={{
-          destroyOnClose: true,
+          destroyOnHidden: true,
           okButtonProps: { loading },
         }}
         onFinish={onFinish}
       >
         <ProFormText name="id" hidden />
+        {/* 不给字段设 width：pro-form 的 "md" 是固定 328px，在弹窗里会让输入框右侧
+            空出一段。不设就跟着容器占满。 */}
         <ProFormText
+          name="name"
+          label={intl.formatMessage({ id: "pages.searchTable.title.name" })}
+          placeholder={intl.formatMessage({
+            id: "pages.searchTable.placeholder.name",
+          })}
           rules={[
             {
               required: true,
               message: (
-                <FormattedMessage
-                  id="pages.searchTable.required.name"
-                  defaultMessage="Name is required"
-                />
+                <FormattedMessage id="pages.searchTable.required.name" />
               ),
             },
           ]}
-          label={intl.formatMessage({
-            id: "pages.searchTable.title.name",
-            defaultMessage: "Name",
-          })}
-          width="md"
-          name="name"
         />
         <ProFormText
+          name="email"
+          label={intl.formatMessage({ id: "pages.searchTable.title.email" })}
+          placeholder={intl.formatMessage({
+            id: "pages.searchTable.placeholder.email",
+          })}
           rules={[
             {
               required: true,
               message: (
-                <FormattedMessage
-                  id="pages.searchTable.required.email"
-                  defaultMessage="Email is required"
-                />
+                <FormattedMessage id="pages.searchTable.required.email" />
+              ),
+            },
+            {
+              type: "email",
+              message: (
+                <FormattedMessage id="pages.searchTable.invalid.email" />
               ),
             },
           ]}
-          label={intl.formatMessage({
-            id: "pages.searchTable.title.email",
-            defaultMessage: "Email",
-          })}
-          width="md"
-          name="email"
         />
         <ProFormSelect
+          name="access"
+          label={intl.formatMessage({ id: "pages.searchTable.title.access" })}
+          placeholder={intl.formatMessage({
+            id: "pages.searchTable.placeholder.access",
+          })}
+          // 取值是后端约定的标识符，直接展示不做翻译，与表格里的 access 标签一致。
+          options={[
+            { label: "user", value: "user" },
+            { label: "admin", value: "admin" },
+          ]}
           rules={[
             {
               required: true,
               message: (
-                <FormattedMessage
-                  id="pages.searchTable.required.access"
-                  defaultMessage="Access is required"
-                />
+                <FormattedMessage id="pages.searchTable.required.access" />
               ),
             },
           ]}
-          label={intl.formatMessage({
-            id: "pages.searchTable.title.access",
-            defaultMessage: "Access",
-          })}
-          width="md"
-          name="access"
-          options={[
-            { label: "User", value: "user" },
-            { label: "Admin", value: "admin" },
-          ]}
         />
-        <ProFormText
-          label={intl.formatMessage({
-            id: "pages.searchTable.title.phone",
-            defaultMessage: "Phone",
-          })}
-          width="md"
-          name="phone"
-        />
-        <ProFormText
-          label={intl.formatMessage({
-            id: "pages.searchTable.title.password",
-            defaultMessage: "Password",
-          })}
-          width="md"
+        {/* 编辑时密码非必填：留空即不修改，占位文案要把这点说清楚。 */}
+        <ProFormText.Password
           name="password"
-          fieldProps={{ type: "password" }}
+          label={intl.formatMessage({ id: "pages.searchTable.title.password" })}
+          placeholder={intl.formatMessage({
+            id: "pages.searchTable.placeholder.passwordKeep",
+          })}
         />
       </ModalForm>
     </>

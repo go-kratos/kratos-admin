@@ -33,21 +33,19 @@ message Admin {
   string name = 2;
   // The email of the user.
   string email = 3;
-  // The phone number of the user.
-  string phone = 4;
   // The avatar URL of the user.
-  string avatar = 5;
+  string avatar = 4;
   // The access level of the user.
   // Possible values are: "admin", "user", etc.
-  string access = 6;
+  string access = 5;
   // The password of the user.
-  string password = 7;
+  string password = 6;
   // The lifecycle status of the user.
-  Status status = 8;
+  Status status = 7;
   // The timestamp at which the user was created.
-  google.protobuf.Timestamp created_at = 9;
+  google.protobuf.Timestamp created_at = 8;
   // The latest timestamp at which the user was updated.
-  google.protobuf.Timestamp updated_at = 10;
+  google.protobuf.Timestamp updated_at = 9;
 }
 
 // AdminSet is the set of admins.
@@ -141,7 +139,6 @@ message ListAdminsRequest {
   // Supported fields:
   //    * `name` (i.e. `name="John Doe"`)
   //    * `email` (i.e. `email="admin@go-kratos.dev"`)
-  //    * `phone` (i.e. `phone="+1234567890"`)
   //    * `created_at` range (i.e. `timestamp>="2025-01-31T11:30:00-04:00"` where
   //    the timestamp is in RFC 3339 format)
   //
