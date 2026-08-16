@@ -1,4 +1,15 @@
 # Kratos Admin Template
+A Kratos service template with an Ant Design Pro console: sign-in, an overview
+dashboard, and admin management backed by AIP filtering and pagination.
+
+![Sign in](docs/login.png)
+
+<table>
+  <tr>
+    <td width="50%"><img src="docs/overview.png" alt="Overview"></td>
+    <td width="50%"><img src="docs/admins.png" alt="Admin management"></td>
+  </tr>
+</table>
 
 ## Best Practice
 Google AIP(https://google.aip.dev/general):
@@ -8,6 +19,20 @@ Google AIP(https://google.aip.dev/general):
 4. Field masks
 5. Field behavior
 
+## Console
+The `console/` directory holds an Ant Design Pro frontend that talks to the
+service through the generated TypeScript clients: an overview dashboard, admin
+management backed by AIP filtering and pagination, and a sign-in page.
+
+![Overview](docs/overview.png)
+
+<table>
+  <tr>
+    <td width="50%"><img src="docs/admin.png" alt="Admin management"></td>
+    <td width="50%"><img src="docs/login.png" alt="Sign in"></td>
+  </tr>
+</table>
+
 ## Generate API files
 Proto generation is driven by [buf](https://buf.build). Dependencies such as
 googleapis are resolved from the Buf Schema Registry (`buf.build/googleapis/googleapis`),
@@ -15,22 +40,22 @@ so there is no vendored `third_party/` directory.
 ```shell
 # Install tooling (buf + wire)
 make init
-# Generate API files (pb.go, grpc, kratos http, openapi.yaml, web TS clients) from api/*.proto
+# Generate API files (pb.go, grpc, kratos http, openapi.yaml, console TS clients) from api/*.proto
 make api
 # Generate internal config (internal/conf/conf.pb.go) from internal/*.proto
 make config
 ```
 
-## Run Web Application
+## Run Console Application
 ```shell
-# Enter web directory, install dependencies and start development server
-cd web
+# Enter console directory, install dependencies and start development server
+cd console
 npm install
 npm run dev
 ```
 
 The generated clients work with any Promise-based HTTP client that returns JSON.  
-Services are defined and re-exported from this file: `web/src/services/index.ts`.  
+Services are defined and re-exported from this file: `console/src/services/index.ts`.  
 ```typescript
 import { createAdminServiceClient } from "@/services/kratos/admin/v1/index";
 

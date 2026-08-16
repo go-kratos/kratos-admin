@@ -1,0 +1,60 @@
+{
+  "name": "kratos-admin-console",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Admin console for the Kratos service template",
+  "repository": "git@github.com:go-kratos/kratos-admin.git",
+  "scripts": {
+    "analyze": "cross-env ANALYZE=1 max build",
+    "build": "max build",
+    "dev": "npm run start:dev",
+    "postinstall": "max setup",
+    "jest": "jest",
+    "lint": "npm run biome:lint && npm run tsc",
+    "lint-staged": "lint-staged",
+    "biome:lint": "npx @biomejs/biome lint",
+    "prepare": "husky",
+    "preview": "npm run build && max preview --port 3000",
+    "start": "cross-env UMI_ENV=dev max dev",
+    "start:dev": "cross-env UMI_ENV=dev PORT=3000 max dev",
+    "test": "jest",
+    "test:coverage": "npm run jest -- --coverage",
+    "test:update": "npm run jest -- -u",
+    "tsc": "tsc --noEmit"
+  },
+  "browserslist": ["defaults"],
+  "dependencies": {
+    "@ant-design/icons": "^6.3.2",
+    "@ant-design/pro-components": "3.1.14-6",
+    "antd": "^6.6.0",
+    "antd-style": "^4.1.0",
+    "dayjs": "^1.11.22",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.1.1",
+    "@commitlint/cli": "^21.2.2",
+    "@commitlint/config-conventional": "^21.2.2",
+    "@testing-library/dom": "^10.4.0",
+    "@testing-library/react": "^16.3.0",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^26.2.0",
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
+    "@types/react-helmet": "^6.1.11",
+    "@umijs/lint": "^4.6.1",
+    "@umijs/max": "^4.7.5",
+    "cross-env": "^10.0.0",
+    "husky": "^9.1.7",
+    "jest": "^30.0.4",
+    "jest-environment-jsdom": "^30.0.5",
+    "lint-staged": "^17.3.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.6.3",
+    "umi-presets-pro": "^2.0.3"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

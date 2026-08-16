@@ -29,6 +29,11 @@ message Data {
   message Database {
     string driver = 1;
     string source = 2;
+    // Log every generated statement. Development only.
+    bool debug = 3;
+    // Create or update tables from the ent schema on startup. Leave false in
+    // production and apply migrations as a separate, reviewed step.
+    bool auto_migrate = 4;
   }
   message Redis {
     string network = 1;

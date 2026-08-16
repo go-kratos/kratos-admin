@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1200" viewBox="0 0 1200 1200" fill="none">
+  <title>Kratos Admin</title>
+  <!--
+    登录页左栏的品牌插画。手写 SVG 而非位图：左栏宽度随视口变化，位图在宽屏上会
+    发虚，而这张任意尺寸都锐利、只有几 KB、不依赖任何 CDN。
+
+    画面是一张服务拓扑：中心节点向外辐射到六个服务节点，外面两圈虚线是调用边界。
+    这是 Kratos 本身的语义，比纯几何装饰更贴题。
+
+    正方形画布：左栏在常见视口下接近 1:1（1280x800 时 0.93，1920x1080 时 1.03），
+    竖长的画布配 background-size: cover 会被裁掉大半。核心图形都在中心 r=560 内，
+    长宽比再偏一些也不会缺一块。
+  -->
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1200" y2="1200" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#4A0FB0"/>
+      <stop offset=".52" stop-color="#7624F4"/>
+      <stop offset="1" stop-color="#5416BE"/>
+    </linearGradient>
+    <!-- 两团柔光打破平面渐变，位置错开成对角，避免画面重心居中发闷。 -->
+    <radialGradient id="glowTop" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse"
+      gradientTransform="translate(210 200) scale(620)">
+      <stop stop-color="#C9A6FF" stop-opacity=".38"/>
+      <stop offset="1" stop-color="#C9A6FF" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glowBottom" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse"
+      gradientTransform="translate(1030 1060) scale(580)">
+      <stop stop-color="#8B5CF6" stop-opacity=".45"/>
+      <stop offset="1" stop-color="#8B5CF6" stop-opacity="0"/>
+    </radialGradient>
+    <!-- 节点自带光晕，让白点看着是发光的而不是贴上去的。 -->
+    <radialGradient id="nodeGlow" cx=".5" cy=".5" r=".5">
+      <stop stop-color="#FFFFFF" stop-opacity=".55"/>
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="grid" width="48" height="48" patternUnits="userSpaceOnUse">
+      <path d="M48 0H0v48" stroke="#FFFFFF" stroke-opacity=".055" stroke-width="1"/>
+    </pattern>
+  </defs>
+
+  <rect width="1200" height="1200" fill="url(#bg)"/>
+  <rect width="1200" height="1200" fill="url(#grid)"/>
+  <rect width="1200" height="1200" fill="url(#glowTop)"/>
+  <rect width="1200" height="1200" fill="url(#glowBottom)"/>
+
+  <!-- 调用边界。两圈半径拉开够远，缩放时不会挤成一条粗线。 -->
+  <g stroke="#FFFFFF" fill="none">
+    <circle cx="600" cy="600" r="420" stroke-opacity=".13" stroke-dasharray="2 10"/>
+    <circle cx="600" cy="600" r="560" stroke-opacity=".08" stroke-dasharray="2 14"/>
+  </g>
+
+  <!-- 服务网格：六边形环 + 中心到各节点的辐射线。 -->
+  <g stroke="#FFFFFF" fill="none" stroke-linejoin="round">
+    <path stroke-opacity=".22"
+      d="M600 350 816.5 475 816.5 725 600 850 383.5 725 383.5 475Z"/>
+    <g stroke-opacity=".16">
+      <path d="M600 600 600 350M600 600 816.5 475M600 600 816.5 725"/>
+      <path d="M600 600 600 850M600 600 383.5 725M600 600 383.5 475"/>
+    </g>
+  </g>
+
+  <!-- 六个服务节点。 -->
+  <g>
+    <circle cx="600" cy="350" r="46" fill="url(#nodeGlow)"/>
+    <circle cx="816.5" cy="475" r="46" fill="url(#nodeGlow)"/>
+    <circle cx="816.5" cy="725" r="46" fill="url(#nodeGlow)"/>
+    <circle cx="600" cy="850" r="46" fill="url(#nodeGlow)"/>
+    <circle cx="383.5" cy="725" r="46" fill="url(#nodeGlow)"/>
+    <circle cx="383.5" cy="475" r="46" fill="url(#nodeGlow)"/>
+    <g fill="#FFFFFF">
+      <circle cx="600" cy="350" r="9"/>
+      <circle cx="816.5" cy="475" r="9"/>
+      <circle cx="816.5" cy="725" r="9"/>
+      <circle cx="600" cy="850" r="9"/>
+      <circle cx="383.5" cy="725" r="9"/>
+      <circle cx="383.5" cy="475" r="9"/>
+    </g>
+  </g>
+
+  <!-- 中心节点。比外围节点重，作为画面焦点。 -->
+  <circle cx="600" cy="600" r="110" fill="url(#nodeGlow)"/>
+  <circle cx="600" cy="600" r="46" fill="#FFFFFF" fill-opacity=".1" stroke="#FFFFFF"
+    stroke-opacity=".3"/>
+  <circle cx="600" cy="600" r="15" fill="#FFFFFF"/>
+</svg>

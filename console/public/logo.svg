@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
+  <title>Kratos Admin</title>
+  <rect width="200" height="200" rx="44" fill="#7624F4"/>
+  <!-- 实心几何 K：favicon 会缩到 16px，描边式笔画在那个尺寸会跨半个像素而发虚。 -->
+  <g fill="#FFFFFF">
+    <rect x="52" y="46" width="26" height="108" rx="6"/>
+    <path d="M132 46h30l-58 54 58 54h-32l-52-50v-8z"/>
+  </g>
+</svg>
