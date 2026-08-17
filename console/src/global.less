@@ -28,8 +28,12 @@ body,
 // 要 !important：那条规则由 cssinjs 运行时注入，靠特异性压不稳。
 //
 // 顶栏不用管：layout 是 'side'，pro-layout 不渲染独立顶栏，头像和右上操作都在侧栏里。
-.ant-pro-sider .ant-layout-sider-children {
+.kratos-theme-light .ant-pro-sider .ant-layout-sider-children {
   border-inline-end-color: #eaeaea !important;
+}
+
+.kratos-theme-dark .ant-pro-sider .ant-layout-sider-children {
+  border-inline-end-color: #303034 !important;
 }
 
 // 侧栏标题默认带一个 0.4s 的淡入（pro-layout 的 proLayoutTitleHide），每次进页面
@@ -78,6 +82,12 @@ body,
 
   .ant-table-footer {
     padding-inline: 24px !important;
+  }
+
+  // ProTable 的 copyable 列会把 Typography 复制按钮直接接在文本后面，默认间距太窄；
+  // 复制成功后按钮会替换成勾，因此统一在按钮容器上留出距离。
+  .ant-typography-copy {
+    margin-inline-start: 8px;
   }
 }
 

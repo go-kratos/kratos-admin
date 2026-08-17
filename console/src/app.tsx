@@ -9,14 +9,48 @@ import { type Admin, services } from "@/services";
 import type { Settings as LayoutSettings } from "@ant-design/pro-components";
 import { SettingDrawer } from "@ant-design/pro-components";
 import type { RequestConfig, RunTimeLayoutConfig } from "@umijs/max";
-import { getIntl, history } from "@umijs/max";
+import { getIntl, history, useAntdConfigSetter } from "@umijs/max";
 import { Result } from "antd";
+import { useLayoutEffect, useRef } from "react";
 import defaultSettings from "../config/defaultSettings";
-import { brandColor, buildLayoutToken } from "../config/theme";
+import {
+  brandColor,
+  buildAntdTheme,
+  buildLayoutToken,
+  type ColorMode,
+} from "../config/theme";
 import { errorConfig } from "./requestErrorConfig";
 
 const isDevOrTest = process.env.NODE_ENV === "development" || process.env.CI;
 const loginPath = "/user/login";
+
+/**
+ * ProLayout 会为 realDark 注入暗色算法，但 config.ts 中固定的亮色 token 优先级更高，
+ * 因此还要同步替换最外层 ConfigProvider 的语义色。放在独立组件中，避免在 layout
+ * 配置函数里调用 Hook。
+ */
+const ThemeSync = ({ primary, mode }: { primary: string; mode: ColorMode }) => {
+  const setAntdConfig = useAntdConfigSetter();
+  const setAntdConfigRef = useRef(setAntdConfig);
+
+  // Umi 每次 Provider render 都会创建新的 setter；用 ref 取最新版，主题 effect 只在
+  // 实际颜色变化时执行，避免 setter 自身变化造成重复更新。
+  useLayoutEffect(() => {
+    setAntdConfigRef.current = setAntdConfig;
+  });
+
+  useLayoutEffect(() => {
+    setAntdConfigRef.current({ theme: buildAntdTheme(primary, mode) });
+    const root = document.documentElement;
+    root.style.colorScheme = mode;
+
+    return () => {
+      root.style.colorScheme = "";
+    };
+  }, [primary, mode]);
+
+  return null;
+};
 
 /**
  * @see https://umijs.org/docs/api/runtime-config#getinitialstate
@@ -45,6 +79,8 @@ export const layout: RunTimeLayoutConfig = ({
 }) => {
   // SettingDrawer 换色后写在这里，未改动时回落到默认品牌色。
   const themeColor = initialState?.settings?.colorPrimary ?? brandColor;
+  const colorMode: ColorMode =
+    initialState?.settings?.navTheme === "realDark" ? "dark" : "light";
   return {
     actionsRender: () => [<SelectLang key="SelectLang" />],
     avatarProps: {
@@ -79,6 +115,7 @@ export const layout: RunTimeLayoutConfig = ({
     ),
     childrenRender: (children) => (
       <>
+        <ThemeSync primary={themeColor} mode={colorMode} />
         {children}
         {isDevOrTest && (
           <SettingDrawer
@@ -100,7 +137,8 @@ export const layout: RunTimeLayoutConfig = ({
     //
     // SettingDrawer 只写 settings.colorPrimary，而侧栏配色读的是 token.sider.*，
     // 两者不相通 —— 不在这里重新派生，换主题色时侧栏和内容区底色会停在默认色上。
-    token: buildLayoutToken(themeColor),
+    token: buildLayoutToken(themeColor, colorMode),
+    className: `kratos-theme-${colorMode}`,
     // 同理，public/logo.svg 的 fill 写死在文件里，只有换成组件才能跟着主题色走。
     logo: <Logo color={themeColor} />,
   };
