@@ -37,6 +37,8 @@ github.com/fsnotify/fsnotify v1.10.1 h1:b0/UzAf9yR5rhf3RPm9gf3ehBPpf0oZKIjtpKrx5
 github.com/fsnotify/fsnotify v1.10.1/go.mod h1:TLheqan6HD6GBK6PrDWyDPBaEV8LspOxvPSjC+bVfgo=
 github.com/go-kratos/aip-go/ents v0.0.0-20251213081434-74ffa1fc1588 h1:e0dWyNWFeTgGCH7cRMROahTwMaQYtmHce/6fxVmA6yI=
 github.com/go-kratos/aip-go/ents v0.0.0-20251213081434-74ffa1fc1588/go.mod h1:ifKMm4eJmaQz5WNKKhfClpCng8UxUB3sArof8wjwG78=
+github.com/go-kratos/aip-go/ents v0.0.0-20260901003907-1ab5471e605b h1:ulDN7Axly2Mnr/6trdyzhvcvype1tuL/lUSjsKWBn24=
+github.com/go-kratos/aip-go/ents v0.0.0-20260901003907-1ab5471e605b/go.mod h1:ifKMm4eJmaQz5WNKKhfClpCng8UxUB3sArof8wjwG78=
 github.com/go-kratos/kratos/contrib/otel/v3 v3.0.0-20260617100506-4e232a3eff59 h1:FeDujUZF6a2pPS0RWGI52IXWPqVcGW1QP5vHDlAqLE8=
 github.com/go-kratos/kratos/contrib/otel/v3 v3.0.0-20260617100506-4e232a3eff59/go.mod h1:hT2QNZ/0DPOvRqVqxoBBL/aMCOHhbbWh92mF87DBiCU=
 github.com/go-kratos/kratos/v3 v3.0.0-20260617100506-4e232a3eff59 h1:32laNndL0GsYLuGwWquB6if8yrBQWEzXlkkXImcfeKA=

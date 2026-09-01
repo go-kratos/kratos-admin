@@ -4,7 +4,7 @@ go 1.25.7
 
 require (
 	entgo.io/ent v0.14.6
-	github.com/go-kratos/aip-go/ents v0.0.0-20251213081434-74ffa1fc1588
+	github.com/go-kratos/aip-go/ents v0.0.0-20260901003907-1ab5471e605b
 	github.com/go-kratos/kratos/contrib/otel/v3 v3.0.0-20260617100506-4e232a3eff59
 	github.com/go-kratos/kratos/v3 v3.0.0
 	github.com/go-sql-driver/mysql v1.10.0
